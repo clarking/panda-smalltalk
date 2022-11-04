@@ -29,7 +29,7 @@
 #include <st-identity-hashtable.h>
 #include <st-heap.h>
 #include <st-utils.h>
-#include <ptr_array.h>
+#include "ptr_array.h"
 
 /* threshold is 8 Mb or 16 Mb depending on whether system is 32 or 64 bits */
 #define ST_COLLECTION_THRESHOLD (sizeof (st_oop) * 2 * 1024 * 1024)

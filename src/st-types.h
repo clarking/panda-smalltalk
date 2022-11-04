@@ -27,23 +27,20 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <config.h>
 #include <stddef.h>
 
 /* Check host data model. We only support LP64 at the moment.
  */
-#if (SIZEOF_VOID_P == 4 && SIZEOF_INT == 4)
+#ifndef __LP64__
 #  define ST_HOST32             1
 #  define ST_HOST64             0
 #  define ST_BITS_PER_WORD     32
 #  define ST_BITS_PER_INTEGER  32
-#elif (SIZEOF_VOID_P == 8)
+#else
 #  define ST_HOST32            0
 #  define ST_HOST64            1
 #  define ST_BITS_PER_WORD     64
 #  define ST_BITS_PER_INTEGER  32
-#else
-#  error Sorry, platform not supported. Patches welcome! 
 #endif
 
 #define ST_SMALL_INTEGER_MIN  (-ST_SMALL_INTEGER_MAX - 1)

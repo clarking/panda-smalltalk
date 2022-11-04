@@ -31,35 +31,31 @@
 
 #define ST_METHOD(oop) ((struct st_method *) (st_detag_pointer (oop)))
 
-struct st_method
-{
-    struct st_header __parent__;
-
-    st_oop header;
-    st_oop bytecode;
-    st_oop literals;
-    st_oop selector;
+struct st_method {
+	struct st_header __parent__;
+	st_oop header;
+	st_oop bytecode;
+	st_oop literals;
+	st_oop selector;
 };
 
-typedef enum
-{
-    ST_METHOD_NORMAL,
-    ST_METHOD_RETURN_RECEIVER,
-    ST_METHOD_RETURN_INSTVAR,
-    ST_METHOD_RETURN_LITERAL,
-    ST_METHOD_PRIMITIVE,
+typedef enum {
+	ST_METHOD_NORMAL,
+	ST_METHOD_RETURN_RECEIVER,
+	ST_METHOD_RETURN_INSTVAR,
+	ST_METHOD_RETURN_LITERAL,
+	ST_METHOD_PRIMITIVE,
 
 } st_method_flags;
 
-typedef enum
-{
-    ST_METHOD_LITERAL_NIL,
-    ST_METHOD_LITERAL_TRUE,
-    ST_METHOD_LITERAL_FALSE,
-    ST_METHOD_LITERAL_MINUS_ONE,
-    ST_METHOD_LITERAL_ZERO,
-    ST_METHOD_LITERAL_ONE,
-    ST_METHOD_LITERAL_TWO,
+typedef enum {
+	ST_METHOD_LITERAL_NIL,
+	ST_METHOD_LITERAL_TRUE,
+	ST_METHOD_LITERAL_FALSE,
+	ST_METHOD_LITERAL_MINUS_ONE,
+	ST_METHOD_LITERAL_ZERO,
+	ST_METHOD_LITERAL_ONE,
+	ST_METHOD_LITERAL_TWO,
 
 } st_method_literal_type;
 
@@ -117,120 +113,91 @@ typedef enum
  *       2:              6
  */
 
-#define _ST_METHOD_SET_BITFIELD(bitfield, field, value) 	  		\
+#define _ST_METHOD_SET_BITFIELD(bitfield, field, value)            \
     ((bitfield) = ((bitfield) & ~(_ST_METHOD_##field##_MASK << _ST_METHOD_##field##_SHIFT)) \
-	 | (((value) & _ST_METHOD_##field##_MASK) << _ST_METHOD_##field##_SHIFT))
+     | (((value) & _ST_METHOD_##field##_MASK) << _ST_METHOD_##field##_SHIFT))
 
-#define _ST_METHOD_GET_BITFIELD(bitfield, field)			\
+#define _ST_METHOD_GET_BITFIELD(bitfield, field)            \
     (((bitfield) >> _ST_METHOD_##field##_SHIFT) & _ST_METHOD_##field##_MASK)
 
-enum
-{
-    _ST_METHOD_FLAG_BITS           = 3,
-    _ST_METHOD_ARG_BITS            = 5,
-    _ST_METHOD_TEMP_BITS           = 6,
-    _ST_METHOD_UNUSED_BITS         = 7,
-    _ST_METHOD_LARGE_BITS          = 1,
-    _ST_METHOD_INSTVAR_BITS        = 16,  
-    _ST_METHOD_LITERAL_BITS        = 4,
-    _ST_METHOD_PRIMITIVE_BITS      = 8,
-    
-    _ST_METHOD_PRIMITIVE_SHIFT     =  ST_TAG_SIZE,
-    _ST_METHOD_INSTVAR_SHIFT       =  ST_TAG_SIZE,
-    _ST_METHOD_LITERAL_SHIFT       =  ST_TAG_SIZE,
-    _ST_METHOD_LARGE_SHIFT         = _ST_METHOD_PRIMITIVE_BITS + _ST_METHOD_PRIMITIVE_SHIFT,
-    _ST_METHOD_UNUSED_SHIFT        = _ST_METHOD_LARGE_BITS     + _ST_METHOD_LARGE_SHIFT,
-    _ST_METHOD_TEMP_SHIFT          = _ST_METHOD_UNUSED_BITS    + _ST_METHOD_UNUSED_SHIFT,
-    _ST_METHOD_ARG_SHIFT           = _ST_METHOD_TEMP_BITS      + _ST_METHOD_TEMP_SHIFT,
-    _ST_METHOD_FLAG_SHIFT          = _ST_METHOD_ARG_BITS       + _ST_METHOD_ARG_SHIFT,
-    
-    _ST_METHOD_PRIMITIVE_MASK      = ST_NTH_MASK (_ST_METHOD_PRIMITIVE_BITS),
-    _ST_METHOD_LARGE_MASK          = ST_NTH_MASK (_ST_METHOD_LARGE_BITS),
-    _ST_METHOD_INSTVAR_MASK        = ST_NTH_MASK (_ST_METHOD_INSTVAR_BITS),
-    _ST_METHOD_LITERAL_MASK        = ST_NTH_MASK (_ST_METHOD_LITERAL_BITS),
-    _ST_METHOD_TEMP_MASK           = ST_NTH_MASK (_ST_METHOD_TEMP_BITS),
-    _ST_METHOD_ARG_MASK            = ST_NTH_MASK (_ST_METHOD_ARG_BITS),
-    _ST_METHOD_FLAG_MASK           = ST_NTH_MASK (_ST_METHOD_FLAG_BITS),
+enum {
+	_ST_METHOD_FLAG_BITS = 3,
+	_ST_METHOD_ARG_BITS = 5,
+	_ST_METHOD_TEMP_BITS = 6,
+	_ST_METHOD_UNUSED_BITS = 7,
+	_ST_METHOD_LARGE_BITS = 1,
+	_ST_METHOD_INSTVAR_BITS = 16,
+	_ST_METHOD_LITERAL_BITS = 4,
+	_ST_METHOD_PRIMITIVE_BITS = 8,
+
+	_ST_METHOD_PRIMITIVE_SHIFT = ST_TAG_SIZE,
+	_ST_METHOD_INSTVAR_SHIFT = ST_TAG_SIZE,
+	_ST_METHOD_LITERAL_SHIFT = ST_TAG_SIZE,
+	_ST_METHOD_LARGE_SHIFT = _ST_METHOD_PRIMITIVE_BITS + _ST_METHOD_PRIMITIVE_SHIFT,
+	_ST_METHOD_UNUSED_SHIFT = _ST_METHOD_LARGE_BITS + _ST_METHOD_LARGE_SHIFT,
+	_ST_METHOD_TEMP_SHIFT = _ST_METHOD_UNUSED_BITS + _ST_METHOD_UNUSED_SHIFT,
+	_ST_METHOD_ARG_SHIFT = _ST_METHOD_TEMP_BITS + _ST_METHOD_TEMP_SHIFT,
+	_ST_METHOD_FLAG_SHIFT = _ST_METHOD_ARG_BITS + _ST_METHOD_ARG_SHIFT,
+
+	_ST_METHOD_PRIMITIVE_MASK = ST_NTH_MASK (_ST_METHOD_PRIMITIVE_BITS),
+	_ST_METHOD_LARGE_MASK = ST_NTH_MASK (_ST_METHOD_LARGE_BITS),
+	_ST_METHOD_INSTVAR_MASK = ST_NTH_MASK (_ST_METHOD_INSTVAR_BITS),
+	_ST_METHOD_LITERAL_MASK = ST_NTH_MASK (_ST_METHOD_LITERAL_BITS),
+	_ST_METHOD_TEMP_MASK = ST_NTH_MASK (_ST_METHOD_TEMP_BITS),
+	_ST_METHOD_ARG_MASK = ST_NTH_MASK (_ST_METHOD_ARG_BITS),
+	_ST_METHOD_FLAG_MASK = ST_NTH_MASK (_ST_METHOD_FLAG_BITS),
 };
 
-
-static inline int
-st_method_get_temp_count (st_oop method)
-{
-    return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER (method), TEMP);
+static inline int st_method_get_temp_count(st_oop method) {
+	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), TEMP);
 }
 
-static inline int
-st_method_get_arg_count (st_oop method)
-{
-    return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER (method), ARG);
+static inline int st_method_get_arg_count(st_oop method) {
+	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), ARG);
 }
 
-static inline int
-st_method_get_large_context (st_oop method)
-{
-    return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER (method), LARGE);
+static inline int st_method_get_large_context(st_oop method) {
+	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), LARGE);
 }
 
-static inline int
-st_method_get_primitive_index (st_oop method)
-{
-    return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER (method), PRIMITIVE);
+static inline int st_method_get_primitive_index(st_oop method) {
+	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), PRIMITIVE);
 }
 
-static inline st_method_flags
-st_method_get_flags (st_oop method)
-{   
-    return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER (method), FLAG);
+static inline st_method_flags st_method_get_flags(st_oop method) {
+	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), FLAG);
 }
 
-static inline void
-st_method_set_flags (st_oop method, st_method_flags flags)
-{
-    _ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER (method), FLAG, flags);
+static inline void st_method_set_flags(st_oop method, st_method_flags flags) {
+	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), FLAG, flags);
 }
 
-static inline void
-st_method_set_arg_count (st_oop method, int count)
-{	
-    _ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER (method), ARG, count);
+static inline void st_method_set_arg_count(st_oop method, int count) {
+	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), ARG, count);
 }
 
-static inline void
-st_method_set_temp_count (st_oop method, int count)
-{
-    _ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER (method), TEMP, count);
+static inline void st_method_set_temp_count(st_oop method, int count) {
+	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), TEMP, count);
 }
 
-static inline void
-st_method_set_large_context (st_oop method, bool is_large)
-{
-    _ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER (method), LARGE, is_large);
+static inline void st_method_set_large_context(st_oop method, bool is_large) {
+	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), LARGE, is_large);
 }
 
-static inline void
-st_method_set_primitive_index (st_oop method, int index)
-{
-    _ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER (method), PRIMITIVE, index);
+static inline void st_method_set_primitive_index(st_oop method, int index) {
+	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), PRIMITIVE, index);
 }
 
-static inline void
-st_method_set_instvar_index (st_oop method, int index)
-{
-    _ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER (method), INSTVAR, index);
+static inline void st_method_set_instvar_index(st_oop method, int index) {
+	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), INSTVAR, index);
 }
 
-static inline void
-st_method_set_literal_type (st_oop method, st_method_literal_type literal_type)
-{
-    _ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER (method), LITERAL, literal_type);
+static inline void st_method_set_literal_type(st_oop method, st_method_literal_type literal_type) {
+	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), LITERAL, literal_type);
 }
 
-
-static inline st_uchar *
-st_method_bytecode_bytes (st_oop method)
-{
-    return st_byte_array_bytes (ST_METHOD_BYTECODE (method));    
+static inline st_uchar *st_method_bytecode_bytes(st_oop method) {
+	return st_byte_array_bytes(ST_METHOD_BYTECODE (method));
 }
 
 #endif /* __ST_METHOD_H__ */

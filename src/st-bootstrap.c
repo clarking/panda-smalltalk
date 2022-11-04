@@ -25,19 +25,16 @@
 #include "st-types.h"
 #include "st-utils.h"
 #include "st-universe.h"
-
 #include "st-interpreter.h"
-
-#include <glib.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
-int
-main (int argc, char *argv[])
-{
-    st_bootstrap_universe ();
 
-    return 0;    
+		int
+main(int argc, char *argv[]) {
+			bootstrap_universe();
+
+	return 0;
 }
 
