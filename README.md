@@ -23,13 +23,11 @@ Panda is a new Smalltalk implementation, written from scratch in C99.
     cmake .. && cmake --build .
 ```
 
-
 Panda isn't installable right now. The `panda' executable runs in the
 directory in which it was built ("build/"), and expects the kernel library files
 to be in "../st".
 
 ## Usage
-
 
 Use '-h' option to see available parameters.
 The main executable can read files and output the result, as well as enter in a repl loop to evaluate expressions.
@@ -57,20 +55,18 @@ Here are some short examples. Make sure to browse through the class library in "
          map := Dictionary new. 
          map at: #key put: 'foo'.
          map at: #key." | ./panda
-
 ```
 
 4. Fun with blocks: Use block to select elements of array which are greater than 
 
-   ```bash
-   $ echo "#(3 7 5 7 12 1) select: [ :x | x > 5 ]" | ./panda
-   ```
-
+```bash
+    echo "#(3 7 5 7 12 1) select: [ :x | x > 5 ]" | ./panda
+```
 
 5. Errors: Panda prints a useful traceback if there is an runtime error
 
-```smalltalk
-    $ echo "#(3 7 5 7 12 1) reverse" | ./panda
+```bash
+    echo "#(3 7 5 7 12 1) reverse" | ./panda
     An error occurred during program execution
     message: reverse
     
