@@ -26,7 +26,6 @@
 #include "st-compiler.h"
 #include "st-universe.h"
 #include "st-dictionary.h"
-//#include "st-symbol.h"
 #include "st-object.h"
 #include "st-behavior.h"
 #include "st-context.h"

@@ -48,7 +48,6 @@ struct st_behavior {
 
 struct st_class {
 	struct st_behavior parent;
-
 	st_oop name;
 };
 

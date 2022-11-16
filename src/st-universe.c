@@ -26,20 +26,14 @@
 #include "st-utils.h"
 #include "st-object.h"
 #include "st-behavior.h"
-//#include "st-float.h"
-//#include "st-association.h"
-//#include "st-method.h"
 #include "st-array.h"
 #include "st-small-integer.h"
 #include "st-dictionary.h"
-//#include "st-large-integer.h"
 #include "st-symbol.h"
 #include "st-universe.h"
-//#include "st-object.h"
 #include "st-lexer.h"
 #include "st-compiler.h"
 #include "st-memory.h"
-//#include "st-context.h"
 #include "st-machine.h"
 
 #include <stdlib.h>
@@ -67,8 +61,7 @@ enum {
 	INSTANCE_SIZE_BLOCK_CONTEXT = 6
 };
 
-static st_oop
-class_new(st_format format, st_uint instance_size) {
+static st_oop class_new(st_format format, st_uint instance_size) {
 	st_oop class;
 
 	class = st_memory_allocate(ST_SIZE_OOPS (struct st_class));
@@ -143,8 +136,7 @@ static void initialize_class(const char *name, const char *super_name, st_list *
 
 		ST_BEHAVIOR_SUPERCLASS (class) = superclass;
 		ST_BEHAVIOR_SUPERCLASS (metaclass) = ST_HEADER (superclass)->class;
-		ST_BEHAVIOR_INSTANCE_SIZE (class) = st_smi_new(st_list_length(ivarnames) +
-		                                               st_smi_value(ST_BEHAVIOR_INSTANCE_SIZE (superclass)));
+		ST_BEHAVIOR_INSTANCE_SIZE (class) = st_smi_new(st_list_length(ivarnames) + st_smi_value(ST_BEHAVIOR_INSTANCE_SIZE (superclass)));
 	}
 
 	names = ST_NIL;
@@ -167,8 +159,7 @@ static void initialize_class(const char *name, const char *super_name, st_list *
 	st_dictionary_at_put(ST_GLOBALS, st_symbol_new(name), class);
 }
 
-static bool
-parse_variable_names(st_lexer *lexer, st_list **varnames) {
+static bool parse_variable_names(st_lexer *lexer, st_list **varnames) {
 	st_lexer *ivarlexer;
 	st_token *token;
 	char *names;

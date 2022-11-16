@@ -27,16 +27,15 @@
 
 #include <st-machine.h>
 
-typedef void (*st_primitive_func) (struct st_machine *machine);
+typedef void (*st_primitive_func)(struct st_machine *machine);
 
-struct st_primitive
-{
-    const char *       name;
-    st_primitive_func  func;
+struct st_primitive {
+	const char *name;
+	st_primitive_func func;
 };
 
 extern const struct st_primitive st_primitives[];
 
-int st_primitive_index_for_name (const char *name);
+int st_primitive_index_for_name(const char *name);
 
 #endif /* __ST_PRIMITIVES_H__ */

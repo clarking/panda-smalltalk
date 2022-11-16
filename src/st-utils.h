@@ -64,86 +64,81 @@
    do {                                 \
       enum { assert_static__ = 1/(e) }; \
    } while (0)
-   
-#define streq(a,b)  (strcmp ((a),(b)) == 0)
+
+#define streq(a, b)  (strcmp ((a),(b)) == 0)
 
 #ifndef MAX
-#define MAX(a,b) (((a)>(b)) ? (a) : (b))
+#define MAX(a, b) (((a)>(b)) ? (a) : (b))
 #endif
 
 #ifndef MIN
-#define MIN(a,b) (((a)<(b)) ? (a) : (b))
+#define MIN(a, b) (((a)<(b)) ? (a) : (b))
 #endif
 
 #ifndef CLAMP
-#define CLAMP(a,low,high) (((a) < (low)) ? (low) : (((a) > (high)) ? (high) : (a)))
+#define CLAMP(a, low, high) (((a) < (low)) ? (low) : (((a) > (high)) ? (high) : (a)))
 #endif
 
-enum
-{
-    st_tag_mask = ST_NTH_MASK (2),
+enum {
+	st_tag_mask = ST_NTH_MASK (2),
 };
 
 static inline void
-st_oops_copy (st_oop *to, st_oop *from, st_uint count)
-{
-    memcpy (to, from, sizeof (st_oop) * count);
+st_oops_copy(st_oop *to, st_oop *from, st_uint count) {
+	memcpy(to, from, sizeof(st_oop) * count);
 }
 
 static inline void
-st_oops_move (st_oop *to, st_oop *from, st_uint count)
-{
-    memmove (to, from, sizeof (st_oop) * count);
+st_oops_move(st_oop *to, st_oop *from, st_uint count) {
+	memmove(to, from, sizeof(st_oop) * count);
 }
 
-st_pointer  st_malloc   (size_t size) ST_GNUC_MALLOC;
-st_pointer  st_malloc0  (size_t size) ST_GNUC_MALLOC;
-st_pointer  st_realloc  (st_pointer mem, size_t size);
+st_pointer st_malloc(size_t size) ST_GNUC_MALLOC;
+st_pointer st_malloc0(size_t size) ST_GNUC_MALLOC;
+st_pointer st_realloc(st_pointer mem, size_t size);
 
-void        st_free    (st_pointer mem);
+void st_free(st_pointer mem);
 
 #define st_new(struct_type)  ((struct_type *) st_malloc  (sizeof (struct_type)))
 #define st_new0(struct_type) ((struct_type *) st_malloc0 (sizeof (struct_type)))
 
-bool    st_file_get_contents (const char *filename,
-			      char      **buffer);
+bool st_file_get_contents(const char *filename,
+                          char **buffer);
 
-char  *st_strdup         (const char *string);
-char  *st_strdup_printf  (const char *format, ...) ST_GNUC_PRINTF (1, 2);
-char  *st_strdup_vprintf (const char *format, va_list args);
-char  *st_strconcat      (const char *first, ...);
+char *st_strdup(const char *string);
+char *st_strdup_printf(const char *format, ...) ST_GNUC_PRINTF (1, 2);
+char *st_strdup_vprintf(const char *format, va_list args);
+char *st_strconcat(const char *first, ...);
 
-char ** st_strsplit (const char *string, const char *delimiter, int max_tokens);
-void    st_strfreev (char **str_array);
+char **st_strsplit(const char *string, const char *delimiter, int max_tokens);
+void st_strfreev(char **str_array);
 
-char   *st_strndup (const char *str, size_t n);
+char *st_strndup(const char *str, size_t n);
 
+double st_timespec_to_double_seconds(struct timespec *t);
 
-double st_timespec_to_double_seconds (struct timespec *t);
+void st_timespec_difference(struct timespec *start, struct timespec *end, struct timespec *diff);
 
-void st_timespec_difference (struct timespec *start, struct timespec *end, struct timespec *diff);
-
-void st_timespec_add        (struct timespec *t1, struct timespec *t2, struct timespec *result);
+void st_timespec_add(struct timespec *t1, struct timespec *t2, struct timespec *result);
 
 typedef struct st_list st_list;
 
-struct st_list
-{
-    st_pointer data;
-    st_list   *next;
+struct st_list {
+	st_pointer data;
+	st_list *next;
 };
 
-typedef void (* st_list_foreach_func) (st_pointer data); 
+typedef void (*st_list_foreach_func)(st_pointer data);
 
-st_list  *st_list_append  (st_list *list,  st_pointer data);
-st_list  *st_list_prepend (st_list *list,  st_pointer data);
-st_list  *st_list_concat  (st_list *list1, st_list *list2);
-void      st_list_foreach (st_list *list,  st_list_foreach_func func); 
-st_list  *st_list_reverse (st_list *list);
-st_uint   st_list_length  (st_list *list);
-void      st_list_destroy (st_list *list);
+st_list *st_list_append(st_list *list, st_pointer data);
+st_list *st_list_prepend(st_list *list, st_pointer data);
+st_list *st_list_concat(st_list *list1, st_list *list2);
+void st_list_foreach(st_list *list, st_list_foreach_func func);
+st_list *st_list_reverse(st_list *list);
+st_uint st_list_length(st_list *list);
+void st_list_destroy(st_list *list);
 
-st_uint   st_string_hash (const char *string);
+st_uint st_string_hash(const char *string);
 
 #if  defined(__GNUC__) && defined(__OPTIMIZE__)
 #define ST_LIKELY(condition)     __builtin_expect (!!(condition), 1)
@@ -162,20 +157,20 @@ st_uint   st_string_hash (const char *string);
 #endif
 
 #ifndef ST_DEBUG
-#define st_assert(condition) 
+#define st_assert(condition)
 #else
 #define st_assert(condition)						\
 ST_STMT_START						         	\
 if (!(condition)) {						       	\
-    fprintf (stderr, "%s:%i: %s: assertion `" #condition "' failed\n",	\
-	     __FILE__, __LINE__, __FUNCTION__);				\
-    abort ();								\
+	fprintf (stderr, "%s:%i: %s: assertion `" #condition "' failed\n",	\
+		 __FILE__, __LINE__, __FUNCTION__);				\
+	abort ();								\
  }									\
 ST_STMT_END
 #endif
 
 #ifndef ST_DEBUG
-#define st_assert_not_reached() 
+#define st_assert_not_reached()
 #else
 #define st_assert_not_reached()						\
 ST_STMT_START						        	\
@@ -185,6 +180,6 @@ abort ();								\
 ST_STMT_END
 #endif
 
-void st_log (const char * restrict domain, const char * restrict format, ...);
+void st_log(const char *restrict domain, const char *restrict format, ...);
 
 #endif /* __ST_UTILS_H__ */

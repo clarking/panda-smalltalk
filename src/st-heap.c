@@ -29,89 +29,78 @@
 
 #define PAGE_SIZE (st_system_pagesize ())
 
-static inline st_uint
-round_pagesize (st_uint size)
-{
-    return ((size + PAGE_SIZE - 1) / PAGE_SIZE) * PAGE_SIZE;
+static inline st_uint round_pagesize(st_uint size) {
+	return ((size + PAGE_SIZE - 1) / PAGE_SIZE) * PAGE_SIZE;
 }
 
-st_heap *
-st_heap_new (st_uint reserved_size)
-{
-    /* Create a new heap with a reserved address space.
-     * Returns NULL if address space could not be reserved
-     */
-    st_pointer result;
-    st_heap   *heap;
-    st_uint    size;
+st_heap *st_heap_new(st_uint reserved_size) {
+	/*
+	 * Create a new heap with a reserved address space.
+	 * Returns NULL if address space could not be reserved
+	 */
 
-    st_assert (reserved_size > 0);
-    size = round_pagesize (reserved_size);
+	st_pointer result;
+	st_heap *heap;
+	st_uint size;
 
-    result = st_system_reserve_memory (NULL, size);
-    if (result == NULL)
-	return NULL;
+	st_assert (reserved_size > 0);
+	size = round_pagesize(reserved_size);
 
-    heap = st_new0 (st_heap);
+	result = st_system_reserve_memory(NULL, size);
+	if (result == NULL)
+		return NULL;
 
-    heap->start = result;
-    heap->end = result + size;
-    heap->p = result;
-    
-    return heap;
+	heap = st_new0 (st_heap);
+	heap->start = result;
+	heap->end = result + size;
+	heap->p = result;
+	return heap;
 }
 
-bool
-st_heap_grow (st_heap *heap, st_uint grow_size)
-{
-    /* Grows the heap by the specified amount (in bytes).
-     * The primitive will not succeed if the heap runs out
-     * of reserved address space.
-     */
-    st_pointer result;
-    st_uint    size;
+bool st_heap_grow(st_heap *heap, st_uint grow_size) {
+	/*
+	 * Grows the heap by the specified amount (in bytes).
+	 * The primitive will not succeed if the heap runs out
+	 * of reserved address space.
+	 */
+	st_pointer result;
+	st_uint size;
 
-    st_assert (grow_size > 0);
-    size = round_pagesize (grow_size);
+	st_assert (grow_size > 0);
+	size = round_pagesize(grow_size);
 
-    if ((heap->p + size) >= heap->end)
-	return false;
+	if ((heap->p + size) >= heap->end)
+		return false;
 
-    result = st_system_commit_memory (heap->p, size);
-    if (result == NULL)
-	return false;
+	result = st_system_commit_memory(heap->p, size);
+	if (result == NULL)
+		return false;
 
-    heap->p += size;
+	heap->p += size;
 
-    return true;
+	return true;
 }
 
-bool
-st_heap_shrink (st_heap *heap, st_uint shrink_size)
-{
-    /* Shrinks the heap by the specified amount (in bytes).
-     */
-    st_pointer result;
-    st_uint    size;
-    
-    st_assert (shrink_size > 0);
-    size = round_pagesize (shrink_size);
-    
-    if ((heap->p - size) < heap->start)
-	return false;
-    
-    result = st_system_decommit_memory (heap->p - size, size);
-    if (result == NULL)
-	return false;
+bool st_heap_shrink(st_heap *heap, st_uint shrink_size) {
+	/* Shrinks the heap by the specified amount (in bytes).	 */
+	st_pointer result;
+	st_uint size;
 
-    heap->p -= size;
+	st_assert (shrink_size > 0);
+	size = round_pagesize(shrink_size);
 
-    return true;
+	if ((heap->p - size) < heap->start)
+		return false;
+
+	result = st_system_decommit_memory(heap->p - size, size);
+	if (result == NULL)
+		return false;
+
+	heap->p -= size;
+	return true;
 }
 
-void
-st_heap_destroy (st_heap *heap)
-{
-    st_system_release_memory (heap->start, heap->end - heap->start);
-    st_free (heap);
+void st_heap_destroy(st_heap *heap) {
+	st_system_release_memory(heap->start, heap->end - heap->start);
+	st_free(heap);
 }

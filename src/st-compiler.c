@@ -55,12 +55,8 @@ bool st_compile_string(st_oop class, const char *string, st_compiler_error *erro
 		return false;
 	}
 
-	st_dictionary_at_put(ST_BEHAVIOR (class)->method_dictionary,
-	                     node->method.selector,
-	                     method);
-
+	st_dictionary_at_put(ST_BEHAVIOR (class)->method_dictionary, node->method.selector,method);
 	st_node_destroy(node);
-
 	return true;
 }
 

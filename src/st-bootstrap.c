@@ -30,10 +30,8 @@
 #include <string.h>
 #include <stdio.h>
 
-
-		int
-main(int argc, char *argv[]) {
-			bootstrap_universe();
+int main(int argc, char *argv[]) {
+	bootstrap_universe();
 
 	return 0;
 }

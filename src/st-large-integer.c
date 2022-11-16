@@ -46,7 +46,7 @@ st_oop st_large_integer_new_from_string(const char *string, st_uint radix) {
 
 	out:
 	mp_clear(&value);
-	fprintf(stderr, mp_error_to_string(result));
+	fprintf(stderr, "%s", mp_error_to_string(result));
 	return ST_NIL;
 }
 
@@ -61,13 +61,15 @@ char *st_large_integer_to_string(st_oop integer, st_uint radix) {
 	char *str = st_malloc(size);
 
 	mp_toradix(VALUE (integer), str, radix);
-	if (result != MP_OKAY)
-		goto out;
+
+	// --removed as condition is always false
+	//	if (result != MP_OKAY)
+	//		goto out;
 
 	return str;
 
 	out:
-	fprintf(stderr, mp_error_to_string(result));
+	fprintf(stderr, "%s", mp_error_to_string(result));
 	return NULL;
 }
 

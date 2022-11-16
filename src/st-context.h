@@ -28,39 +28,32 @@
 #include <st-types.h>
 #include <st-object.h>
 
-struct st_context_part
-{
-    struct st_header __parent__;
-
-    st_oop sender;
-    st_oop ip;
-    st_oop sp;
+struct st_context_part {
+	struct st_header __parent__;
+	st_oop sender;
+	st_oop ip;
+	st_oop sp;
 
 };
 
-struct st_method_context
-{
-    struct st_context_part __parent__;
-    st_oop method;   
-    st_oop receiver;
-
-    st_oop stack[];
+struct st_method_context {
+	struct st_context_part __parent__;
+	st_oop method;
+	st_oop receiver;
+	st_oop stack[];
 };
 
-struct st_block_context
-{
-    struct st_context_part __parent__;
-    st_oop initial_ip;
-    st_oop argcount;
-    st_oop home;
-
-    st_oop stack[];
+struct st_block_context {
+	struct st_context_part __parent__;
+	st_oop initial_ip;
+	st_oop argcount;
+	st_oop home;
+	st_oop stack[];
 };
 
 #define ST_CONTEXT_PART(oop)       ((struct st_context_part *)   st_detag_pointer (oop))
 #define ST_METHOD_CONTEXT(oop)     ((struct st_method_context *) st_detag_pointer (oop))
 #define ST_BLOCK_CONTEXT(oop)      ((struct st_block_context *)  st_detag_pointer (oop))
-
 
 #define ST_CONTEXT_PART_SENDER(oop)  (ST_CONTEXT_PART (oop)->sender)
 #define ST_CONTEXT_PART_IP(oop)      (ST_CONTEXT_PART (oop)->ip)

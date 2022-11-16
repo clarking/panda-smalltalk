@@ -43,13 +43,13 @@ set(PANDA_SRC
 
 add_subdirectory(libs/libmpa)
 add_subdirectory(libs/libtommath)
-add_subdirectory(libs/optparse)
+#add_subdirectory(libs/optparse)
 
 add_executable(panda ${PANDA_SRC})
-target_include_directories(panda PUBLIC src/ libs/libmpa libs/libtommath libs/optparse)
+target_include_directories(panda PUBLIC src/ libs/libmpa libs/libtommath )
 
 #add_executable(panda_boot ${PANDA_BOOT_SRC})
 #target_include_directories(panda_boot PUBLIC src/ libs/libmpa libs/libtommath libs/optparse)
 
-target_link_libraries(panda -lm -lreadline -ldl -lpthread libmpa libtommath optparse)
+target_link_libraries(panda -lm -lreadline -ldl -lpthread libmpa libtommath )
 #target_link_libraries(panda_boot -lm -lreadline -ldl -lpthread libmpa libtommath optparse)

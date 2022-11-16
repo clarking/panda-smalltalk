@@ -45,5 +45,4 @@ st_oop  st_set_like              (st_oop set, st_oop object);
 void    st_set_add               (st_oop set, st_oop object);
 
 
-
 #endif /* __ST_HASHED_COLLECTION_H__ */

@@ -47,10 +47,10 @@
 #define ST_SMALL_INTEGER_MAX  536870911
 
 enum {
-    ST_SMI_TAG,
-    ST_POINTER_TAG,
-    ST_CHARACTER_TAG,
-    ST_MARK_TAG,
+	ST_SMI_TAG,
+	ST_POINTER_TAG,
+	ST_CHARACTER_TAG,
+	ST_MARK_TAG,
 };
 
 #define ST_TAG_SIZE 2
@@ -61,23 +61,37 @@ enum {
  */
 typedef uintptr_t st_oop;
 
-typedef unsigned char    st_uchar;
-typedef unsigned short   st_ushort;
-typedef unsigned long    st_ulong;
-typedef unsigned int     st_uint;
-typedef void *           st_pointer;
-typedef st_uint          st_unichar;
+typedef unsigned char st_uchar;
+typedef unsigned short st_ushort;
+typedef unsigned long st_ulong;
+typedef unsigned int st_uint;
+typedef void *st_pointer;
+typedef st_uint st_unichar;
 
 static inline st_oop
-st_tag_pointer (st_pointer p)
-{
-    return ((st_oop) p) + ST_POINTER_TAG;
+st_tag_pointer(st_pointer p) {
+	return ((st_oop) p) + ST_POINTER_TAG;
 }
 
 static inline st_oop *
-st_detag_pointer (st_oop oop)
-{
-    return (st_oop *) (oop - ST_POINTER_TAG);
+st_detag_pointer(st_oop oop) {
+	return (st_oop *) (oop - ST_POINTER_TAG);
 }
+
+struct _global {
+	int width, maxhelppos, indent;
+	const char *helppfx;
+	const char *filepath;
+	char sf[3]; /* Initialised to 0 from here on. */
+	const char *prog, *usage, *message, *helplf;
+	char helpsf, **argv;
+	struct opt_spec *opts, *curr;
+	int opts1st, helppos;
+	bool verbose;
+	bool repl;
+};
+
+typedef struct _global global;
+
 
 #endif /* __ST_TYPES_H__ */

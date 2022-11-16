@@ -23,13 +23,11 @@
 */
 
 #include "st-compiler.h"
-
 #include "st-types.h"
 #include "st-object.h"
 #include "st-symbol.h"
 #include "st-dictionary.h"
 #include "st-method.h"
-#include "st-array.h"
 #include "st-array.h"
 #include "st-universe.h"
 #include "st-behavior.h"
@@ -37,15 +35,12 @@
 #include "st-unicode.h"
 
 #include <string.h>
-#include <stdlib.h>
 #include <setjmp.h>
 
 #define DEFAULT_CODE_SIZE 20
-
 #define CSTRING(string) ((char *) st_byte_array_bytes (string))
 
-typedef struct 
-{
+typedef struct {
     st_oop   class;
 
     jmp_buf  jmploc;

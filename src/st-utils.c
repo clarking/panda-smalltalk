@@ -28,9 +28,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
-//#include <error.h>
-//#include <stdint.h>
-//#include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -88,18 +85,21 @@ bool st_file_get_contents(const char *filename, char **buffer) {
 	*buffer = NULL;
 
 	if (stat(filename, &info) != 0) {
-		fprintf(stderr, "%s: error: `%s': %s\n", program_invocation_short_name, filename, strerror(errno));
+		if(strlen(filename) > 0)
+			fprintf(stderr, "%s: error: %s: %s\n", program_invocation_short_name, filename, strerror(errno));
+		else
+			fprintf(stderr, "%s: %s\n", program_invocation_short_name, strerror(errno));
 		return false;
 	}
 
 	if (!S_ISREG (info.st_mode)) {
-		fprintf(stderr, "%s: error: `%s': Not a regular file\n", program_invocation_short_name, filename);
+		fprintf(stderr, "%s: error: %s: Not a regular file\n", program_invocation_short_name, filename);
 		return false;
 	}
 
 	fd = open(filename, O_RDONLY);
 	if (fd < 0) {
-		fprintf(stderr, "%s: error: `%s': %s\n", program_invocation_short_name, filename, strerror(errno));
+		fprintf(stderr, "%s: error: %s: %s\n", program_invocation_short_name, filename, strerror(errno));
 		return false;
 	}
 
