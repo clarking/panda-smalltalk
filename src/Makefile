@@ -1,5 +1,0 @@
-
-all: .DEFAULT
-
-.DEFAULT:
-	cd .. && $(MAKE) $(MAKECMDGOALS)

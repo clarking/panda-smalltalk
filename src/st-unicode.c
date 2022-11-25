@@ -5,10 +5,10 @@
 
 st_unichar st_utf8_get_unichar(const char *p) {
 	st_unichar ch;
-
+	
 	if (p == NULL)
 		return 0x00;
-
+	
 	if ((p[0] & 0x80) == 0x00) {
 		ch = p[0];
 	}
@@ -23,7 +23,6 @@ st_unichar st_utf8_get_unichar(const char *p) {
 	}
 	else
 		ch = 0x00; /* undefined */
-
 	return ch;
 }
 
@@ -33,7 +32,7 @@ st_unichar st_utf8_get_unichar(const char *p) {
 int st_unichar_to_utf8(st_unichar ch, char *outbuf) {
 	int bits;
 	char *d = outbuf;
-
+	
 	if (ch < 0x80) {
 		*d++ = ch;
 		bits = -6;
@@ -60,7 +59,7 @@ int st_unichar_to_utf8(st_unichar ch, char *outbuf) {
 	}
 	else
 		return 0;
-
+	
 	for (; bits >= 0; bits -= 6) {
 		*d++ = ((ch >> bits) & 0x3F) | 0x80;
 	}
@@ -86,10 +85,10 @@ int st_unichar_to_utf8(st_unichar ch, char *outbuf) {
  */
 bool st_utf8_validate(const char *string, ssize_t max_len) {
 	int ix;
-
+	
 	if (max_len == -1)
 		max_len = strlen(string);
-
+	
 	/*
 	 * input is a string of 1, 2, 3 or 4 bytes.  The valid strings
 	 * are as follows (in "bit format"):
@@ -100,7 +99,7 @@ bool st_utf8_validate(const char *string, ssize_t max_len) {
 	 */
 	for (ix = 0; ix < max_len;) {      /* string is 0-terminated */
 		st_uchar c;
-
+		
 		c = string[ix];
 		if ((c & 0x80) == 0x00) {    /* 1-byte code, starts with 10 */
 			ix++;
@@ -129,7 +128,7 @@ bool st_utf8_validate(const char *string, ssize_t max_len) {
 			return false;
 		}
 	}
-
+	
 	return true;
 }
 
@@ -147,10 +146,10 @@ bool st_utf8_validate(const char *string, ssize_t max_len) {
  */
 int st_utf8_strlen(const char *string) {
 	int ret = 0;
-
+	
 	if (string == NULL)
 		return (-1);
-
+	
 	while (*string != 0) {
 		if (string[0] & 0x80) {
 			if ((string[1] & 0xc0) != 0x80)
@@ -181,10 +180,10 @@ int st_utf8_strlen(const char *string) {
 
 const char *st_utf8_offset_to_pointer(const char *string, st_uint offset) {
 	const char *p = string;
-
+	
 	for (st_uint i = 0; i < offset; i++)
 		p = st_utf8_next_char (p);
-
+	
 	return p;
 }
 
@@ -192,12 +191,12 @@ st_unichar *st_utf8_to_ucs4(const char *string) {
 	const st_uchar *p = string;
 	st_unichar *buffer, c;
 	st_uint index = 0;
-
+	
 	if (string == NULL)
 		return NULL;
-
+	
 	buffer = st_malloc(sizeof(st_unichar) * (st_utf8_strlen(string) + 1));
-
+	
 	while (p[0]) {
 		if ((p[0] & 0x80) == 0x00) {
 			c = p[0];
@@ -217,10 +216,10 @@ st_unichar *st_utf8_to_ucs4(const char *string) {
 		}
 		else
 			break;
-
+		
 		buffer[index++] = c;
 	}
-
+	
 	buffer[index] = 0;
 	return buffer;
 }

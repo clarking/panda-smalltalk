@@ -34,10 +34,10 @@ bool
 st_symbol_equal(st_oop object, st_oop other) {
 	if (object == other)
 		return true;
-
+	
 	if (st_object_class(object) == st_object_class(other))
 		return false;
-
+	
 	return st_byte_array_equal(object, other);
 }
 
@@ -46,13 +46,13 @@ string_new(st_oop class, const char *bytes) {
 	st_oop string;
 	st_uchar *data;
 	int len;
-
+	
 	len = strlen(bytes);
 	string = st_object_new_arrayed(class, len);
 	data = st_byte_array_bytes(string);
-
+	
 	memcpy(data, bytes, len);
-
+	
 	return string;
 }
 

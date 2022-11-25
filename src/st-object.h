@@ -63,12 +63,12 @@ enum {
 	_ST_OBJECT_HASH_BITS = 1,
 	_ST_OBJECT_SIZE_BITS = 8,
 	_ST_OBJECT_FORMAT_BITS = 6,
-
+	
 	_ST_OBJECT_FORMAT_SHIFT = ST_TAG_SIZE,
 	_ST_OBJECT_SIZE_SHIFT = _ST_OBJECT_FORMAT_BITS + _ST_OBJECT_FORMAT_SHIFT,
 	_ST_OBJECT_HASH_SHIFT = _ST_OBJECT_SIZE_BITS + _ST_OBJECT_SIZE_SHIFT,
 	_ST_OBJECT_UNUSED_SHIFT = _ST_OBJECT_HASH_BITS + _ST_OBJECT_HASH_SHIFT,
-
+	
 	_ST_OBJECT_FORMAT_MASK = ST_NTH_MASK (_ST_OBJECT_FORMAT_BITS),
 	_ST_OBJECT_SIZE_MASK = ST_NTH_MASK (_ST_OBJECT_SIZE_BITS),
 	_ST_OBJECT_HASH_MASK = ST_NTH_MASK (_ST_OBJECT_HASH_BITS),
@@ -91,8 +91,11 @@ typedef enum st_format {
 } st_format;
 
 st_oop st_object_allocate(st_oop class);
+
 void st_object_initialize_header(st_oop object, st_oop class);
+
 bool st_object_equal(st_oop object, st_oop other);
+
 st_uint st_object_hash(st_oop object);
 
 static inline void
@@ -154,10 +157,10 @@ static inline st_oop
 st_object_class(st_oop object) {
 	if (ST_UNLIKELY (st_object_is_smi(object)))
 		return ST_SMI_CLASS;
-
+	
 	if (ST_UNLIKELY (st_object_is_character(object)))
 		return ST_CHARACTER_CLASS;
-
+	
 	return ST_OBJECT_CLASS (object);
 }
 

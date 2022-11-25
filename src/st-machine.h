@@ -61,12 +61,12 @@ struct st_machine {
 	st_uint ip;
 	st_uint sp;
 	jmp_buf main_loop;
-
+	
 	st_method_cache method_cache[ST_METHOD_CACHE_SIZE];
-
+	
 	st_oop globals[ST_NUM_GLOBALS];
 	st_oop selectors[ST_NUM_SELECTORS];
-
+	
 };
 extern st_machine __machine;
 #define ST_STACK_POP(machine)          (machine->stack[--machine->sp])
@@ -75,10 +75,15 @@ extern st_machine __machine;
 #define ST_STACK_UNPOP(machine, count) (machine->sp += count)
 
 void st_machine_main(st_machine *machine);
+
 void st_machine_initialize(st_machine *machine);
+
 void st_machine_set_active_context(st_machine *machine, st_oop context);
+
 void st_machine_execute_method(st_machine *machine);
+
 st_oop st_machine_lookup_method(st_machine *machine, st_oop class);
+
 void st_machine_clear_caches(st_machine *machine);
 
 #endif /* __ST_CPU_H__ */

@@ -37,14 +37,14 @@ typedef enum {
 	ST_MESSAGE_NODE,
 	ST_CASCADE_NODE,
 	ST_LITERAL_NODE,
-
+	
 } st_node_type;
 
 typedef enum {
 	ST_UNARY_PRECEDENCE,
 	ST_BINARY_PRECEDENCE,
 	ST_KEYWORD_PRECEDENCE,
-
+	
 } STMessagePrecedence;
 
 typedef struct st_node st_node;
@@ -53,9 +53,9 @@ struct st_node {
 	st_node_type type;
 	int line;
 	st_node *next;
-
+	
 	union {
-
+		
 		struct {
 			STMessagePrecedence precedence;
 			int primitive;
@@ -63,57 +63,57 @@ struct st_node {
 			st_node *statements;
 			st_node *temporaries;
 			st_node *arguments;
-
+			
 		} method;
-
+		
 		struct {
 			STMessagePrecedence precedence;
 			bool is_statement;
 			st_oop selector;
 			st_node *receiver;
 			st_node *arguments;
-
+			
 			bool super_send;
-
-		} message;
-
+			
+		} msg;
+		
 		struct {
 			char *name;
-
+			
 		} variable;
-
+		
 		struct {
 			st_oop value;
-
+			
 		} literal;
-
+		
 		struct {
 			st_node *assignee;
 			st_node *expression;
-
+			
 		} assign;
-
+		
 		struct {
 			st_node *expression;
-
+			
 		} retrn;
-
+		
 		struct {
 			st_node *statements;
 			st_node *temporaries;
 			st_node *arguments;
-
+			
 		} block;
-
+		
 		struct {
 			st_node *receiver;
 			st_list *messages;
 			bool is_statement;
-
+			
 		} cascade;
-
+		
 	};
-
+	
 };
 
 st_node *st_node_new(st_node_type type);

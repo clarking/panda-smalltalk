@@ -103,4 +103,5 @@ void st_set_verbose_mode(bool verbose);
 bool st_get_verbose_mode(void) ST_GNUC_PURE;
 
 void bootstrap_universe(void);
+
 #endif /* __ST_UNIVERSE_H__ */

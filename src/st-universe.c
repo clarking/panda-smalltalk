@@ -63,14 +63,14 @@ enum {
 
 static st_oop class_new(st_format format, st_uint instance_size) {
 	st_oop class;
-
+	
 	class = st_memory_allocate(ST_SIZE_OOPS (struct st_class));
-
+	
 	ST_OBJECT_MARK (class) = 0 | ST_MARK_TAG;
 	ST_OBJECT_CLASS (class) = ST_NIL;
 	st_object_set_format(class, ST_FORMAT_OBJECT);
 	st_object_set_instance_size(class, INSTANCE_SIZE_CLASS);
-
+	
 	ST_BEHAVIOR_FORMAT (class) = st_smi_new(format);
 	ST_BEHAVIOR_INSTANCE_SIZE (class) = st_smi_new(instance_size);
 	ST_BEHAVIOR_SUPERCLASS (class) = ST_NIL;
@@ -82,13 +82,13 @@ static st_oop class_new(st_format format, st_uint instance_size) {
 
 static void add_global(const char *name, st_oop object) {
 	st_oop symbol;
-
+	
 	// sanity check for symbol interning
 	st_assert (st_symbol_new(name) == st_symbol_new(name));
-
+	
 	symbol = st_symbol_new(name);
 	st_dictionary_at_put(ST_GLOBALS, symbol, object);
-
+	
 	// sanity check for dictionary
 	st_assert (st_dictionary_at(ST_GLOBALS, symbol) == object);
 }
@@ -102,43 +102,43 @@ static void initialize_class(const char *name, const char *super_name, st_list *
 	st_oop metaclass, class, superclass;
 	st_oop names;
 	st_uint i = 1;
-
+	
 	if (streq (name, "Object") && streq (super_name, "nil")) {
-
+		
 		class = st_dictionary_at(ST_GLOBALS, st_symbol_new("Object"));
 		st_assert (class != ST_NIL);
-
+		
 		metaclass = st_object_class(class);
 		if (metaclass == ST_NIL) {
 			metaclass = st_object_new(ST_METACLASS_CLASS);
 			ST_OBJECT_CLASS (class) = metaclass;
 		}
-
+		
 		ST_BEHAVIOR_SUPERCLASS (class) = ST_NIL;
 		ST_BEHAVIOR_INSTANCE_SIZE (class) = st_smi_new(0);
 		ST_BEHAVIOR_SUPERCLASS (metaclass) = st_dictionary_at(ST_GLOBALS, st_symbol_new("Class"));
-
+		
 	}
 	else {
 		superclass = st_global_get(super_name);
 		if (superclass == ST_NIL)
 				st_assert (superclass != ST_NIL);
-
+		
 		class = st_global_get(name);
 		if (class == ST_NIL)
 			class = class_new(st_smi_value(ST_BEHAVIOR_FORMAT (superclass)), 0);
-
+		
 		metaclass = ST_HEADER (class)->class;
 		if (metaclass == ST_NIL) {
 			metaclass = st_object_new(ST_METACLASS_CLASS);
 			ST_OBJECT_CLASS (class) = metaclass;
 		}
-
+		
 		ST_BEHAVIOR_SUPERCLASS (class) = superclass;
 		ST_BEHAVIOR_SUPERCLASS (metaclass) = ST_HEADER (superclass)->class;
 		ST_BEHAVIOR_INSTANCE_SIZE (class) = st_smi_new(st_list_length(ivarnames) + st_smi_value(ST_BEHAVIOR_INSTANCE_SIZE (superclass)));
 	}
-
+	
 	names = ST_NIL;
 	if (st_list_length(ivarnames) != 0) {
 		names = st_object_new_arrayed(ST_ARRAY_CLASS, st_list_length(ivarnames));
@@ -146,7 +146,7 @@ static void initialize_class(const char *name, const char *super_name, st_list *
 			st_array_at_put(names, i++, st_symbol_new(l->data));
 		ST_BEHAVIOR_INSTANCE_VARIABLES (class) = names;
 	}
-
+	
 	ST_BEHAVIOR_FORMAT (metaclass) = st_smi_new(ST_FORMAT_OBJECT);
 	ST_BEHAVIOR_METHOD_DICTIONARY (metaclass) = st_dictionary_new();
 	ST_BEHAVIOR_INSTANCE_VARIABLES (metaclass) = ST_NIL;
@@ -155,7 +155,7 @@ static void initialize_class(const char *name, const char *super_name, st_list *
 	ST_BEHAVIOR_INSTANCE_VARIABLES (class) = names;
 	ST_BEHAVIOR_METHOD_DICTIONARY (class) = st_dictionary_new();
 	ST_CLASS_NAME (class) = st_symbol_new(name);
-
+	
 	st_dictionary_at_put(ST_GLOBALS, st_symbol_new(name), class);
 }
 
@@ -163,28 +163,28 @@ static bool parse_variable_names(st_lexer *lexer, st_list **varnames) {
 	st_lexer *ivarlexer;
 	st_token *token;
 	char *names;
-
+	
 	token = st_lexer_next_token(lexer);
-
+	
 	if (st_token_get_type(token) != ST_TOKEN_STRING_CONST)
 		return false;
-
+	
 	names = st_strdup(st_token_get_text(token));
 	ivarlexer = st_lexer_new(names);
 	token = st_lexer_next_token(ivarlexer);
-
+	
 	while (st_token_get_type(token) != ST_TOKEN_EOF) {
-
+		
 		if (st_token_get_type(token) != ST_TOKEN_IDENTIFIER)
 			parse_error(NULL, token);
-
+		
 		*varnames = st_list_append(*varnames, st_strdup(st_token_get_text(token)));
 		token = st_lexer_next_token(ivarlexer);
 	}
-
+	
 	st_free(names);
 	st_lexer_destroy(ivarlexer);
-
+	
 	return true;
 }
 
@@ -193,18 +193,18 @@ parse_class(st_lexer *lexer, st_token *token) {
 	char *class_name = NULL;
 	char *superclass_name = NULL;
 	st_list *ivarnames = NULL;
-
+	
 	// 'Class' token
 	if (st_token_get_type(token) != ST_TOKEN_IDENTIFIER
 	    || !streq (st_token_get_text(token), "Class"))
 		parse_error("expected class definition", token);
-
+	
 	// `named:' token
 	token = st_lexer_next_token(lexer);
 	if (st_token_get_type(token) != ST_TOKEN_KEYWORD_SELECTOR
 	    || !streq (st_token_get_text(token), "named:"))
 		parse_error("expected 'name:'", token);
-
+	
 	// class name
 	token = st_lexer_next_token(lexer);
 	if (st_token_get_type(token) == ST_TOKEN_STRING_CONST) {
@@ -213,43 +213,43 @@ parse_class(st_lexer *lexer, st_token *token) {
 	else {
 		parse_error("expected string literal", token);
 	}
-
+	
 	// `superclass:' token
 	token = st_lexer_next_token(lexer);
 	if (st_token_get_type(token) != ST_TOKEN_KEYWORD_SELECTOR
 	    || !streq (st_token_get_text(token), "superclass:"))
 		parse_error("expected 'superclass:'", token);
-
+	
 	// superclass name
 	token = st_lexer_next_token(lexer);
 	if (st_token_get_type(token) == ST_TOKEN_STRING_CONST) {
-
+		
 		superclass_name = st_strdup(st_token_get_text(token));
-
+		
 	}
 	else {
 		parse_error("expected string literal", token);
 	}
-
+	
 	// 'instanceVariableNames:' keyword selector
 	token = st_lexer_next_token(lexer);
 	if (st_token_get_type(token) == ST_TOKEN_KEYWORD_SELECTOR &&
 	    streq (st_token_get_text(token), "instanceVariableNames:")) {
-
+		
 		parse_variable_names(lexer, &ivarnames);
 	}
 	else {
 		parse_error(NULL, token);
 	}
-
+	
 	token = st_lexer_next_token(lexer);
 	initialize_class(class_name, superclass_name, ivarnames);
-
+	
 	st_list_foreach(ivarnames, st_free);
 	st_list_destroy(ivarnames);
 	st_free(class_name);
 	st_free(superclass_name);
-
+	
 	return;
 }
 
@@ -258,33 +258,33 @@ parse_classes(const char *filename) {
 	char *contents;
 	st_lexer *lexer;
 	st_token *token;
-
+	
 	if (!st_file_get_contents(filename, &contents)) {
 		exit(1);
 	}
-
+	
 	lexer = st_lexer_new(contents);
 	st_assert (lexer != NULL);
 	token = st_lexer_next_token(lexer);
-
+	
 	while (st_token_get_type(token) != ST_TOKEN_EOF) {
-
+		
 		while (st_token_get_type(token) == ST_TOKEN_COMMENT)
 			token = st_lexer_next_token(lexer);
-
+		
 		parse_class(lexer, token);
 		token = st_lexer_next_token(lexer);
 	}
-
+	
 	st_free(contents);
 	st_lexer_destroy(lexer);
 }
 
 static void file_in_classes(void) {
 	char *filename;
-
+	
 	parse_classes("../st/class-defs.st");
-
+	
 	static const char *files[] = {
 			"Stream.st",
 			"PositionableStream.st",
@@ -332,7 +332,7 @@ static void file_in_classes(void) {
 			"FileStream.st",
 			"pidigits.st"
 	};
-
+	
 	for (st_uint i = 0; i < ST_N_ELEMENTS (files); i++) {
 		filename = st_strconcat("..", ST_DIR_SEPARATOR_S, "st", ST_DIR_SEPARATOR_S, files[i], NULL);
 		st_compile_file_in(filename);
@@ -387,11 +387,11 @@ static void init_specials(void) {
 void bootstrap_universe(void) {
 	st_oop smalltalk;
 	st_oop st_object_class_, st_class_class_;
-
+	
 	st_memory_new();
-
+	
 	ST_NIL = create_nil_object();
-
+	
 	st_object_class_ = class_new(ST_FORMAT_OBJECT, 0);
 	ST_UNDEFINED_OBJECT_CLASS = class_new(ST_FORMAT_OBJECT, 0);
 	ST_METACLASS_CLASS = class_new(ST_FORMAT_OBJECT, INSTANCE_SIZE_METACLASS);
@@ -419,9 +419,9 @@ void bootstrap_universe(void) {
 	ST_SYSTEM_CLASS = class_new(ST_FORMAT_OBJECT, INSTANCE_SIZE_SYSTEM);
 	ST_HANDLE_CLASS = class_new(ST_FORMAT_HANDLE, 0);
 	ST_MESSAGE_CLASS = class_new(ST_FORMAT_OBJECT, 2);
-
+	
 	ST_OBJECT_CLASS (ST_NIL) = ST_UNDEFINED_OBJECT_CLASS;
-
+	
 	/* special objects */
 	ST_TRUE = st_object_new(ST_TRUE_CLASS);
 	ST_FALSE = st_object_new(ST_FALSE_CLASS);
@@ -430,7 +430,7 @@ void bootstrap_universe(void) {
 	ST_SMALLTALK = st_object_new(ST_SYSTEM_CLASS);
 	ST_OBJECT_FIELDS (ST_SMALLTALK)[0] = ST_GLOBALS;
 	ST_OBJECT_FIELDS (ST_SMALLTALK)[1] = ST_SYMBOLS;
-
+	
 	/* add class names to symbol table */
 	add_global("Object", st_object_class_);
 	add_global("UndefinedObject", ST_UNDEFINED_OBJECT_CLASS);
@@ -460,10 +460,10 @@ void bootstrap_universe(void) {
 	add_global("Message", ST_MESSAGE_CLASS);
 	add_global("System", ST_SYSTEM_CLASS);
 	add_global("Smalltalk", ST_SMALLTALK);
-
+	
 	init_specials();
 	file_in_classes();
-
+	
 	st_memory_add_root(ST_NIL);
 	st_memory_add_root(ST_TRUE);
 	st_memory_add_root(ST_FALSE);

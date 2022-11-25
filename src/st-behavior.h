@@ -53,7 +53,7 @@ struct st_class {
 
 struct st_metaclass {
 	struct st_behavior parent;
-
+	
 	st_oop instance_class;
 };
 
@@ -66,7 +66,9 @@ struct st_metaclass {
 #define ST_METACLASS_INSTANCE_CLASS(oop)    (ST_METACLASS (oop)->instance_class)
 
 st_oop st_object_new(st_oop class);
+
 st_oop st_object_new_arrayed(st_oop class, int size);
+
 st_list *st_behavior_all_instance_variables(st_oop class);
 
 #endif /* __ST_BEHAVIOR_H__ */

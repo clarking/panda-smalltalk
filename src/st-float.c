@@ -28,7 +28,7 @@
 st_oop st_float_allocate(st_oop class) {
 	st_uint size;
 	st_oop object;
-
+	
 	size = ST_SIZE_OOPS (struct st_float);
 	object = st_memory_allocate(size);
 	if (object == 0) {
@@ -37,7 +37,7 @@ st_oop st_float_allocate(st_oop class) {
 		object = st_memory_allocate(size);
 		st_assert (object != 0);
 	}
-
+	
 	st_object_initialize_header(object, class);
 	st_float_set_value(object, 0.0);
 	return object;

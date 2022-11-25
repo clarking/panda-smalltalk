@@ -30,38 +30,38 @@ typedef enum {
 	PUSH_INSTVAR,
 	PUSH_LITERAL_CONST,
 	PUSH_LITERAL_VAR,
-
+	
 	STORE_LITERAL_VAR,
 	STORE_TEMP,
 	STORE_INSTVAR,
-
+	
 	STORE_POP_LITERAL_VAR,
 	STORE_POP_TEMP,
 	STORE_POP_INSTVAR,
-
+	
 	PUSH_SELF,
 	PUSH_NIL,
 	PUSH_TRUE,
 	PUSH_FALSE,
 	PUSH_INTEGER,
-
+	
 	RETURN_STACK_TOP,
 	BLOCK_RETURN,
-
+	
 	POP_STACK_TOP,
 	DUPLICATE_STACK_TOP,
-
+	
 	PUSH_ACTIVE_CONTEXT,
-
+	
 	BLOCK_COPY,
-
+	
 	JUMP_TRUE,
 	JUMP_FALSE,
 	JUMP,
-
+	
 	SEND,        /* B, B (arg count), B (selector index) */
 	SEND_SUPER,
-
+	
 	SEND_PLUS,
 	SEND_MINUS,
 	SEND_LT,
@@ -77,7 +77,7 @@ typedef enum {
 	SEND_BITAND,
 	SEND_BITOR,
 	SEND_BITXOR,
-
+	
 	SEND_AT,
 	SEND_AT_PUT,
 	SEND_SIZE,
@@ -87,7 +87,7 @@ typedef enum {
 	SEND_CLASS,
 	SEND_NEW,
 	SEND_NEW_ARG,
-
+	
 } Code;
 
 #endif /* __ST_COMPILER_H__ */

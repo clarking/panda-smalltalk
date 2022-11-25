@@ -94,7 +94,9 @@ st_oops_move(st_oop *to, st_oop *from, st_uint count) {
 }
 
 st_pointer st_malloc(size_t size) ST_GNUC_MALLOC;
+
 st_pointer st_malloc0(size_t size) ST_GNUC_MALLOC;
+
 st_pointer st_realloc(st_pointer mem, size_t size);
 
 void st_free(st_pointer mem);
@@ -103,14 +105,18 @@ void st_free(st_pointer mem);
 #define st_new0(struct_type) ((struct_type *) st_malloc0 (sizeof (struct_type)))
 
 bool st_file_get_contents(const char *filename,
-                          char **buffer);
+		char **buffer);
 
 char *st_strdup(const char *string);
+
 char *st_strdup_printf(const char *format, ...) ST_GNUC_PRINTF (1, 2);
+
 char *st_strdup_vprintf(const char *format, va_list args);
+
 char *st_strconcat(const char *first, ...);
 
 char **st_strsplit(const char *string, const char *delimiter, int max_tokens);
+
 void st_strfreev(char **str_array);
 
 char *st_strndup(const char *str, size_t n);
@@ -131,11 +137,17 @@ struct st_list {
 typedef void (*st_list_foreach_func)(st_pointer data);
 
 st_list *st_list_append(st_list *list, st_pointer data);
+
 st_list *st_list_prepend(st_list *list, st_pointer data);
+
 st_list *st_list_concat(st_list *list1, st_list *list2);
+
 void st_list_foreach(st_list *list, st_list_foreach_func func);
+
 st_list *st_list_reverse(st_list *list);
+
 st_uint st_list_length(st_list *list);
+
 void st_list_destroy(st_list *list);
 
 st_uint st_string_hash(const char *string);

@@ -38,18 +38,18 @@ st_heap *st_heap_new(st_uint reserved_size) {
 	 * Create a new heap with a reserved address space.
 	 * Returns NULL if address space could not be reserved
 	 */
-
+	
 	st_pointer result;
 	st_heap *heap;
 	st_uint size;
-
+	
 	st_assert (reserved_size > 0);
 	size = round_pagesize(reserved_size);
-
+	
 	result = st_system_reserve_memory(NULL, size);
 	if (result == NULL)
 		return NULL;
-
+	
 	heap = st_new0 (st_heap);
 	heap->start = result;
 	heap->end = result + size;
@@ -65,19 +65,19 @@ bool st_heap_grow(st_heap *heap, st_uint grow_size) {
 	 */
 	st_pointer result;
 	st_uint size;
-
+	
 	st_assert (grow_size > 0);
 	size = round_pagesize(grow_size);
-
+	
 	if ((heap->p + size) >= heap->end)
 		return false;
-
+	
 	result = st_system_commit_memory(heap->p, size);
 	if (result == NULL)
 		return false;
-
+	
 	heap->p += size;
-
+	
 	return true;
 }
 
@@ -85,17 +85,17 @@ bool st_heap_shrink(st_heap *heap, st_uint shrink_size) {
 	/* Shrinks the heap by the specified amount (in bytes).	 */
 	st_pointer result;
 	st_uint size;
-
+	
 	st_assert (shrink_size > 0);
 	size = round_pagesize(shrink_size);
-
+	
 	if ((heap->p - size) < heap->start)
 		return false;
-
+	
 	result = st_system_decommit_memory(heap->p - size, size);
 	if (result == NULL)
 		return false;
-
+	
 	heap->p -= size;
 	return true;
 }

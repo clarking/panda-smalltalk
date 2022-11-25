@@ -31,7 +31,7 @@
 #define INITIAL_CAPACITY 256
 
 st_identity_hashtable *st_identity_hashtable_new(void) {
-
+	
 	st_identity_hashtable *ht;
 	ht = st_new (st_identity_hashtable);
 	ht->table = st_malloc0(sizeof(struct cell) * INITIAL_CAPACITY);
@@ -47,7 +47,7 @@ static st_uint identity_hashtable_find(st_identity_hashtable *ht, st_oop object)
 	st_uint mask, i;
 	mask = ht->alloc - 1;
 	i = (st_detag_pointer(object) - memory->start) & mask;
-
+	
 	while (true) {
 		if (ht->table[i].object == 0 || object == ht->table[i].object)
 			return i;
@@ -58,10 +58,10 @@ static st_uint identity_hashtable_find(st_identity_hashtable *ht, st_oop object)
 static st_uint identity_hashtable_find_available_cell(st_identity_hashtable *ht, st_oop object) {
 	/* use this probing function to find a place to insert object */
 	st_uint mask, i;
-
+	
 	mask = ht->alloc - 1;
 	i = (st_detag_pointer(object) - memory->start) & mask;
-
+	
 	while (true) {
 		if (ht->table[i].object == 0 || ht->table[i].object == (st_oop) ht)
 			return i;
@@ -73,17 +73,17 @@ static void
 identity_hashtable_check_grow(st_identity_hashtable *ht) {
 	st_uint alloc, index;
 	struct cell *table;
-
+	
 	/* ensure table is at least half-full */
 	if ((ht->size + ht->deleted) * 2 <= ht->alloc)
 		return;
-
+	
 	alloc = ht->alloc;
 	table = ht->table;
 	ht->alloc *= 2;
 	ht->deleted = 0;
 	ht->table = st_malloc0(sizeof(struct cell) * ht->alloc);
-
+	
 	for (st_uint i = 0; i <= alloc; i++) {
 		if (table[i].object != 0 && (table[i].object != (st_oop) ht)) {
 			index = identity_hashtable_find_available_cell(ht, table[i].object);
@@ -91,12 +91,12 @@ identity_hashtable_check_grow(st_identity_hashtable *ht) {
 			ht->table[index].hash = table[i].hash;
 		}
 	}
-
+	
 	st_free(table);
 }
 
 void st_identity_hashtable_remove(st_identity_hashtable *ht, st_oop object) {
-
+	
 	st_uint index;
 	index = identity_hashtable_find(ht, object);
 	if (ht->table[index].object != 0) {
@@ -106,7 +106,7 @@ void st_identity_hashtable_remove(st_identity_hashtable *ht, st_oop object) {
 		ht->deleted++;
 		return;
 	}
-
+	
 	st_assert_not_reached ();
 }
 
@@ -120,25 +120,25 @@ st_uint st_identity_hashtable_hash(st_identity_hashtable *ht, st_oop object) {
 		ht->table[index].hash = ht->current_hash++;
 		identity_hashtable_check_grow(ht);
 	}
-
+	
 	return ht->table[index].hash;
 }
 
 void st_identity_hashtable_rehash_object(st_identity_hashtable *ht, st_oop old, st_oop new) {
 	st_uint hash, index;
-
+	
 	index = identity_hashtable_find(ht, old);
 	st_assert (ht->table[index].object != 0);
-
+	
 	hash = ht->table[index].hash;
 	ht->table[index].object = (st_oop) ht;
 	ht->table[index].hash = 0;
 	ht->deleted++;
-
+	
 	index = identity_hashtable_find_available_cell(ht, new);
 	if (ht->table[index].object == (st_oop) ht)
 		ht->deleted--;
-
+	
 	ht->table[index].object = new;
 	ht->table[index].hash = hash;
 }

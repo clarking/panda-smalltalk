@@ -36,6 +36,7 @@ struct st_float {
 };
 
 st_oop st_float_new(double value);
+
 st_oop st_float_allocate(st_oop class);
 
 static inline double st_float_value(st_oop object) {
