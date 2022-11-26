@@ -1,35 +1,18 @@
+
 /*
- * st-memory.h
- *
  * Copyright (C) 2008 Vincent Geddes
+ * Copyright (c) 2022, Aaron Clark Diaz.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
-*/
+ * SPDX-License-Identifier: MIT
+ */
 
-#ifndef __ST_MEMORY__
-#define __ST_MEMORY__
+#pragma once
 
-#include <st-types.h>
-#include <st-identity-hashtable.h>
-#include <st-heap.h>
-#include <st-utils.h>
-#include "ptr_array.h"
+#include <ptr_array.h>
+#include "st-types.h"
+#include "st-identity-hashtable.h"
+#include "st-heap.h"
+#include "st-utils.h"
 
 /* threshold is 8 Mb or 16 Mb depending on whether system is 32 or 64 bits */
 #define ST_COLLECTION_THRESHOLD (sizeof (st_oop) * 2 * 1024 * 1024)
@@ -83,4 +66,3 @@ void st_memory_perform_gc(void);
 
 st_oop st_memory_remap_reference(st_oop reference);
 
-#endif /* __ST_MEMORY__ */

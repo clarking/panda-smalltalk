@@ -1,7 +1,14 @@
 
+/*
+ * Copyright (C) 2008 Vincent Geddes
+ * Copyright (c) 2022, Aaron Clark Diaz.
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <string.h>
 #include "st-unicode.h"
 #include "st-utils.h"
-#include <string.h>
 
 st_unichar st_utf8_get_unichar(const char *p) {
 	st_unichar ch;

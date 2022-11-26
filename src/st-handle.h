@@ -1,7 +1,12 @@
 
+/*
+ * Copyright (C) 2008 Vincent Geddes
+ * Copyright (c) 2022, Aaron Clark Diaz.
+ *
+ * SPDX-License-Identifier: MIT
+ */
 
-#ifndef __ST_HANDLE_H__
-#define __ST_HANDLE_H__
+#pragma once
 
 #include <st-types.h>
 
@@ -15,4 +20,3 @@ struct st_handle {
 
 st_oop st_handle_allocate(st_oop class);
 
-#endif /* __ST_HANDLE_H__ */

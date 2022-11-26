@@ -1,4 +1,14 @@
 
+/*
+ * Copyright (C) 2008 Vincent Geddes
+ * Copyright (c) 2022, Aaron Clark Diaz.
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <stdlib.h>
+#include <string.h>
+
 #include "st-compiler.h"
 #include "st-universe.h"
 #include "st-dictionary.h"
@@ -7,8 +17,6 @@
 #include "st-node.h"
 #include "st-lexer.h"
 #include "st-array.h"
-#include <stdlib.h>
-#include <string.h>
 
 typedef struct {
 	const char *filename;

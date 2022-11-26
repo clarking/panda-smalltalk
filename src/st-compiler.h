@@ -1,12 +1,17 @@
 
+/*
+ * Copyright (C) 2008 Vincent Geddes
+ * Copyright (c) 2022, Aaron Clark Diaz.
+ *
+ * SPDX-License-Identifier: MIT
+ */
 
-#ifndef __ST_COMPILER_H__
-#define __ST_COMPILER_H__
+#pragma once
 
-#include <st-types.h>
-#include <st-utils.h>
-#include <st-lexer.h>
-#include <st-node.h>
+#include "st-types.h"
+#include "st-utils.h"
+#include "st-lexer.h"
+#include "st-node.h"
 
 typedef struct st_compiler_error {
 	char message[255];
@@ -90,4 +95,3 @@ typedef enum {
 	
 } Code;
 
-#endif /* __ST_COMPILER_H__ */

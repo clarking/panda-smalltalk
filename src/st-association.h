@@ -1,35 +1,19 @@
+
 /*
- * st-association.h
+ * Copyright (C) 2008 Vincent Geddes
+ * Copyright (c) 2022, Aaron Clark Diaz.
  *
- * Copyright (c) 2008 Vincent Geddes
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
-*/
+ * SPDX-License-Identifier: MIT
+ */
 
-#ifndef __ST_ASSOCIATION_H__
-#define __ST_ASSOCIATION_H__
 
-#include <st-object.h>
-#include <st-types.h>
+#pragma once
+
+#include "st-object.h"
+#include "st-types.h"
 
 struct st_association {
-	struct st_header __parent__;
+	struct st_header parent;
 	st_oop key;
 	st_oop value;
 };
@@ -44,4 +28,3 @@ bool st_association_equal(st_oop object, st_oop other);
 #define ST_ASSOCIATION_KEY(oop)   (ST_ASSOCIATION(oop)->key)
 #define ST_ASSOCIATION_VALUE(oop) (ST_ASSOCIATION(oop)->value)
 
-#endif /* __ST_ASSOCIATION_H__ */

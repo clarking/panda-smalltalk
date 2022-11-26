@@ -1,9 +1,15 @@
 
-#ifndef __ST_UNICODE_H__
-#define __ST_UNICODE_H__
+/*
+ * Copyright (C) 2008 Vincent Geddes
+ * Copyright (c) 2022, Aaron Clark Diaz.
+ *
+ * SPDX-License-Identifier: MIT
+ */
 
-#include <st-types.h>
+#pragma once
+
 #include <unistd.h>
+#include "st-types.h"
 
 void st_unicode_init(void);
 
@@ -24,4 +30,3 @@ const char *st_utf8_offset_to_pointer(const char *string, st_uint offset);
 
 st_unichar *st_utf8_to_ucs4(const char *string);
 
-#endif /* __ST_UNICODE_H__ */

@@ -1,13 +1,19 @@
 
-
-#include "st-system.h"
-#include "st-utils.h"
+/*
+ * Copyright (C) 2008 Vincent Geddes
+ * Copyright (c) 2022, Aaron Clark Diaz.
+ *
+ * SPDX-License-Identifier: MIT
+ */
 
 #include <unistd.h>
 #include <sys/mman.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "st-system.h"
+#include "st-utils.h"
 
 static st_pointer
 st_mmap_anon(st_pointer address, st_uint length, int protect, int flags) {

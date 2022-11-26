@@ -1,26 +1,12 @@
+
 /*
- * st-symbol.c
- *
  * Copyright (C) 2008 Vincent Geddes
+ * Copyright (c) 2022, Aaron Clark Diaz.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
-*/
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <string.h>
 
 #include "st-symbol.h"
 #include "st-dictionary.h"
@@ -28,10 +14,7 @@
 #include "st-behavior.h"
 #include "st-object.h"
 
-#include <string.h>
-
-bool
-st_symbol_equal(st_oop object, st_oop other) {
+bool st_symbol_equal(st_oop object, st_oop other) {
 	if (object == other)
 		return true;
 	
@@ -41,8 +24,7 @@ st_symbol_equal(st_oop object, st_oop other) {
 	return st_byte_array_equal(object, other);
 }
 
-static st_oop
-string_new(st_oop class, const char *bytes) {
+static st_oop string_new(st_oop class, const char *bytes) {
 	st_oop string;
 	st_uchar *data;
 	int len;
@@ -56,12 +38,10 @@ string_new(st_oop class, const char *bytes) {
 	return string;
 }
 
-st_oop
-st_string_new(const char *bytes) {
+st_oop st_string_new(const char *bytes) {
 	return string_new(ST_STRING_CLASS, bytes);
 }
 
-st_oop
-st_symbol_new(const char *bytes) {
+st_oop st_symbol_new(const char *bytes) {
 	return st_set_intern_cstring(ST_SYMBOLS, bytes);
 }

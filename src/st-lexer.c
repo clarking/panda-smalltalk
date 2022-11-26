@@ -1,49 +1,21 @@
+
 /*
- * st-lexer.c
- *
  * Copyright (C) 2008 Vincent Geddes
+ * Copyright (c) 2022, Aaron Clark Diaz.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
-*/
-
-/* Notes:
- *
- * we expand utf8-encoded text to ucs4 format and then lex it. Yes it's a bit
- * inefficient, but more straightforward than munging around with
- * multi-byte characters.
- *
- * Character input is supplied by the st_input object. It keeps track of
- * line/column numbers and has the ability to mark() and rewind() on the
- * input stream.
- *
+ * SPDX-License-Identifier: MIT
  */
-
-#include "st-lexer.h"
-#include "st-input.h"
-#include "st-utils.h"
-#include "st-unicode.h"
 
 #include <stdbool.h>
 #include <setjmp.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+
+#include "st-lexer.h"
+#include "st-input.h"
+#include "st-utils.h"
+#include "st-unicode.h"
 
 #define lookahead(self, k)   ((char) st_input_look_ahead (self->input, k))
 #define consume(self)        (st_input_consume (self->input))
