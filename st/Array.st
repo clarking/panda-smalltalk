@@ -3,7 +3,7 @@
 
 Array method!
 at: anInteger
-	<primitive: 'Array_at'>
+	<primitive: 'array_at'>
 	anInteger isInteger
 		ifTrue: [self error: 'out of bounds array access'].
 	anInteger isNumber
@@ -12,7 +12,7 @@ at: anInteger
 
 Array method!
 at: anInteger put: anObject
-	<primitive: 'Array_at_put'>
+	<primitive: 'array_at_put'>
 	anInteger isInteger
 		ifTrue: [self error: 'out of bounds array access'].
 	anInteger isNumber

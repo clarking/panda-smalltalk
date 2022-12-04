@@ -16,7 +16,7 @@ void st_unicode_init(void);
 void st_unicode_canonical_decomposition(const st_unichar *in, int inlen, st_unichar **out, int *outlen);
 
 #define st_utf8_skip(c) (((0xE5000000 >> (((c) >> 3) & 0xFE)) & 3) + 1)
-#define st_utf8_next_char(p) (char *)((p) + st_utf8_skip (*(const char *)(p)))
+#define st_utf8_next_char(p) (const char *)((p) + st_utf8_skip (*(const char *)(p)))
 
 int st_utf8_strlen(const char *string);
 

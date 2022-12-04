@@ -12,19 +12,6 @@
 #include <stdio.h>
 #include "st-types.h"
 
-struct cell {
-	st_oop object;
-	st_uint hash;
-};
-
-typedef struct st_identity_hashtable {
-	struct cell *table;
-	st_uint alloc;
-	st_uint size;
-	st_uint deleted;
-	st_uint current_hash;
-	
-} st_identity_hashtable;
 
 st_uint st_identity_hashtable_hash(st_identity_hashtable *ht, st_oop object);
 

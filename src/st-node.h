@@ -11,93 +11,27 @@
 #include "st-types.h"
 #include "st-utils.h"
 
-typedef enum {
-	ST_METHOD_NODE,
-	ST_BLOCK_NODE,
-	ST_VARIABLE_NODE,
-	ST_ASSIGN_NODE,
-	ST_RETURN_NODE,
-	ST_MESSAGE_NODE,
-	ST_CASCADE_NODE,
-	ST_LITERAL_NODE,
-	
-} st_node_type;
+void print_variable(st_node *node);
 
-typedef enum {
-	ST_UNARY_PRECEDENCE,
-	ST_BINARY_PRECEDENCE,
-	ST_KEYWORD_PRECEDENCE,
-	
-} STMessagePrecedence;
+void print_object(st_oop object);
 
-typedef struct st_node st_node;
+void print_expression(st_node *expression);
 
-struct st_node {
-	st_node_type type;
-	int line;
-	st_node *next;
-	
-	union {
-		
-		struct {
-			STMessagePrecedence precedence;
-			int primitive;
-			st_oop selector;
-			st_node *statements;
-			st_node *temporaries;
-			st_node *arguments;
-			
-		} method;
-		
-		struct {
-			STMessagePrecedence precedence;
-			bool is_statement;
-			st_oop selector;
-			st_node *receiver;
-			st_node *arguments;
-			
-			bool super_send;
-			
-		} msg;
-		
-		struct {
-			char *name;
-			
-		} variable;
-		
-		struct {
-			st_oop value;
-			
-		} literal;
-		
-		struct {
-			st_node *assignee;
-			st_node *expression;
-			
-		} assign;
-		
-		struct {
-			st_node *expression;
-			
-		} retrn;
-		
-		struct {
-			st_node *statements;
-			st_node *temporaries;
-			st_node *arguments;
-			
-		} block;
-		
-		struct {
-			st_node *receiver;
-			st_list *messages;
-			bool is_statement;
-			
-		} cascade;
-		
-	};
-	
-};
+void print_tuple(st_oop tuple);
+
+void node_print_literal(st_node *node);
+
+void print_return(st_node *node);
+
+void print_assign(st_node *node);
+
+char **extract_keywords(char *selector);
+
+void print_method_node(st_node *node);
+
+void print_block(st_node *node);
+
+void print_message(st_node *node);
 
 st_node *st_node_new(st_node_type type);
 

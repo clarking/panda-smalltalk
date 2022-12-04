@@ -15,9 +15,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-/* bit utilities */
-#define ST_NTH_BIT(n)         (1 << (n))
-#define ST_NTH_MASK(n)        (ST_NTH_BIT(n) - 1)
 
 #define ST_BYTES_TO_OOPS(m) ((m) / sizeof (st_oop))
 #define ST_OOPS_TO_BYTES(m) ((m) * sizeof (st_oop))
@@ -110,12 +107,6 @@ void st_timespec_difference(struct timespec *start, struct timespec *end, struct
 
 void st_timespec_add(struct timespec *t1, struct timespec *t2, struct timespec *result);
 
-typedef struct st_list st_list;
-
-struct st_list {
-	st_pointer data;
-	st_list *next;
-};
 
 typedef void (*st_list_foreach_func)(st_pointer data);
 
@@ -154,24 +145,24 @@ st_uint st_string_hash(const char *string);
 #ifndef ST_DEBUG
 #define st_assert(condition)
 #else
-#define st_assert(condition)						\
-ST_STMT_START						         	\
-if (!(condition)) {						       	\
-	fprintf (stderr, "%s:%i: %s: assertion `" #condition "' failed\n",	\
-		 __FILE__, __LINE__, __FUNCTION__);				\
-	abort ();								\
- }									\
+#define st_assert(condition)                        \
+ST_STMT_START                                    \
+if (!(condition)) {                                \
+    fprintf (stderr, "%s:%i: %s: assertion `" #condition "' failed\n",    \
+         __FILE__, __LINE__, __FUNCTION__);                \
+    abort ();                                \
+ }                                    \
 ST_STMT_END
 #endif
 
 #ifndef ST_DEBUG
 #define st_assert_not_reached()
 #else
-#define st_assert_not_reached()						\
-ST_STMT_START						        	\
-fprintf (stderr, "%s:%i: %s: should not reach here\n",			\
-	 __FILE__, __LINE__, __FUNCTION__);				\
-abort ();								\
+#define st_assert_not_reached()                        \
+ST_STMT_START                                    \
+fprintf (stderr, "%s:%i: %s: should not reach here\n",            \
+     __FILE__, __LINE__, __FUNCTION__);                \
+abort ();                                \
 ST_STMT_END
 #endif
 

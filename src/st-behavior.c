@@ -33,32 +33,34 @@ st_list *st_behavior_all_instance_variables(st_oop class) {
 
 st_oop st_object_new(st_oop class) {
 	switch (st_smi_value(ST_BEHAVIOR_FORMAT(class))) {
-		case ST_FORMAT_OBJECT: return st_object_allocate(class);
+		case ST_FORMAT_OBJECT:
+			return st_object_allocate(class);
 		case ST_FORMAT_CONTEXT:
-			/* not implemented */
-			abort();
-			break;
-		case ST_FORMAT_FLOAT: return st_float_allocate(class);
-		case ST_FORMAT_LARGE_INTEGER: return st_large_integer_allocate(class, NULL);
-		case ST_FORMAT_HANDLE: return st_handle_allocate(class);
+			abort(); // not implemented
+		case ST_FORMAT_FLOAT:
+			return st_float_allocate(class);
+		case ST_FORMAT_LARGE_INTEGER:
+			return st_large_integer_allocate(class, NULL);
+		case ST_FORMAT_HANDLE:
+			return st_handle_allocate(class);
 		default:
-			/* should not reach */
-			abort();
+			abort(); // should not reach
 	}
 }
 
 st_oop st_object_new_arrayed(st_oop class, int size) {
 	switch (st_smi_value(ST_BEHAVIOR_FORMAT (class))) {
-		case ST_FORMAT_ARRAY: return st_array_allocate(class, size);
-		case ST_FORMAT_BYTE_ARRAY: return st_byte_array_allocate(class, size);
-		case ST_FORMAT_WORD_ARRAY: return st_word_array_allocate(class, size);
-		case ST_FORMAT_FLOAT_ARRAY: return st_float_array_allocate(class, size);
+		case ST_FORMAT_ARRAY:
+			return st_array_allocate(class, size);
+		case ST_FORMAT_BYTE_ARRAY:
+			return st_byte_array_allocate(class, size);
+		case ST_FORMAT_WORD_ARRAY:
+			return st_word_array_allocate(class, size);
+		case ST_FORMAT_FLOAT_ARRAY:
+			return st_float_array_allocate(class, size);
 		case ST_FORMAT_INTEGER_ARRAY:
-			/* not implemented */
-			abort();
-			break;
+			abort(); // not implemented
 		default:
-			/* should not reach */
-			abort();
+			abort(); // should not reach
 	}
 }

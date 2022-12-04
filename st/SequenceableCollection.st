@@ -77,7 +77,7 @@ findLast: aBlock
 
 SequenceableCollection method!
 size
-	<primitive: 'SequenceableCollection_size'>
+	<primitive: 'sequenceable_collection_size'>
 	self primitiveFailed!
 
 

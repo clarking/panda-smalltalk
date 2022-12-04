@@ -8,16 +8,11 @@
 
 #pragma once
 
-#include <tommath.h>
+
 #include "st-object.h"
 #include "st-types.h"
 
 #define ST_LARGE_INTEGER(oop) ((struct st_large_integer *) st_detag_pointer (oop))
-
-struct st_large_integer {
-	struct st_header parent;
-	mp_int value;
-};
 
 st_oop st_large_integer_new(mp_int *value);
 

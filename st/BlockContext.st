@@ -3,27 +3,27 @@
 
 BlockContext method!
 value
-	<primitive: 'BlockContext_value'>
+	<primitive: 'block_context_value'>
 	self primitiveFailed!
 
 BlockContext method!
 value: argument
-	<primitive: 'BlockContext_value'>
+	<primitive: 'block_context_value'>
 	self primitiveFailed!
 
 BlockContext method!
 value: firstArgument value: secondArgument
-	<primitive: 'BlockContext_value'>
+	<primitive: 'block_context_value'>
 	self primitiveFailed!
 
 BlockContext method!
 value: firstArgument value: secondArgument value: thirdArgument
-	<primitive: 'BlockContext_value'>
+	<primitive: 'block_context_value'>
 	self primitiveFailed!
 
 BlockContext method!
 valueWithArguments: anArray
-	<primitive: 'BlockContext_valueWithArguments'>
+	<primitive: 'block_context_value_with_args'>
 	self primitiveFailed!
 
 

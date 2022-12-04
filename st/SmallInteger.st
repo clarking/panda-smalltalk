@@ -50,28 +50,28 @@ gcd: aNumber
 
 SmallInteger method!
 + aNumber
-	<primitive: 'SmallInteger_add'>
+	<primitive: 'small_int_add'>
 	aNumber isSmallInteger
 		ifTrue: [^ self asLargeInteger + aNumber asLargeInteger]
 	    ifFalse: [^ super + aNumber]! 
 
 SmallInteger method!
 - aNumber
-	<primitive: 'SmallInteger_sub'>
+	<primitive: 'small_int_sub'>
 	aNumber isSmallInteger
 		ifTrue: [^ self asLargeInteger - aNumber asLargeInteger]
 	    ifFalse: [^ super - aNumber]!
 	
 SmallInteger method!
 * aNumber
-	<primitive: 'SmallInteger_mul'>
+	<primitive: 'small_int_mul'>
 	aNumber isSmallInteger
 		ifTrue: [^ self asLargeInteger * aNumber asLargeInteger]
 	    ifFalse: [^ super * aNumber]!
 
 SmallInteger method!
 / aNumber
-	<primitive: 'SmallInteger_div'>
+	<primitive: 'small_int_div_sel'>
 	aNumber = 0
 		ifTrue: [ self error: 'cannot divide by 0' ].
 	(aNumber isMemberOf: SmallInteger)
@@ -80,73 +80,70 @@ SmallInteger method!
 
 SmallInteger method!
 // aNumber
-	<primitive: 'SmallInteger_intDiv'>
+	<primitive: 'small_int_div'>
 	^ super // aNumber!
 
 SmallInteger method!
 \\ aNumber
-	<primitive: 'SmallInteger_mod'>
+	<primitive: 'small_int_mod'>
 	^ super \\ aNumber!
-
-
 
 "comparing"
 
 SmallInteger method!
 < aNumber
-	<primitive: 'SmallInteger_lt'>
+	<primitive: 'small_int_lt'>
 	^ super < aNumber!
 
 SmallInteger method!
 > aNumber
-	<primitive: 'SmallInteger_gt'>
+	<primitive: 'small_int_gt'>
 	^ super > aNumber!
 
 SmallInteger method!
 <= aNumber
-	<primitive: 'SmallInteger_le'>
+	<primitive: 'small_int_le'>
 	^ super <= aNumber!
 
 SmallInteger method!
 >= aNumber
-	<primitive: 'SmallInteger_ge'>
+	<primitive: 'small_int_ge'>
 	^ super >= aNumber!
 
 SmallInteger method!
 = aNumber
-	<primitive: 'SmallInteger_eq'>
+	<primitive: 'small_int_eq'>
 	^ super = aNumber!
 
 SmallInteger method!
 ~= aNumber
-	<primitive: 'SmallInteger_ne'>
+	<primitive: 'small_int_ne'>
 	^ super ~= aNumber!
 
 SmallInteger method!
 hash
 	^ self!
 
-
 "bit-wise operations"
 
 SmallInteger method!
 bitAnd: aNumber
-	<primitive: 'SmallInteger_bitAnd'>
+	<primitive: 'small_int_bitAnd'>
 	^ super bitAnd: aNumber!
 
 SmallInteger method!
 bitOr: aNumber
-	<primitive: 'SmallInteger_bitOr'>
+	<primitive: 'small_int_bitOr'>
 	^ super bitOr: aNumber!
 
 SmallInteger method!
 bitXor: aNumber
-	<primitive: 'SmallInteger_bitXor'>
+	<primitive: 'small_int_bitXor'>
 	^ super bitXor: aNumber!
 
 SmallInteger method!
 bitShift: aNumber
-	<primitive: 'SmallInteger_bitShift'>
+	<primitive: 'small_int_bitShift'>
 	^ super bitShift: aNumber!
 
 
@@ -170,7 +167,6 @@ SmallInteger method!
 isLargeInteger
 	^ false!
 
-
 "coercing"
 
 SmallInteger method!
@@ -179,12 +175,12 @@ asInteger
 
 SmallInteger method!
 asFloat    
-	<primitive: 'SmallInteger_asFloat'>
+	<primitive: 'small_int_asFloat'>
 	self primitiveFailed!
 
 SmallInteger method!
 asLargeInteger    
-	<primitive: 'SmallInteger_asLargeInteger'>
+	<primitive: 'small_int_asLargeInt'>
 	self primitiveFailed!
 
 SmallInteger method!

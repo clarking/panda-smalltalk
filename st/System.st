@@ -25,7 +25,7 @@ startupSystem
 
 System method!
 exitWithResult: anObject
-	<primitive: 'System_exitWithResult'>
+	<primitive: 'sys_exit_with_result'>
 	self primitiveFailed!
 
 System method!

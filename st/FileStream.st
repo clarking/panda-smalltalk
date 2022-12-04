@@ -1,10 +1,7 @@
 
-
-
-
 FileStream classMethod!
 primOpen: fileName mode: anInteger
-	<primitive: 'FileStream_open'>
+	<primitive: 'file_stream_open'>
 	self primitiveFailed!
 
 FileStream classMethod!
@@ -23,22 +20,22 @@ open: fileName mode: aSymbol
 
 FileStream method!
 primRead: fd count: anInteger
-	<primitive: 'FileStream_read'>
+	<primitive: 'file_stream_read'>
 	self primitiveFailed!
 
 FileStream method!
 primWrite: fd byte: anInteger
-	<primitive: 'FileStream_write'>
+	<primitive: 'file_stream_write'>
 	self primitiveFailed!
 
 FileStream method!
 primWrite: fd byteArray: aByteArray
-	<primitive: 'FileStream_write'>
+	<primitive: 'file_stream_write'>
 	self primitiveFailed!
 
 FileStream method!
 primClose: fd
-	<primitive: 'FileStream_close'>
+	<primitive: 'file_stream_close'>
 	self primitiveFailed!
 
 FileStream method!
@@ -64,7 +61,6 @@ nextPutAll: aByteArray
 FileStream method!
 close
 	^ self primClose: fdesc!
-
 
 FileStream method!
 on: fd

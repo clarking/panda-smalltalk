@@ -18,12 +18,6 @@
 #include "st-lexer.h"
 #include "st-array.h"
 
-typedef struct {
-	const char *filename;
-	st_input *input;
-	int line;
-} FileInParser;
-
 /*
  * st_compile_string:
  * @class: The class for which the compiled method will be bound.
@@ -61,50 +55,45 @@ bool st_compile_string(st_oop class, const char *string, st_compiler_error *erro
 	return true;
 }
 
-static void
-filein_error(FileInParser *parser, st_token *token, const char *message) {
-	fprintf(stderr, "%s: %i: %s\n", parser->filename, parser->line + ((token) ? st_token_get_line(token) : -90), message);
+void filein_error(st_filein *parser, st_token *token, const char *message) {
+	fprintf(stderr, "%s: %i: %s\n", parser->filename, parser->line + ((token) ? st_token_get_line(token) : -90),
+			message);
 	exit(1);
 }
 
-static st_token *
-next_token(FileInParser *parser, st_lexer *lexer) {
+st_token *next_token(st_filein *parser, st_lexer *lexer) {
 	st_token *token;
-	
 	token = st_lexer_next_token(lexer);
-	
-	if (st_token_get_type(token) == ST_TOKEN_COMMENT)
+	if (st_token_get_type(token) == TOKEN_COMMENT)
 		return next_token(parser, lexer);
-	else if (st_token_get_type(token) == ST_TOKEN_INVALID)
+	else if (st_token_get_type(token) == TOKEN_INVALID)
 		filein_error(parser, token, st_lexer_error_message(lexer));
 	
 	return token;
 }
 
-static st_lexer *next_chunk(FileInParser *parser) {
+st_lexer *next_chunk(st_filein *parser) {
 	st_lexer *lexer;
 	char *chunk;
 	
 	parser->line = st_input_get_line(parser->input);
-	
 	chunk = st_input_next_chunk(parser->input);
 	if (!chunk)
 		return NULL;
 	
 	lexer = st_lexer_new(chunk);
-	
 	st_free(chunk);
 	return lexer;
 }
 
-static void parse_method(FileInParser *parser, st_lexer *lexer, char *class_name, bool class_method) {
+void compile_method(st_filein *parser, st_lexer *lexer, char *class_name, bool class_method) {
 	st_token *token = NULL;
 	st_oop class;
 	st_compiler_error error;
 	
 	st_lexer_destroy(lexer);
 	
-	/* get class or metaclass */
+	// get class or metaclass
 	class = st_global_get(class_name);
 	if (class == ST_NIL)
 		filein_error(parser, token, "undefined class");
@@ -112,7 +101,7 @@ static void parse_method(FileInParser *parser, st_lexer *lexer, char *class_name
 	if (class_method)
 		class = st_object_class(class);
 	
-	/* parse method chunk */
+	// parse method chunk
 	lexer = next_chunk(parser);
 	if (!lexer)
 		filein_error(parser, token, "expected method definition");
@@ -143,63 +132,53 @@ static void parse_method(FileInParser *parser, st_lexer *lexer, char *class_name
 	exit(1);
 }
 
-static void parse_class(FileInParser *parser, st_lexer *lexer, char *name) {
+void compile_class(st_filein *parser, st_lexer *lexer, char *name) {
 	printf("%s", "TODO: Not implemented yet");
 }
 
-static void parse_chunk(FileInParser *parser, st_lexer *lexer) {
+void compile_chunk(st_filein *parser, st_lexer *lexer) {
 	st_token *token;
 	char *name;
 	token = next_token(parser, lexer);
-	if (st_token_get_type(token) == ST_TOKEN_IDENTIFIER) {
+	if (st_token_get_type(token) == TOKEN_IDENTIFIER) {
 		name = st_strdup(st_token_get_text(token));
 		token = next_token(parser, lexer);
 		
-		if (st_token_get_type(token) == ST_TOKEN_IDENTIFIER && (streq (st_token_get_text(token), "method")))
-			parse_method(parser, lexer, name, false);
-		
-		else if (st_token_get_type(token) == ST_TOKEN_IDENTIFIER || streq (st_token_get_text(token), "classMethod"))
-			parse_method(parser, lexer, name, true);
-		
-		else if (st_token_get_type(token) == ST_TOKEN_KEYWORD_SELECTOR && streq (st_token_get_text(token), "subclass:"))
-			parse_class(parser, lexer, name);
-		
+		if (st_token_get_type(token) == TOKEN_IDENTIFIER && (streq (st_token_get_text(token), "method")))
+			compile_method(parser, lexer, name, false);
+		else if (st_token_get_type(token) == TOKEN_IDENTIFIER || streq (st_token_get_text(token), "classMethod"))
+			compile_method(parser, lexer, name, true);
+		else if (st_token_get_type(token) == TOKEN_KEYWORD_SELECTOR && streq (st_token_get_text(token), "subclass:"))
+			compile_class(parser, lexer, name);
 		else
 			goto error;
-	}
-	else
+	} else
 		goto error;
 	
 	return;
-	
 	error:
 	filein_error(parser, token, "unrecognised syntax");
 }
 
-static void parse_chunks(FileInParser *parser) {
+void compile_chunks(st_filein *parser) {
 	st_lexer *lexer;
-	
 	while (st_input_look_ahead(parser->input, 1) != ST_INPUT_EOF) {
 		lexer = next_chunk(parser);
 		if (!lexer)
 			continue;
-		parse_chunk(parser, lexer);
+		compile_chunk(parser, lexer);
 	}
 }
 
-/* isn't declared in glibc string.h */
-char *basename(const char *FILENAME);
-
-void st_compile_file_in(const char *filename) {
+void compile_file_in(const char *filename) {
 	char *buffer;
-	FileInParser *parser;
+	st_filein *parser;
 	
 	st_assert (filename != NULL);
-	
 	if (!st_file_get_contents(filename, &buffer))
 		return;
 	
-	parser = st_new0 (FileInParser);
+	parser = st_new0 (st_filein);
 	parser->input = st_input_new(buffer);
 	
 	if (!parser->input) {
@@ -210,7 +189,7 @@ void st_compile_file_in(const char *filename) {
 	parser->filename = basename(filename);
 	parser->line = 1;
 	
-	parse_chunks(parser);
+	compile_chunks(parser);
 	st_free(buffer);
 	st_input_destroy(parser->input);
 	st_free(parser);

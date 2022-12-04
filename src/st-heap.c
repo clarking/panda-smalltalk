@@ -6,7 +6,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-
 #include "st-heap.h"
 #include "st-utils.h"
 #include "st-system.h"
@@ -18,22 +17,16 @@ static inline st_uint round_pagesize(st_uint size) {
 }
 
 st_heap *st_heap_new(st_uint reserved_size) {
-	/*
-	 * Create a new heap with a reserved address space.
-	 * Returns NULL if address space could not be reserved
-	 */
 	
+	// Create a new heap with a reserved address space.
 	st_pointer result;
 	st_heap *heap;
 	st_uint size;
 	
 	st_assert (reserved_size > 0);
 	size = round_pagesize(reserved_size);
-	
 	result = st_system_reserve_memory(NULL, size);
-	if (result == NULL)
-		return NULL;
-	
+	if (result == NULL) return NULL;
 	heap = st_new0 (st_heap);
 	heap->start = result;
 	heap->end = result + size;
@@ -42,14 +35,11 @@ st_heap *st_heap_new(st_uint reserved_size) {
 }
 
 bool st_heap_grow(st_heap *heap, st_uint grow_size) {
-	/*
-	 * Grows the heap by the specified amount (in bytes).
-	 * The primitive will not succeed if the heap runs out
-	 * of reserved address space.
-	 */
+	
+	// Grows the heap by the specified amount (in bytes).
+	// The primitive will not succeed if the heap runs out of reserved address space.
 	st_pointer result;
 	st_uint size;
-	
 	st_assert (grow_size > 0);
 	size = round_pagesize(grow_size);
 	
@@ -61,12 +51,11 @@ bool st_heap_grow(st_heap *heap, st_uint grow_size) {
 		return false;
 	
 	heap->p += size;
-	
 	return true;
 }
 
 bool st_heap_shrink(st_heap *heap, st_uint shrink_size) {
-	/* Shrinks the heap by the specified amount (in bytes).	 */
+	// Shrinks the heap by the specified amount (in bytes).
 	st_pointer result;
 	st_uint size;
 	

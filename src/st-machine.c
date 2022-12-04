@@ -23,20 +23,14 @@
 #include "st-association.h"
 #include "st-memory.h"
 
-#ifdef __GNUC__
-#define HAVE_COMPUTED_GOTO
-#endif
-
 st_machine __machine;
 
 static inline st_oop method_context_new(st_machine *machine) {
+	
 	st_oop context;
 	st_uint temp_count;
 	st_oop *stack;
-	bool large;
-	
 	temp_count = st_method_get_arg_count(machine->new_method) + st_method_get_temp_count(machine->new_method);
-	
 	context = st_memory_allocate_context();
 	
 	ST_CONTEXT_PART_SENDER (context) = machine->context;
@@ -45,7 +39,7 @@ static inline st_oop method_context_new(st_machine *machine) {
 	ST_METHOD_CONTEXT_RECEIVER (context) = machine->message_receiver;
 	ST_METHOD_CONTEXT_METHOD (context) = machine->new_method;
 	
-	/* clear temporaries (and nothing above) */
+	// clear temporaries (and nothing above)
 	stack = ST_METHOD_CONTEXT_STACK (context);
 	for (st_uint i = 0; i < temp_count; i++)
 		stack[i] = ST_NIL;
@@ -56,12 +50,9 @@ static inline st_oop method_context_new(st_machine *machine) {
 static st_oop block_context_new(st_machine *machine, st_uint initial_ip, st_uint argcount) {
 	st_oop home;
 	st_oop context;
-	st_oop method;
-	st_oop *stack;
 	st_uint stack_size;
 	
 	stack_size = 32;
-	
 	context = st_memory_allocate(ST_SIZE_OOPS (struct st_block_context) + stack_size);
 	if (context == 0) {
 		st_memory_perform_gc();
@@ -70,7 +61,6 @@ static st_oop block_context_new(st_machine *machine, st_uint initial_ip, st_uint
 	}
 	
 	st_object_initialize_header(context, ST_BLOCK_CONTEXT_CLASS);
-	
 	if (ST_OBJECT_CLASS (machine->context) == ST_BLOCK_CONTEXT_CLASS)
 		home = ST_BLOCK_CONTEXT_HOME (machine->context);
 	else
@@ -79,11 +69,9 @@ static st_oop block_context_new(st_machine *machine, st_uint initial_ip, st_uint
 	ST_CONTEXT_PART_SENDER (context) = ST_NIL;
 	ST_CONTEXT_PART_IP (context) = st_smi_new(0);
 	ST_CONTEXT_PART_SP (context) = st_smi_new(0);
-	
 	ST_BLOCK_CONTEXT_INITIALIP (context) = st_smi_new(initial_ip);
 	ST_BLOCK_CONTEXT_ARGCOUNT (context) = st_smi_new(argcount);
 	ST_BLOCK_CONTEXT_HOME (context) = home;
-	
 	return context;
 }
 
@@ -98,7 +86,6 @@ static void create_actual_message(st_machine *machine) {
 		elements[i] = machine->stack[machine->sp - machine->message_argcount + i];
 	
 	machine->sp -= machine->message_argcount;
-	
 	message = st_object_new(ST_MESSAGE_CLASS);
 	if (message == 0) {
 		st_memory_perform_gc();
@@ -108,7 +95,6 @@ static void create_actual_message(st_machine *machine) {
 	
 	ST_OBJECT_FIELDS (message)[0] = machine->message_selector;
 	ST_OBJECT_FIELDS (message)[1] = array;
-	
 	ST_STACK_PUSH (machine, message);
 	
 	machine->message_selector = ST_SELECTOR_DOESNOTUNDERSTAND;
@@ -121,12 +107,10 @@ static st_oop lookup_method(st_machine *machine, st_oop class) {
 	
 	parent = class;
 	hash = st_byte_array_hash(machine->message_selector);
-	
 	while (parent != ST_NIL) {
 		
 		st_oop el;
 		st_uint mask, i;
-		
 		dict = ST_BEHAVIOR_METHOD_DICTIONARY (parent);
 		mask = st_smi_value(st_arrayed_object_size(ST_OBJECT_FIELDS (dict)[2])) - 1;
 		i = (hash & mask) + 1;
@@ -144,12 +128,11 @@ static st_oop lookup_method(st_machine *machine, st_oop class) {
 	}
 	
 	if (machine->message_selector == ST_SELECTOR_DOESNOTUNDERSTAND) {
-		fprintf(stderr, "panda: error: no method found for #doesNotUnderstand:\n");
+		fprintf(stderr, "'byte_stringerror: no method found for #doesNotUnderstand:\n");
 		exit(1);
 	}
 	
 	create_actual_message(machine);
-	
 	return lookup_method(machine, class);
 }
 
@@ -181,14 +164,14 @@ static inline void activate_method(st_machine *machine) {
 }
 
 void st_machine_execute_method(st_machine *machine) {
-	st_uint primitive_index;
+	st_uint prim_index;
 	st_method_flags flags;
 	
 	flags = st_method_get_flags(machine->new_method);
 	if (flags == ST_METHOD_PRIMITIVE) {
-		primitive_index = st_method_get_primitive_index(machine->new_method);
+		prim_index = st_method_get_prim_index(machine->new_method);
 		machine->success = true;
-		st_primitives[primitive_index].func(machine);
+		st_primitives[prim_index].func(machine);
 		if (ST_LIKELY (machine->success))
 			return;
 	}
@@ -211,8 +194,7 @@ void st_machine_set_active_context(st_machine *machine, st_oop context) {
 		machine->receiver = ST_METHOD_CONTEXT_RECEIVER (home);
 		machine->temps = ST_METHOD_CONTEXT_STACK (home);
 		machine->stack = ST_BLOCK_CONTEXT_STACK (context);
-	}
-	else {
+	} else {
 		machine->method = ST_METHOD_CONTEXT_METHOD (context);
 		machine->receiver = ST_METHOD_CONTEXT_RECEIVER (context);
 		machine->temps = ST_METHOD_CONTEXT_STACK (context);
@@ -222,7 +204,7 @@ void st_machine_set_active_context(st_machine *machine, st_oop context) {
 	machine->context = context;
 	machine->sp = st_smi_value(ST_CONTEXT_PART_SP (context));
 	machine->ip = st_smi_value(ST_CONTEXT_PART_IP (context));
-	machine->bytecode = st_method_bytecode_bytes(machine->method);
+	machine->bytecode = (st_uchar *) st_method_bytecode_bytes(machine->method);
 }
 
 #define SEND_SELECTOR(selector, argcount)            \
@@ -230,11 +212,6 @@ void st_machine_set_active_context(st_machine *machine, st_oop context) {
     machine->message_receiver = sp[- argcount - 1];  \
     machine->message_selector = selector;            \
     goto send_common;
-
-#define SEND_TEMPLATE()                                                     \
-    machine->lookup_class = st_object_class (machine->message_receiver);    \
-    ip += 1;                                                                \
-    goto common;
 
 #ifdef HAVE_COMPUTED_GOTO
 #define SWITCH(ip)                            \
@@ -381,10 +358,10 @@ static inline bool lookup_method_in_cache(st_machine *machine) {
     machine->ip = ip - machine->bytecode;                             \
     machine->sp = sp - machine->stack;                                \
     ST_CONTEXT_PART_IP (machine->context) = st_smi_new (machine->ip); \
-    ST_CONTEXT_PART_SP (machine->context) = st_smi_new (machine->sp);
+    ST_CONTEXT_PART_SP (machine->context) = st_smi_new (machine->sp)
 #define LOAD_REGISTERS()                    \
     ip = machine->bytecode + machine->ip;   \
-    sp = machine->stack + machine->sp;
+    sp = machine->stack + machine->sp
 
 void st_machine_main(st_machine *machine) {
 	register const st_uchar *ip;
@@ -502,12 +479,10 @@ void st_machine_main(st_machine *machine) {
 			if (STACK_PEEK () == ST_TRUE) {
 				(void) STACK_POP ();
 				ip += *((unsigned short *) (ip + 1)) + 3;
-			}
-			else if (ST_LIKELY (STACK_PEEK() == ST_FALSE)) {
+			} else if (ST_LIKELY (STACK_PEEK() == ST_FALSE)) {
 				(void) STACK_POP ();
 				ip += 3;
-			}
-			else {
+			} else {
 				ip += 3;
 				SEND_SELECTOR (ST_SELECTOR_MUSTBEBOOLEAN, 0);
 			}
@@ -519,12 +494,10 @@ void st_machine_main(st_machine *machine) {
 			if (STACK_PEEK () == ST_FALSE) {
 				(void) STACK_POP ();
 				ip += *((unsigned short *) (ip + 1)) + 3;
-			}
-			else if (ST_LIKELY (STACK_PEEK() == ST_TRUE)) {
+			} else if (ST_LIKELY (STACK_PEEK() == ST_TRUE)) {
 				(void) STACK_POP ();
 				ip += 3;
-			}
-			else {
+			} else {
 				ip += 3;
 				SEND_SELECTOR (ST_SELECTOR_MUSTBEBOOLEAN, 0);
 			}
@@ -570,10 +543,8 @@ void st_machine_main(st_machine *machine) {
 					STACK_PUSH (st_smi_new(result));
 					ip++;
 					NEXT ();
-				}
-				else {
+				} else
 					STACK_UNPOP (2);
-				}
 			}
 			
 			machine->message_argcount = 1;
@@ -637,13 +608,11 @@ void st_machine_main(st_machine *machine) {
 		{
 			st_oop a, b;
 			
-			if (ST_LIKELY (st_object_is_smi(sp[-1]) &&
-			               st_object_is_smi(sp[-2]))) {
+			if (ST_LIKELY (st_object_is_smi(sp[-1]) && st_object_is_smi(sp[-2]))) {
 				b = STACK_POP ();
 				a = STACK_POP ();
-				if (st_smi_value(b) < 0) {
+				if (st_smi_value(b) < 0)
 					STACK_PUSH (st_smi_new(st_smi_value(a) >> -st_smi_value(b)));
-				}
 				else
 					STACK_PUSH (st_smi_new(st_smi_value(a) << st_smi_value(b)));
 				ip++;
@@ -882,7 +851,7 @@ void st_machine_main(st_machine *machine) {
 		}
 		SEND:
 		{
-			st_uint primitive_index;
+			st_uint prim_index;
 			st_method_flags flags;
 			st_oop context;
 			st_oop *arguments;
@@ -896,46 +865,46 @@ void st_machine_main(st_machine *machine) {
 			send_common:
 			
 			if (!lookup_method_in_cache(machine)) {
-				STORE_REGISTERS ();
+				STORE_REGISTERS();
 				machine->new_method = lookup_method(machine, machine->lookup_class);
-				LOAD_REGISTERS ();
+				LOAD_REGISTERS();
 				install_method_in_cache(machine);
 			}
 			
 			flags = st_method_get_flags(machine->new_method);
 			if (flags == ST_METHOD_PRIMITIVE) {
-				primitive_index = st_method_get_primitive_index(machine->new_method);
+				prim_index = st_method_get_prim_index(machine->new_method);
 				
 				machine->success = true;
-				STORE_REGISTERS ();
-				st_primitives[primitive_index].func(machine);
-				LOAD_REGISTERS ();
+				STORE_REGISTERS();
+				st_primitives[prim_index].func(machine);
+				LOAD_REGISTERS();
 				
 				if (ST_LIKELY (machine->success))
-				NEXT ();
+				NEXT();
 			}
 			
-			/* store registers as a gc could occur */
-			STORE_REGISTERS ();
+			STORE_REGISTERS(); // store registers as a gc could occur
 			context = method_context_new(machine);
-			LOAD_REGISTERS ();
+			LOAD_REGISTERS();
 			arguments = ST_METHOD_CONTEXT_STACK (context);
 			for (int i = 0; i < machine->message_argcount; i++)
 				arguments[i] = sp[-machine->message_argcount + i];
 			sp -= machine->message_argcount + 1;
 			
-			STORE_REGISTERS ();
+			STORE_REGISTERS();
 			st_machine_set_active_context(machine, context);
-			LOAD_REGISTERS ();
+			LOAD_REGISTERS();
 			
 			/* We have to nil these fields here. Its possible that
-				   that the objects they reference may be zapped by the gc.
-				   Another GC invocation may try to remap these fields not knowing that
-				   the references are invalid.
-			   FIXME: move this nilling out of such a critical execution path */
+			   that the objects they reference may be zapped by the gc.
+			   Another GC invocation may try to remap these fields not knowing that
+			   the references are invalid.
+			   FIXME: move this nilling out of such a critical execution path
+		   */
+			
 			machine->message_receiver = ST_NIL;
 			machine->message_selector = ST_NIL;
-			
 			NEXT ();
 		}
 		SEND_SUPER:
@@ -949,19 +918,17 @@ void st_machine_main(st_machine *machine) {
 			machine->lookup_class = ST_BEHAVIOR_SUPERCLASS (st_array_elements(ST_METHOD_LITERALS(machine->method))[index]);
 			
 			ip += 3;
-			
 			goto send_common;
 		}
 		POP_STACK_TOP:
 		{
 			(void) STACK_POP ();
-			
 			ip += 1;
 			NEXT ();
 		}
 		DUPLICATE_STACK_TOP:
 		{
-			STACK_PUSH (STACK_PEEK());
+			STACK_PUSH(STACK_PEEK());
 			ip += 1;
 			NEXT ();
 		}

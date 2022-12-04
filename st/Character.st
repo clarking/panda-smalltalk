@@ -4,7 +4,7 @@
 
 Character classMethod!
 characterFor: unicodeValue
-	<primitive: 'Character_characterFor'>
+	<primitive: 'char_for'>
 	self primitiveFailed!
 
 Character classMethod!
@@ -39,7 +39,7 @@ space
 
 Character method!
 value
-	<primitive: 'Character_value'>
+	<primitive: 'char_value'>
 	self primitiveFailed!
 
 "comparing"

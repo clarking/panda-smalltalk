@@ -29,6 +29,7 @@
  ************************************************************************* */
 #ifndef _POINTER_ARRAY_
 #define _POINTER_ARRAY_
+
 #include <sys/types.h>
 #include <stddef.h>
 
@@ -50,13 +51,12 @@
  *     destroyed and recreated if its space requirements decrease
  *     dramatically.
  */
-typedef struct ptr_array_t *ptr_array; 
+typedef struct ptr_array_t *ptr_array;
 
-struct ptr_array_t
-{
-  const void **array;
-  size_t length;
-  size_t size;
+struct ptr_array_t {
+	const void **array;
+	size_t length;
+	size_t size;
 };
 
 /* Create a new, empty pointer array. The returned value must be freed
@@ -69,6 +69,7 @@ struct ptr_array_t
  *            reason.
  */
 ptr_array ptr_array_new(size_t initial_size);
+
 /* Free an existing pointer array.
  * 
  * Arguments: self, the pointer array to free. Can be NULL. Multiple
@@ -84,7 +85,8 @@ void ptr_array_free(ptr_array self);
  * Result: obj if the value was found, otherwise NULL. Note that if
  *            obj is NULL, success is not possible to determine.
  */
-void * ptr_array_remove_ordered(ptr_array self, const void *obj);
+void *ptr_array_remove_ordered(ptr_array self, const void *obj);
+
 /* Remove an entry by value from the array, preferring speed over
  * preserving order.
  *
@@ -93,7 +95,7 @@ void * ptr_array_remove_ordered(ptr_array self, const void *obj);
  * Result: obj if the value was found, otherwise NULL. Note that if
  *            obj is NULL, success is not possible to determine.
  */
-void * ptr_array_remove_fast(ptr_array self, const void *obj);
+void *ptr_array_remove_fast(ptr_array self, const void *obj);
 
 /* Remove an entry at a certain index from the array, preserving the
  * order of items following the removal point.
@@ -104,7 +106,7 @@ void * ptr_array_remove_fast(ptr_array self, const void *obj);
  *            value removed is NULL, success is not possible to
  *            determine. 
  */
-void * ptr_array_remove_index_ordered(ptr_array self, size_t index);
+void *ptr_array_remove_index_ordered(ptr_array self, size_t index);
 
 /* Remove an entry at a certain index from the array, preferring speed over
  * preserving order.
@@ -115,7 +117,7 @@ void * ptr_array_remove_index_ordered(ptr_array self, size_t index);
  *            value removed is NULL, success is not possible to
  *            determine. 
  */
-void * ptr_array_remove_index_fast(ptr_array self, size_t index);
+void *ptr_array_remove_index_fast(ptr_array self, size_t index);
 
 /* Retrieve the pointer at a certain index.
  *
@@ -123,7 +125,7 @@ void * ptr_array_remove_index_fast(ptr_array self, size_t index);
  *            index, the position of the object to retrieve.
  * Result: the value which exists at the given index.
  */
-void * ptr_array_get_index(const ptr_array self, size_t index);
+void *ptr_array_get_index(const ptr_array self, size_t index);
 
 /* Modify the pointer at a certain index.
  * 
@@ -132,7 +134,7 @@ void * ptr_array_get_index(const ptr_array self, size_t index);
  *            value, the value to overwrite at the specified index
  * Result: the value which was at the index before.
  */
-void * ptr_array_set_index(ptr_array self, size_t index, const void *value);
+const void *ptr_array_set_index(ptr_array self, size_t index, const void *value);
 
 /* Determine if the pointer array contains a particular value
  * 
@@ -148,9 +150,8 @@ int ptr_array_contains(const ptr_array self, const void *value);
  * Arguments: self, the pointer array
  * Result: number of entries within the array.
  */
-static inline size_t ptr_array_length(const ptr_array self)
-{
-  return self->length;
+static inline size_t ptr_array_length(const ptr_array self) {
+	return self->length;
 }
 
 /* Internal method for appending a value which causes array growth */
@@ -162,14 +163,13 @@ int _ptr_array_growing_append(ptr_array self, const void *value);
  *            value, the pointer to append at the end
  * Result: Non-zero on success, zero on failure.
  */
-static inline int ptr_array_append(ptr_array self, const void *value)
-{
+static inline int ptr_array_append(ptr_array self, const void *value) {
 	if (self->length == self->size)
 		return _ptr_array_growing_append(self, value);
-
+	
 	self->array[self->length] = value;
 	self->length++;
-        return 1;
+	return 1;
 }
 
 /* Clear all entries from the array. This does not reduce the
@@ -178,4 +178,5 @@ static inline int ptr_array_append(ptr_array self, const void *value)
  * Arguments: self, the pointer array
  */
 void ptr_array_clear(ptr_array self);
+
 #endif

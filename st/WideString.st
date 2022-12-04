@@ -2,7 +2,7 @@
 
 WideString method!
 at: anInteger
-	<primitive: 'WideString_at'>
+	<primitive: 'wide_string_at'>
 	anInteger isInteger
 		ifTrue: [self error: 'index out of bounds'].
 	anInteger isNumber
@@ -11,7 +11,7 @@ at: anInteger
 
 WideString method!
 at: anInteger put: aCharacter
-	<primitive: 'WideString_at_put'>
+	<primitive: 'wide_string_at_put'>
 	anInteger isInteger
 		ifTrue: [self error: 'index out of bounds'].
 	anInteger isNumber

@@ -14,7 +14,7 @@ Symbol method!
 
 ByteSymbol method!
 at: anInteger
-	<primitive: 'ByteString_at'>
+	<primitive: 'byte_string_at'>
 	anInteger isInteger
 		ifTrue: [ self error: 'index out of bounds' ].
 	anInteger isNumber
@@ -23,19 +23,19 @@ at: anInteger
 
 ByteSymbol method!
 size
-	<primitive: 'ByteString_size'>
+	<primitive: 'byte_string_size'>
 	self primitiveFailed!
 
 "comparing"
 
 ByteSymbol method!
 compare: aString
-	<primitive: 'ByteString_compare'>
+	<primitive: 'byte_string_compare'>
 	self error: 'argument is not a ByteString'!
 
 ByteSymbol method!
 hash
-	<primitive: 'ByteArray_hash'>
+	<primitive: 'byte_array_hash'>
 	self primitiveFailed!
 
 "testing"

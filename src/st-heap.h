@@ -10,11 +10,6 @@
 
 #include "st-types.h"
 
-typedef struct st_heap {
-	st_uchar *start; /* start of reserved address space */
-	st_uchar *p;     /* end of committed address space (`start' to `p' is thus writeable memory) */
-	st_uchar *end;   /* end of reserved address space */
-} st_heap;
 
 st_heap *st_heap_new(st_uint reserved_size);
 

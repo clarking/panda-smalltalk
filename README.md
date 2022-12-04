@@ -1,5 +1,3 @@
-
-
 ## Introduction
 
 Panda is a new Smalltalk implementation, written from scratch in C99.
@@ -13,6 +11,7 @@ Panda is a new Smalltalk implementation, written from scratch in C99.
 - Basic support for reading code from command line
 
 ### Next on the TODO
+
 - Image support
 - better script file support
 
@@ -38,16 +37,18 @@ The main executable can read files and output the result, as well as enter in a 
 
 Here are some short examples. Make sure to browse through the class library in "st/" to see all the implemented classes.
 
-1.  Sort a constant array of SmallIntegers
+1. Sort a constant array of SmallIntegers
 
 ```bash
    echo "#(3 7 5 7 12 1) sort" | ./panda
 ```
 
 2. Bignum arithmetic
+
 ```bash
    echo "1000000000000000000000000 + 1" | ./panda
 ```
+
 3. Data Structures: Put a pair #key -> 'foo' into a dictionary and attempt retrieval
 
 ```smalltalk
@@ -57,7 +58,7 @@ Here are some short examples. Make sure to browse through the class library in "
          map at: #key." | ./panda
 ```
 
-4. Fun with blocks: Use block to select elements of array which are greater than 
+4. Fun with blocks: Use block to select elements of array which are greater than
 
 ```bash
     echo "#(3 7 5 7 12 1) select: [ :x | x > 5 ]" | ./panda

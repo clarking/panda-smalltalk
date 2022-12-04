@@ -4,7 +4,7 @@
 
 ByteString method!
 at: anInteger
-	<primitive: 'ByteString_at'>
+	<primitive: 'byte_string_at'>
 	anInteger isInteger
 		ifTrue: [ self error: 'index out of bounds' ].
 	anInteger isNumber
@@ -13,7 +13,7 @@ at: anInteger
 
 ByteString method!
 at: anInteger put: aCharacter
-	<primitive: 'ByteString_at_put'>
+	<primitive: 'byte_string_at_put'>
 	aCharacter isCharacter
 		ifFalse: [self error: 'object is not a character'].
 	anInteger isInteger
@@ -25,19 +25,19 @@ at: anInteger put: aCharacter
 
 ByteString method!
 size
-	<primitive: 'ByteString_size'>
+	<primitive: 'byte_string_size'>
 	self primitiveFailed!
 
 "comparing"
 
 ByteString method!
 compare: aString
-	<primitive: 'ByteString_compare'>
+	<primitive: 'byte_string_compare'>
 	self error: 'argument is not a ByteString'!
 
 ByteString method!
 hash
-	<primitive: 'ByteArray_hash'>
+	<primitive: 'byte_array_hash'>
 	self primitiveFailed!
 
 "testing"

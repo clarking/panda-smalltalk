@@ -3,7 +3,7 @@
 
 ByteArray method!
 at: anInteger
-	<primitive: 'ByteArray_at'>
+	<primitive: 'byte_array_at'>
 	anInteger isInteger
 		ifTrue: [self error: 'out of bounds array access'].
 	anInteger isNumber
@@ -12,7 +12,7 @@ at: anInteger
 
 ByteArray method!
 at: anInteger put: anObject
-	<primitive: 'ByteArray_at_put'>
+	<primitive: 'byte_array_at_put'>
 	anInteger isInteger
 		ifTrue: [self error: 'out of bounds array access'].
 	anInteger isNumber
@@ -21,5 +21,5 @@ at: anInteger put: anObject
 
 ByteArray method!
 hash
-	<primitive: 'ByteArray_hash'>
+	<primitive: 'byte_array_hash'>
 	self primitiveFailed!

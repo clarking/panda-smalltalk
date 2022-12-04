@@ -11,25 +11,6 @@
 #include "st-input.h"
 #include "st-utils.h"
 
-typedef struct marker {
-	int p;
-	int line;
-	int column;
-	
-} marker;
-
-struct st_input {
-	char *text;
-	
-	st_uint p;        /* current index into text */
-	
-	st_uint n;        /* total number of chars in text */
-	st_uint line;     /* current line number, starting from 1 */
-	st_uint column;   /* current column number, starting from 1 */
-	
-	marker marker;
-};
-
 static char *filter_double_bangs(const char *chunk) {
 	st_uint size, i = 0, count = 0;
 	const char *p = chunk;
@@ -40,7 +21,7 @@ static char *filter_double_bangs(const char *chunk) {
 	if (size < 2)
 		return st_strdup(chunk);
 	
-	/* count number of redundant bangs */
+	// count number of redundant bangs
 	while (p[0] && p[1]) {
 		if (ST_UNLIKELY (p[0] == '!' && p[1] == '!'))
 			count++;
@@ -49,7 +30,7 @@ static char *filter_double_bangs(const char *chunk) {
 	
 	buf = st_malloc(size - count + 1);
 	
-	/* copy over text skipping over redundant bangs */
+	// copy over text skipping over redundant bangs
 	p = chunk;
 	while (*p) {
 		if (*p == '!')
@@ -74,7 +55,7 @@ char *st_input_next_chunk(st_input *input) {
 			continue;
 		}
 		
-		/* skip past doubled bangs */
+		// skip past doubled bangs
 		if (st_input_look_ahead(input, 1) == '!'
 		    && st_input_look_ahead(input, 2) == '!') {
 			st_input_consume(input);

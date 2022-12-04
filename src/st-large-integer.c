@@ -6,7 +6,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-
 #include "st-large-integer.h"
 #include "st-universe.h"
 #include "st-types.h"
@@ -44,13 +43,7 @@ char *st_large_integer_to_string(st_oop integer, st_uint radix) {
 		goto out;
 	
 	char *str = st_malloc(size);
-	
 	mp_toradix(VALUE (integer), str, radix);
-	
-	// --removed as condition is always false
-	//	if (result != MP_OKAY)
-	//		goto out;
-	
 	return str;
 	
 	out:
@@ -81,5 +74,4 @@ st_oop st_large_integer_allocate(st_oop class, mp_int *value) {
 
 st_oop st_large_integer_new(mp_int *value) {
 	return st_large_integer_allocate(ST_LARGE_INTEGER_CLASS, value);
-	
 }

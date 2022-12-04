@@ -4,8 +4,8 @@
  *
  * SPDX-License-Identifier: MIT
  */
-
 #include "st-dictionary.h"
+#include "st-types.h"
 #include "st-array.h"
 #include "st-small-integer.h"
 #include "st-utils.h"
@@ -16,36 +16,19 @@
 
 #define DEFAULT_CAPACITY     8
 #define MINIMUM_CAPACITY     4
+#define ST_HASHED_COLLECTION(oop) ((st_hashed_collection *) st_detag_pointer (oop))
 #define SIZE(collection)     (ST_HASHED_COLLECTION (collection)->size)
 #define DELETED(collection)  (ST_HASHED_COLLECTION (collection)->deleted)
 #define ARRAY(collection)    (ST_HASHED_COLLECTION (collection)->array)
 #define ARRAY_SIZE(array)    (st_smi_value (ST_ARRAYED_OBJECT (array)->size))
 
-#define ST_HASHED_COLLECTION(oop) ((struct st_hashed_collection *) st_detag_pointer (oop))
-
-struct st_hashed_collection {
-	struct st_header header;
-	st_oop size;
-	st_oop deleted;
-	st_oop array;
-	
-};
-
-static st_uint dict_find(st_oop dict, st_oop object);
-
-static st_uint set_find(st_oop set, st_oop object);
-
-static void dict_no_check_add(st_oop dict, st_oop object);
-
-static void set_no_check_add(st_oop set, st_oop object);
-
 /* Common methods */
 
-static inline st_uint occupied(st_oop collection) {
+st_uint occupied(st_oop collection) {
 	return st_smi_value(SIZE (collection)) + st_smi_value(DELETED (collection));
 }
 
-static st_uint size_for_capacity(st_uint capacity) {
+st_uint size_for_capacity(st_uint capacity) {
 	st_uint size;
 	size = MINIMUM_CAPACITY;
 	while (size < capacity)
@@ -53,7 +36,7 @@ static st_uint size_for_capacity(st_uint capacity) {
 	return size;
 }
 
-static void initialize(st_oop collection, int capacity) {
+void initialize(st_oop collection, int capacity) {
 	st_assert (capacity > 0);
 	capacity = size_for_capacity(capacity);
 	
@@ -62,7 +45,7 @@ static void initialize(st_oop collection, int capacity) {
 	ARRAY (collection) = st_object_new_arrayed(ST_ARRAY_CLASS, capacity);
 }
 
-static void dict_check_grow(st_oop dict) {
+void dict_check_grow(st_oop dict) {
 	st_oop old, object;
 	st_uint size, n;
 	size = n = ARRAY_SIZE (ARRAY(dict));
@@ -83,7 +66,7 @@ static void dict_check_grow(st_oop dict) {
 	}
 }
 
-static st_uint dict_find(st_oop dict, st_oop key) {
+st_uint dict_find(st_oop dict, st_oop key) {
 	st_oop el;
 	st_uint mask;
 	st_uint i;
@@ -110,8 +93,7 @@ void st_dictionary_at_put(st_oop dict, st_oop key, st_oop value) {
 		st_array_at_put(ARRAY (dict), index, st_association_new(key, value));
 		SIZE (dict) = st_smi_increment(SIZE (dict));
 		dict_check_grow(dict);
-	}
-	else {
+	} else {
 		ST_ASSOCIATION_VALUE (assoc) = value;
 	}
 }
@@ -143,7 +125,7 @@ st_oop st_dictionary_new_with_capacity(int capacity) {
 
 /* Set implementation */
 
-static st_uint set_find_cstring(st_oop set, const char *string) {
+st_uint set_find_cstring(st_oop set, const char *string) {
 	st_oop el;
 	st_uint mask, i;
 	
@@ -158,7 +140,7 @@ static st_uint set_find_cstring(st_oop set, const char *string) {
 	}
 }
 
-static st_uint set_find(st_oop set, st_oop object) {
+st_uint set_find(st_oop set, st_oop object) {
 	st_oop el;
 	st_uint mask, i;
 	
@@ -173,7 +155,7 @@ static st_uint set_find(st_oop set, st_oop object) {
 	}
 }
 
-static void set_check_grow(st_oop set) {
+void set_check_grow(st_oop set) {
 	st_oop old, object;
 	st_uint size, n;
 	

@@ -106,3 +106,75 @@ st_oop st_handle_allocate(st_oop class) {
 	st_object_initialize_header(object, class);
 	return object;
 }
+
+void st_object_set_format(st_oop object, st_format format) {
+	_ST_OBJECT_SET_BITFIELD (ST_OBJECT_MARK(object), FORMAT, format);
+}
+
+st_format st_object_format(st_oop object) {
+	return _ST_OBJECT_GET_BITFIELD (ST_OBJECT_MARK(object), FORMAT);
+}
+
+void st_object_set_hashed(st_oop object, bool hashed) {
+	_ST_OBJECT_SET_BITFIELD (ST_OBJECT_MARK(object), HASH, hashed);
+}
+
+bool st_object_is_hashed(st_oop object) {
+	return _ST_OBJECT_GET_BITFIELD (ST_OBJECT_MARK(object), HASH);
+}
+
+st_uint st_object_instance_size(st_oop object) {
+	return _ST_OBJECT_GET_BITFIELD (ST_OBJECT_MARK(object), SIZE);
+}
+
+st_uint st_object_set_instance_size(st_oop object, st_uint size) {
+	_ST_OBJECT_SET_BITFIELD (ST_OBJECT_MARK(object), SIZE, size);
+}
+
+int st_object_tag(st_oop object) {
+	return object & st_tag_mask;
+}
+
+bool st_object_is_heap(st_oop object) {
+	return st_object_tag(object) == ST_POINTER_TAG;
+}
+
+bool st_object_is_smi(st_oop object) {
+	return st_object_tag(object) == ST_SMI_TAG;
+}
+
+bool st_object_is_character(st_oop object) {
+	return st_object_tag(object) == ST_CHARACTER_TAG;
+}
+
+bool st_object_is_mark(st_oop object) {
+	return st_object_tag(object) == ST_MARK_TAG;
+}
+
+st_oop st_object_class(st_oop object) {
+	if (ST_UNLIKELY (st_object_is_smi(object)))
+		return ST_SMI_CLASS;
+	if (ST_UNLIKELY (st_object_is_character(object)))
+		return ST_CHARACTER_CLASS;
+	return ST_OBJECT_CLASS (object);
+}
+
+bool st_object_is_symbol(st_oop object) {
+	return st_object_class(object) == ST_SYMBOL_CLASS;
+}
+
+bool st_object_is_string(st_oop object) {
+	return st_object_class(object) == ST_STRING_CLASS;
+}
+
+bool st_object_is_array(st_oop object) {
+	return st_object_class(object) == ST_ARRAY_CLASS;
+}
+
+bool st_object_is_byte_array(st_oop object) {
+	return st_object_class(object) == ST_BYTE_ARRAY_CLASS;
+}
+
+bool st_object_is_float(st_oop object) {
+	return st_object_class(object) == ST_FLOAT_CLASS;
+}

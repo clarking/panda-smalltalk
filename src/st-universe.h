@@ -77,7 +77,17 @@
 
 extern st_memory *memory;
 
-void st_initialize(void);
+st_oop class_new(st_format format, st_uint instance_size);
+
+void add_global(const char *name, st_oop object);
+
+void initialize_class(const char *name, const char *super_name, st_list *ivarnames);
+
+void file_in_classes(void);
+
+st_oop create_nil_object(void);
+
+void init_specials(void);
 
 st_oop st_global_get(const char *name);
 

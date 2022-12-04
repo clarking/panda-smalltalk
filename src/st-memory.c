@@ -10,8 +10,8 @@
 #include <string.h>
 #include <time.h>
 
-#include "st-memory.h"
 #include "st-types.h"
+#include "st-memory.h"
 #include "st-utils.h"
 #include "st-float.h"
 #include "st-large-integer.h"
@@ -21,35 +21,22 @@
 #include "st-method.h"
 #include "st-handle.h"
 
-static inline st_oop remap_oop(st_oop ref);
 
-static void garbage_collect();
-
-static void timer_start(struct timespec *spec) {
-	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, spec);
+void timer_start(struct timespec *spec) {
+	//clock_gettime(CLOCK_PROCESS_CPUTIME_ID, spec);
 }
 
-static void timer_stop(struct timespec *spec) {
+void timer_stop(struct timespec *spec) {
 	struct timespec tmp;
-	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tmp);
+	//clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tmp);
 	st_timespec_difference(spec, &tmp, spec);
 }
 
-// RESERVE 1000 MB worth of virtual address space
-#define RESERVED_SIZE        (1000 * 1024 * 1024)
-#define INITIAL_COMMIT_SIZE  (1 * 1024 * 1024)
-
-#define MARK_STACK_SIZE      (256 * 1024)
-#define MARK_STACK_SIZE_OOPS (MARK_STACK_SIZE / sizeof (st_oop))
-
-#define BLOCK_SIZE       256
-#define BLOCK_SIZE_OOPS  (BLOCK_SIZE / sizeof (st_oop))
-
-static void verify(st_oop object) {
+void verify(st_oop object) {
 	st_assert (st_object_is_mark(ST_OBJECT_MARK(object)));
 }
 
-static void ensure_metadata(void) {
+void ensure_metadata(void) {
 	/* The bit arrays are implemented using bytes as smallest element of storage.
 	 * If there are N oops in the heap, then we need ((N + 7) / 8) bytes
 	 * for a bit array with 32 elements. We need to reserve space for
@@ -74,7 +61,7 @@ static void ensure_metadata(void) {
 	memory->offsets_size = offsets_size;
 }
 
-static void grow_heap(st_uint min_size_oops) {
+void grow_heap(st_uint min_size_oops) {
 	/* we grow the heap by roughly 0.25 or size_oops, whichever is larger */
 	
 	st_uint size, grow_size;
@@ -187,70 +174,83 @@ void st_memory_recycle_context(st_oop context) {
 	memory->free_context = context;
 }
 
-static inline bool get_bit(st_uchar *bits, st_uint index) {
+bool get_bit(st_uchar *bits, st_uint index) {
 	return (bits[index >> 3] >> (index & 0x7)) & 1;
 }
 
-static inline void set_bit(st_uchar *bits, st_uint index) {
+void set_bit(st_uchar *bits, st_uint index) {
 	bits[index >> 3] |= 1 << (index & 0x7);
 }
 
-static inline st_uint bit_index(st_oop object) {
+st_uint bit_index(st_oop object) {
 	return st_detag_pointer(object) - memory->start;
 }
 
-static inline bool ismarked(st_oop object) {
+bool ismarked(st_oop object) {
 	return get_bit(memory->mark_bits, bit_index(object));
 }
 
-static inline void set_marked(st_oop object) {
+void set_marked(st_oop object) {
 	set_bit(memory->mark_bits, bit_index(object));
 }
 
-static inline bool get_alloc_bit(st_oop object) {
+bool get_alloc_bit(st_oop object) {
 	return get_bit(memory->alloc_bits, bit_index(object));
 }
 
-static inline void set_alloc_bit(st_oop object) {
+void set_alloc_bit(st_oop object) {
 	set_bit(memory->alloc_bits, bit_index(object));
 }
 
-static inline st_uint get_block_index(st_oop *object) {
+st_uint get_block_index(st_oop *object) {
 	return (object - memory->start) / BLOCK_SIZE_OOPS;
 }
 
-static st_uint object_size(st_oop object) {
+st_uint object_size(st_oop object) {
 	switch (st_object_format(object)) {
-		case ST_FORMAT_OBJECT: return ST_SIZE_OOPS (struct st_header) + st_object_instance_size(object);
-		case ST_FORMAT_FLOAT: return ST_SIZE_OOPS (struct st_float);
-		case ST_FORMAT_LARGE_INTEGER: return ST_SIZE_OOPS (struct st_large_integer);
-		case ST_FORMAT_HANDLE: return ST_SIZE_OOPS (struct st_handle);
-		case ST_FORMAT_ARRAY: return ST_SIZE_OOPS (struct st_arrayed_object) + st_smi_value(st_arrayed_object_size(object));
-		case ST_FORMAT_BYTE_ARRAY: return ST_SIZE_OOPS (struct st_arrayed_object) + ST_ROUNDED_UP_OOPS (st_smi_value(st_arrayed_object_size(object)) + 1);
+		case ST_FORMAT_OBJECT:
+			return ST_SIZE_OOPS (struct st_header) + st_object_instance_size(object);
+		case ST_FORMAT_FLOAT:
+			return ST_SIZE_OOPS (struct st_float);
+		case ST_FORMAT_LARGE_INTEGER:
+			return ST_SIZE_OOPS (struct st_large_integer);
+		case ST_FORMAT_HANDLE:
+			return ST_SIZE_OOPS (struct st_handle);
+		case ST_FORMAT_ARRAY:
+			return ST_SIZE_OOPS (struct st_arrayed_object) + st_smi_value(st_arrayed_object_size(object));
+		case ST_FORMAT_BYTE_ARRAY:
+			return ST_SIZE_OOPS (struct st_arrayed_object) +
+			       ST_ROUNDED_UP_OOPS (st_smi_value(st_arrayed_object_size(object)) + 1);
 		case ST_FORMAT_WORD_ARRAY:
 			return ST_SIZE_OOPS (struct st_arrayed_object)
 			       + (st_smi_value(st_arrayed_object_size(object)) / (sizeof(st_oop) / sizeof(st_uint)));
-		case ST_FORMAT_FLOAT_ARRAY: return ST_SIZE_OOPS (struct st_arrayed_object) + (st_smi_value(st_arrayed_object_size(object)) * ST_SIZE_OOPS (double));
+		case ST_FORMAT_FLOAT_ARRAY:
+			return ST_SIZE_OOPS (struct st_arrayed_object) +
+			       (st_smi_value(st_arrayed_object_size(object)) * ST_SIZE_OOPS (double));
 		case ST_FORMAT_INTEGER_ARRAY:
 			/* object format not used yet */
 			abort();
 			break;
-		case ST_FORMAT_CONTEXT: return ST_SIZE_OOPS (struct st_header) + st_object_instance_size(object) + 32;
+		case ST_FORMAT_CONTEXT:
+			return ST_SIZE_OOPS (struct st_header) + st_object_instance_size(object) + 32;
 	}
 	/* should not reach */
 	abort();
 	return 0;
 }
 
-static void object_contents(st_oop object, st_oop **oops, st_uint *size) {
+void object_contents(st_oop object, st_oop **oops, st_uint *size) {
 	switch (st_object_format(object)) {
-		case ST_FORMAT_OBJECT: *oops = ST_OBJECT_FIELDS (object);
+		case ST_FORMAT_OBJECT:
+			*oops = ST_OBJECT_FIELDS (object);
 			*size = st_object_instance_size(object);
 			break;
-		case ST_FORMAT_ARRAY: *oops = st_array_elements(object);
+		case ST_FORMAT_ARRAY:
+			*oops = st_array_elements(object);
 			*size = st_smi_value(st_arrayed_object_size(object));
 			break;
-		case ST_FORMAT_CONTEXT: *oops = ST_OBJECT_FIELDS (object);
+		case ST_FORMAT_CONTEXT:
+			*oops = ST_OBJECT_FIELDS (object);
 			*size = st_object_instance_size(object) + st_smi_value(ST_CONTEXT_PART_SP (object));
 			break;
 		case ST_FORMAT_FLOAT:
@@ -259,7 +259,8 @@ static void object_contents(st_oop object, st_oop **oops, st_uint *size) {
 		case ST_FORMAT_BYTE_ARRAY:
 		case ST_FORMAT_WORD_ARRAY:
 		case ST_FORMAT_FLOAT_ARRAY:
-		case ST_FORMAT_INTEGER_ARRAY: *oops = NULL;
+		case ST_FORMAT_INTEGER_ARRAY:
+			*oops = NULL;
 			*size = 0;
 			break;
 		default:
@@ -268,7 +269,7 @@ static void object_contents(st_oop object, st_oop **oops, st_uint *size) {
 	}
 }
 
-static inline st_uint compute_ordinal_number(st_memory *memory, st_oop ref) {
+st_uint compute_ordinal_number(st_memory *memory, st_oop ref) {
 	st_uint i, k, ordinal;
 	
 	ordinal = 0;
@@ -285,7 +286,7 @@ static inline st_uint compute_ordinal_number(st_memory *memory, st_oop ref) {
 	}
 }
 
-static inline st_oop remap_oop(st_oop ref) {
+st_oop remap_oop(st_oop ref) {
 	st_uint b, i = 0, j = 0;
 	st_uint ordinal;
 	st_oop *offset;
@@ -310,7 +311,7 @@ static inline st_oop remap_oop(st_oop ref) {
 	return 0;
 }
 
-static void st_memory_remap(void) {
+void st_memory_remap(void) {
 	/* Remaps all object references in the heap */
 	st_oop *oops, *p;
 	st_uint size;
@@ -326,12 +327,12 @@ static void st_memory_remap(void) {
 	}
 }
 
-static inline void basic_finalize(st_oop object) {
+void basic_finalize(st_oop object) {
 	if (ST_UNLIKELY (st_object_format(object) == ST_FORMAT_LARGE_INTEGER))
 		mp_clear(st_large_integer_value(object));
 }
 
-static void st_memory_compact(void) {
+void st_memory_compact(void) {
 	st_oop *p, *from, *to;
 	st_uint size;
 	st_uint block = 0;
@@ -377,8 +378,7 @@ static void st_memory_compact(void) {
 			
 			to += size;
 			from += size;
-		}
-		else {
+		} else {
 			basic_finalize(st_tag_pointer(from));
 			if (st_object_is_hashed(st_tag_pointer(from)))
 				st_identity_hashtable_remove(memory->ht, st_tag_pointer(from));
@@ -393,14 +393,14 @@ static void st_memory_compact(void) {
 	memory->p = to;
 }
 
-static st_uint grow_marking_stack(void) {
+st_uint grow_marking_stack(void) {
 	memory->mark_stack_size *= 2;
 	memory->mark_stack = st_realloc(memory->mark_stack, memory->mark_stack_size);
 	
 	return memory->mark_stack_size / sizeof(st_oop);
 }
 
-static void st_memory_mark(void) {
+void st_memory_mark(void) {
 	st_oop object;
 	st_oop *oops, *stack;
 	st_uint size, stack_size, sp;
@@ -439,7 +439,7 @@ static void st_memory_mark(void) {
 	}
 }
 
-static void remap_machine(struct st_machine *machine) {
+void remap_machine(struct st_machine *machine) {
 	st_oop context, home;
 	
 	context = remap_oop(machine->context);
@@ -449,8 +449,7 @@ static void remap_machine(struct st_machine *machine) {
 		machine->receiver = ST_METHOD_CONTEXT_RECEIVER (home);
 		machine->temps = ST_METHOD_CONTEXT_STACK (home);
 		machine->stack = ST_BLOCK_CONTEXT_STACK (context);
-	}
-	else {
+	} else {
 		machine->method = ST_METHOD_CONTEXT_METHOD (context);
 		machine->receiver = ST_METHOD_CONTEXT_RECEIVER (context);
 		machine->temps = ST_METHOD_CONTEXT_STACK (context);
@@ -464,7 +463,7 @@ static void remap_machine(struct st_machine *machine) {
 	machine->new_method = remap_oop(machine->new_method);
 }
 
-static void remap_globals(void) {
+void remap_globals(void) {
 	st_uint i;
 	
 	for (i = 0; i < ST_N_ELEMENTS (__machine.globals); i++)
@@ -480,7 +479,7 @@ static void remap_globals(void) {
 	}
 }
 
-static void clear_metadata(void) {
+void clear_metadata(void) {
 	memset(memory->mark_bits, 0, memory->bits_size);
 	memset(memory->alloc_bits, 0, memory->bits_size);
 	memset(memory->offsets, 0, memory->offsets_size);
@@ -490,7 +489,7 @@ void st_memory_perform_gc(void) {
 	garbage_collect();
 }
 
-static void garbage_collect(void) {
+void garbage_collect(void) {
 	double times[3];
 	struct timespec tm;
 	

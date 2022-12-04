@@ -2,7 +2,7 @@
 
 FloatArray method!
 at: index
-	<primitive: 'FloatArray_at'>
+	<primitive: 'float_array_at'>
 	index isInteger
 		ifTrue: [ self error: 'out of bounds array access'].
 	index isNumber
@@ -11,7 +11,7 @@ at: index
 
 FloatArray method!
 at: index put: aFloat
-	<primitive: 'FloatArray_at_put'>
+	<primitive: 'float_array_at_put'>
 	aFloat isFloat
 		ifFalse: [ self error: 'improper store into a FloatArray object'].
 	index isInteger

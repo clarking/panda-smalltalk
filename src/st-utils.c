@@ -60,7 +60,7 @@ void st_free(st_pointer mem) {
 bool st_file_get_contents(const char *filename, char **buffer) {
 	
 	struct stat info;
-	size_t total;
+	long int total;
 	ssize_t count;
 	char *temp;
 	int fd;
@@ -186,8 +186,7 @@ void st_timespec_difference(struct timespec *start, struct timespec *end, struct
 	if ((end->tv_nsec - start->tv_nsec) < 0) {
 		diff->tv_sec = end->tv_sec - start->tv_sec - 1;
 		diff->tv_nsec = 1000000000 + end->tv_nsec - start->tv_nsec;
-	}
-	else {
+	} else {
 		diff->tv_sec = end->tv_sec - start->tv_sec;
 		diff->tv_nsec = end->tv_nsec - start->tv_nsec;
 	}
@@ -197,8 +196,7 @@ void st_timespec_add(struct timespec *t1, struct timespec *t2, struct timespec *
 	if ((t1->tv_nsec + t2->tv_nsec) >= 1000000000) {
 		result->tv_sec = t1->tv_sec + t2->tv_sec + 1;
 		result->tv_nsec = t1->tv_nsec + t2->tv_nsec - 1000000000;
-	}
-	else {
+	} else {
 		result->tv_sec = t1->tv_sec + t2->tv_sec;
 		result->tv_nsec = t1->tv_nsec + t2->tv_nsec;
 	}
@@ -310,8 +308,7 @@ char **st_strsplit(const char *string, const char *delimiter, int max_tokens) {
 		vector[0] = st_strdup("");
 		size++;
 		string += strlen(delimiter);
-	}
-	else {
+	} else {
 		vector = NULL;
 	}
 	
@@ -320,8 +317,7 @@ char **st_strsplit(const char *string, const char *delimiter, int max_tokens) {
 		if (strncmp(string, delimiter, strlen(delimiter)) == 0) {
 			token = st_strdup("");
 			string += strlen(delimiter);
-		}
-		else {
+		} else {
 			while (*string && strncmp(string, delimiter, strlen(delimiter)) != 0) {
 				string++;
 			}
@@ -337,8 +333,7 @@ char **st_strsplit(const char *string, const char *delimiter, int max_tokens) {
 				if (strcmp(string, delimiter) != 0) {
 					string += strlen(delimiter);
 				}
-			}
-			else {
+			} else {
 				token = st_strdup(c);
 			}
 		}
@@ -356,8 +351,7 @@ char **st_strsplit(const char *string, const char *delimiter, int max_tokens) {
 	if (vector == NULL) {
 		vector = (char **) st_malloc(2 * sizeof(vector));
 		vector[0] = NULL;
-	}
-	else if (size > 0) {
+	} else if (size > 0) {
 		vector[size - 1] = NULL;
 	}
 	
@@ -395,7 +389,7 @@ char *st_strndup(const char *str, size_t n) {
 }
 
 st_uint st_string_hash(const char *string) {
-	const signed char *p = (signed char *) string;
+	const signed char *p = (signed const char *) string;
 	st_uint h = *p;
 	
 	if (*p == 0)

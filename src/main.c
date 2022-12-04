@@ -51,9 +51,8 @@ static void read_compile_stdin(void) {
 			if (c == '\n') {
 				
 				string = st_strconcat("doIt ^ [", buffer, "] value", NULL);
-				
 				if (!st_compile_string(ST_UNDEFINED_OBJECT_CLASS, string, &error)) {
-					fprintf(stderr, "panda:%i: %s\n", error.line, error.message);
+					fprintf(stderr, "\n%i: %s\n", error.line, error.message);
 					exit(1);
 				}
 				
@@ -63,9 +62,8 @@ static void read_compile_stdin(void) {
 				value = ST_STACK_PEEK ((&__machine));
 				if (st_object_format(value) != ST_FORMAT_BYTE_ARRAY)
 					abort();
-				
 				if (__machine.success)
-					printf("\nresult: %s\n", (char *) st_byte_array_bytes(value));
+					printf("-> %s\n", (char *) st_byte_array_bytes(value));
 				
 				i = 0;
 				memset(buffer, 0x00, BUF_SIZE);
@@ -74,14 +72,13 @@ static void read_compile_stdin(void) {
 			buffer[i++] = c;
 			buffer[i] = '\0';
 		}
-	}
-	else {
+	} else {
 		if (!st_file_get_contents(globals.filepath, &string)) {
 			exit(1);
 		}
 		
 		if (!st_compile_string(ST_UNDEFINED_OBJECT_CLASS, string, &error)) {
-			fprintf(stderr, "panda: %s\n", error.message);
+			fprintf(stderr, "'byte_string%s\n", error.message);
 			exit(1);
 		}
 	}
@@ -105,9 +102,7 @@ static double get_elapsed_time(struct timeval before, struct timeval after) {
 }
 
 static void parse_args(int argc, char *argv[]) {
-	
 	globals.prog = argv[0];
-	
 	char *arg;
 	char *val = NULL;
 	int i;
@@ -119,22 +114,17 @@ static void parse_args(int argc, char *argv[]) {
 		
 		if (strcmp(arg, "-d") == 0) {
 			globals.filepath = val;
-		}
-		else if (strcmp(arg, "-h") == 0) {
+		} else if (strcmp(arg, "-h") == 0) {
 			print_help();
-		}
-		else if (strcmp(arg, "-r") == 0) {
+		} else if (strcmp(arg, "-r") == 0) {
 			globals.repl = true;
 			//break;
-		}
-		else if (strcmp(arg, "-V") == 0) {
+		} else if (strcmp(arg, "-V") == 0) {
 			st_set_verbose_mode(globals.verbose);
-		}
-		else if (strcmp(arg, "-v") == 0) {
+		} else if (strcmp(arg, "-v") == 0) {
 			printf(version);
 			exit(0);
-		}
-		else {
+		} else {
 			globals.filepath = val;
 		}
 	}
@@ -144,10 +134,8 @@ int main(int argc, char *argv[]) {
 	st_oop value;
 	init_globals();
 	parse_args(argc, argv);
-	
 	bootstrap_universe();
 	read_compile_stdin();
-	
 	return 0;
 }
 

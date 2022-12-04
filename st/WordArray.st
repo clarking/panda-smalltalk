@@ -2,10 +2,10 @@
 
 WordArray method!
 at: index
-	<primitive: 'WordArray_at'>
+	<primitive: 'word_array_at'>
 	self primitiveFailed!
 
 WordArray method!
 at: index put: anInteger
-	<primitive: 'WordArray_at_put'>
+	<primitive: 'word_array_at_put'>
 	self primitiveFailed!

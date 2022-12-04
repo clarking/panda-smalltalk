@@ -137,3 +137,56 @@ st_oop st_float_array_allocate(st_oop class, int size) {
 	
 	return object;
 }
+
+
+st_oop st_arrayed_object_size(st_oop object) {
+	return ST_ARRAYED_OBJECT (object)->size;
+}
+
+st_oop *st_array_elements(st_oop object) {
+	return ST_ARRAY (object)->elements;
+}
+
+st_oop st_array_at(st_oop object, int i) {
+	return (ST_ARRAY (object)->elements - 1)[i];
+}
+
+void st_array_at_put(st_oop object, int i, st_oop value) {
+	(ST_ARRAY (object)->elements - 1)[i] = value;
+}
+
+st_uint *st_word_array_elements(st_oop object) {
+	return ST_WORD_ARRAY (object)->elements;
+}
+
+st_uint st_word_array_at(st_oop object, int i) {
+	return ST_WORD_ARRAY (object)->elements[i - 1];
+}
+
+void st_word_array_at_put(st_oop object, int i, st_uint value) {
+	ST_WORD_ARRAY (object)->elements[i - 1] = value;
+}
+
+char *st_byte_array_bytes(st_oop object) {
+	return (char *) ST_BYTE_ARRAY (object)->bytes;
+}
+
+st_uchar st_byte_array_at(st_oop object, int i) {
+	return st_byte_array_bytes(object)[i - 1];
+}
+
+void st_byte_array_at_put(st_oop object, int i, st_uchar value) {
+	st_byte_array_bytes(object)[i - 1] = value;
+}
+
+double *st_float_array_elements(st_oop array) {
+	return ST_FLOAT_ARRAY (array)->elements;
+}
+
+double st_float_array_at(st_oop array, int i) {
+	return ST_FLOAT_ARRAY (array)->elements[i - 1];
+}
+
+void st_float_array_at_put(st_oop array, int i, double value) {
+	ST_FLOAT_ARRAY (array)->elements[i - 1] = value;
+}

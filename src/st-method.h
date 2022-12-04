@@ -143,7 +143,7 @@ static inline int st_method_get_large_context(st_oop method) {
 	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), LARGE);
 }
 
-static inline int st_method_get_primitive_index(st_oop method) {
+static inline int st_method_get_prim_index(st_oop method) {
 	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), PRIMITIVE);
 }
 
@@ -167,7 +167,7 @@ static inline void st_method_set_large_context(st_oop method, bool is_large) {
 	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), LARGE, is_large);
 }
 
-static inline void st_method_set_primitive_index(st_oop method, int index) {
+static void st_method_set_prim_index(st_oop method, int index) {
 	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), PRIMITIVE, index);
 }
 
@@ -179,6 +179,6 @@ static inline void st_method_set_literal_type(st_oop method, st_method_literal_t
 	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), LITERAL, literal_type);
 }
 
-static inline st_uchar *st_method_bytecode_bytes(st_oop method) {
+static inline char *st_method_bytecode_bytes(st_oop method) {
 	return st_byte_array_bytes(ST_METHOD_BYTECODE (method));
 }

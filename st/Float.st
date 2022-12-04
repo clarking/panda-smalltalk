@@ -55,32 +55,32 @@ isFloat
 
 Float method!
 < aNumber
-     <primitive: 'Float_lt'>
+     <primitive: 'float_lt'>
 	 ^ super < aNumber!
 
 Float method!
 > aNumber
-     <primitive: 'Float_gt'>
+     <primitive: 'float_gt'>
 	 ^ super > aNumber!
 
 Float method!
 <= aNumber
-     <primitive: 'Float_le'>
+     <primitive: 'float_le'>
 	 ^ super <= aNumber!
 
 Float method!
 >= aNumber
-     <primitive: 'Float_ge'>
+     <primitive: 'float_ge'>
 	 ^ super >= aNumber!
 
 Float method!
 = aNumber
-     <primitive: 'Float_eq'>
+     <primitive: 'float_eq'>
 	 ^ super = aNumber!
 
 Float method!
 ~= aNumber
-     <primitive: 'Float_ne'>
+     <primitive: 'float_ne'>
 	 ^ super ~= aNumber!
 
 
@@ -88,22 +88,22 @@ Float method!
 
 Float method!
 + aNumber
-     <primitive: 'Float_add'>
+     <primitive: 'float_add'>
 	 ^ super + aNumber!
 
 Float method!
 - aNumber
-     <primitive: 'Float_sub'>
+     <primitive: 'float_sub'>
 	 ^ super - aNumber!
 
 Float method!
 * aNumber
-     <primitive: 'Float_mul'>
+     <primitive: 'float_mul'>
 	 ^ super * aNumber!
 
 Float method!
 / aNumber
-	<primitive: 'Float_div'>
+	<primitive: 'float_div'>
 	^ super / aNumber!
 
 Float method!
@@ -112,15 +112,14 @@ Float method!
 
 Float method!
 hash
-	<primitive: 'Float_hash'>
+	<primitive: 'float_hash'>
 	self primitiveFailed!
-
 
 "printing"
 
 Float method!
 printStringBase: anInteger
-	<primitive: 'Float_printStringBase'>
+	<primitive: 'float_print_string_base'>
 	self primitiveFailed!
 
 Float method!
@@ -131,17 +130,17 @@ printOn: aStream base: anInteger
 
 Float method!
 truncated
-	<primitive: 'Float_truncated'>
+	<primitive: 'float_truncated'>
 	self primitiveFailed!
 
 Float method!
 fractionPart
-	<primitive: 'Float_fractionPart'>
+	<primitive: 'float_fractionPart'>
 	self primitiveFailed!
 
 Float method!
 integerPart
-	<primitive: 'Float_integerPart'>
+	<primitive: 'float_integerPart'>
 	self primitiveFailed!
 
 
@@ -149,50 +148,50 @@ integerPart
 
 Float method!
 sin
-	<primitive: 'Float_sin'>
+	<primitive: 'float_sin'>
 	self primitiveFailed!
 
 Float method!
 cos
-	<primitive: 'Float_cos'>
+	<primitive: 'float_cos'>
 	self primitiveFailed!
 
 Float method!
 tan
-	<primitive: 'Float_tan'>
+	<primitive: 'float_tan'>
 	self primitiveFailed!
 
 Float method!
 arcSin
-	<primitive: 'Float_arcSin'>
+	<primitive: 'float_arc_sin'>
 	self primitiveFailed!
 
 Float method!
 arcCos
-	<primitive: 'Float_arcSin'>
+	<primitive: 'float_arc_cos'>
 	self primitiveFailed!
 
 Float method!
 arcTan
-	<primitive: 'Float_arcTan'>
+	<primitive: 'float_arc_tan'>
 	self primitiveFailed!
 
 Float method!
 exp
-	<primitive: 'Float_exp'>
+	<primitive: 'float_exp'>
 	self primitiveFailed!
 
 Float method!
 ln
-	<primitive: 'Float_ln'>
+	<primitive: 'float_ln'>
 	self primitiveFailed!
 
 Float method!
 log
-	<primitive: 'Float_log'>
+	<primitive: 'float_log'>
 	self primitiveFailed!
 
 Float method!
 sqrt
-	<primitive: 'Float_sqrt'>
+	<primitive: 'float_sqrt'>
 	self primitiveFailed!

@@ -11,12 +11,12 @@ new: size
 
 Behavior method!
 basicNew
-	<primitive: 'Behavior_new'>
+	<primitive: 'behavior_new'>
 	self primitiveFailed!
 
 Behavior method!
 basicNew: anInteger
-	<primitive: 'Behavior_newSize'>
+	<primitive: 'behavior_new_size'>
 	self primitiveFailed!
 
 
@@ -115,7 +115,7 @@ inheritsFrom: aClass
 
 Behavior method!
 compile: aString
-	<primitive: 'Behavior_compile'>
+	<primitive: 'behavior_compile'>
 	self error: 'could not compile code'!
 
 "printing"
