@@ -13,10 +13,10 @@
 #define BUF_SIZE 10000
 
 int main(int argc, char *argv[]) {
-	st_compiler_error error;
-	st_lexer *lexer;
-	st_node *node;
-	st_oop method;
+	CompilerError error;
+	Lexer *lexer;
+	Node *node;
+	Oop method;
 	char buffer[BUF_SIZE];
 	char c;
 	int i = 0;

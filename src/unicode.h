@@ -9,7 +9,7 @@
 #pragma once
 
 #include <unistd.h>
-#include "st-types.h"
+#include "types.h"
 
 void st_unicode_init(void);
 

@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "st-types.h"
+#include "types.h"
 
-#define  ST_HANDLE(oop)       ((st_handle *) st_detag_pointer (oop))
+#define  ST_HANDLE(oop)       ((Handle *) st_detag_pointer (oop))
 #define  ST_HANDLE_VALUE(oop) (ST_HANDLE (oop)->value)
 
-st_oop st_handle_allocate(st_oop class);
+Oop st_handle_allocate(Oop class);
 

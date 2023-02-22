@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "st-types.h"
-#include "st-memory.h"
-#include "st-machine.h"
+#include "types.h"
+#include "memory.h"
+#include "machine.h"
 
 #define ST_NIL                        __machine.globals[0]
 #define ST_TRUE                       __machine.globals[1]
@@ -75,21 +75,21 @@
 #define ST_SELECTOR_NEW        __machine.selectors[22]
 #define ST_SELECTOR_NEW_ARG    __machine.selectors[23]
 
-extern st_memory *memory;
+extern ObjMemory *memory;
 
-st_oop class_new(st_format format, st_uint instance_size);
+Oop class_new(st_format format, st_uint instance_size);
 
-void add_global(const char *name, st_oop object);
+void add_global(const char *name, Oop object);
 
-void initialize_class(const char *name, const char *super_name, st_list *ivarnames);
+void initialize_class(const char *name, const char *super_name, List *ivarnames);
 
 void file_in_classes(void);
 
-st_oop create_nil_object(void);
+Oop create_nil_object(void);
 
 void init_specials(void);
 
-st_oop st_global_get(const char *name);
+Oop st_global_get(const char *name);
 
 void st_set_verbose_mode(bool verbose);
 

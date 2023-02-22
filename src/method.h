@@ -8,18 +8,18 @@
 
 #pragma once
 
-#include "st-types.h"
-#include "st-object.h"
-#include "st-array.h"
+#include "types.h"
+#include "object.h"
+#include "array.h"
 
 #define ST_METHOD(oop) ((struct st_method *) (st_detag_pointer (oop)))
 
 struct st_method {
-	struct st_header parent;
-	st_oop header;
-	st_oop bytecode;
-	st_oop literals;
-	st_oop selector;
+	struct ObjHeader parent;
+	Oop header;
+	Oop bytecode;
+	Oop literals;
+	Oop selector;
 };
 
 typedef enum {
@@ -131,54 +131,54 @@ enum {
 	_ST_METHOD_FLAG_MASK = ST_NTH_MASK (_ST_METHOD_FLAG_BITS),
 };
 
-static inline int st_method_get_temp_count(st_oop method) {
+static inline int st_method_get_temp_count(Oop method) {
 	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), TEMP);
 }
 
-static inline int st_method_get_arg_count(st_oop method) {
+static inline int st_method_get_arg_count(Oop method) {
 	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), ARG);
 }
 
-static inline int st_method_get_large_context(st_oop method) {
+static inline int st_method_get_large_context(Oop method) {
 	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), LARGE);
 }
 
-static inline int st_method_get_prim_index(st_oop method) {
+static inline int st_method_get_prim_index(Oop method) {
 	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), PRIMITIVE);
 }
 
-static inline st_method_flags st_method_get_flags(st_oop method) {
+static inline st_method_flags st_method_get_flags(Oop method) {
 	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), FLAG);
 }
 
-static inline void st_method_set_flags(st_oop method, st_method_flags flags) {
+static inline void st_method_set_flags(Oop method, st_method_flags flags) {
 	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), FLAG, flags);
 }
 
-static inline void st_method_set_arg_count(st_oop method, int count) {
+static inline void st_method_set_arg_count(Oop method, int count) {
 	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), ARG, count);
 }
 
-static inline void st_method_set_temp_count(st_oop method, int count) {
+static inline void st_method_set_temp_count(Oop method, int count) {
 	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), TEMP, count);
 }
 
-static inline void st_method_set_large_context(st_oop method, bool is_large) {
+static inline void st_method_set_large_context(Oop method, bool is_large) {
 	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), LARGE, is_large);
 }
 
-static void st_method_set_prim_index(st_oop method, int index) {
+static void st_method_set_prim_index(Oop method, int index) {
 	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), PRIMITIVE, index);
 }
 
-static inline void st_method_set_instvar_index(st_oop method, int index) {
+static inline void st_method_set_instvar_index(Oop method, int index) {
 	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), INSTVAR, index);
 }
 
-static inline void st_method_set_literal_type(st_oop method, st_method_literal_type literal_type) {
+static inline void st_method_set_literal_type(Oop method, st_method_literal_type literal_type) {
 	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), LITERAL, literal_type);
 }
 
-static inline char *st_method_bytecode_bytes(st_oop method) {
+static inline char *st_method_bytecode_bytes(Oop method) {
 	return st_byte_array_bytes(ST_METHOD_BYTECODE (method));
 }

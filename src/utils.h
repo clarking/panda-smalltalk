@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "st-types.h"
+#include "types.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -16,13 +16,13 @@
 #include <unistd.h>
 
 
-#define ST_BYTES_TO_OOPS(m) ((m) / sizeof (st_oop))
-#define ST_OOPS_TO_BYTES(m) ((m) * sizeof (st_oop))
+#define ST_BYTES_TO_OOPS(m) ((m) / sizeof (Oop))
+#define ST_OOPS_TO_BYTES(m) ((m) * sizeof (Oop))
 #define ST_ROUNDED_UP_OOPS(m) (ST_BYTES_TO_OOPS ((m) + ST_OOPS_TO_BYTES (1) - 1))
 
 #define ST_N_ELEMENTS(static_array)  (sizeof(static_array) / sizeof ((static_array) [0]))
 
-#define ST_SIZE_OOPS(type) (sizeof (type) / sizeof (st_oop))
+#define ST_SIZE_OOPS(type) (sizeof (type) / sizeof (Oop))
 
 #define ST_DIR_SEPARATOR   '/'
 #define ST_DIR_SEPARATOR_S "/"
@@ -64,22 +64,22 @@ enum {
 };
 
 static inline void
-st_oops_copy(st_oop *to, st_oop *from, st_uint count) {
-	memcpy(to, from, sizeof(st_oop) * count);
+st_oops_copy(Oop *to, Oop *from, st_uint count) {
+	memcpy(to, from, sizeof(Oop) * count);
 }
 
 static inline void
-st_oops_move(st_oop *to, st_oop *from, st_uint count) {
-	memmove(to, from, sizeof(st_oop) * count);
+st_oops_move(Oop *to, Oop *from, st_uint count) {
+	memmove(to, from, sizeof(Oop) * count);
 }
 
-st_pointer st_malloc(size_t size) ST_GNUC_MALLOC;
+void * st_malloc(size_t size) ST_GNUC_MALLOC;
 
-st_pointer st_malloc0(size_t size) ST_GNUC_MALLOC;
+void * st_malloc0(size_t size) ST_GNUC_MALLOC;
 
-st_pointer st_realloc(st_pointer mem, size_t size);
+void * st_realloc(void * mem, size_t size);
 
-void st_free(st_pointer mem);
+void st_free(void * mem);
 
 #define st_new(struct_type)  ((struct_type *) st_malloc  (sizeof (struct_type)))
 #define st_new0(struct_type) ((struct_type *) st_malloc0 (sizeof (struct_type)))
@@ -108,21 +108,21 @@ void st_timespec_difference(struct timespec *start, struct timespec *end, struct
 void st_timespec_add(struct timespec *t1, struct timespec *t2, struct timespec *result);
 
 
-typedef void (*st_list_foreach_func)(st_pointer data);
+typedef void (*st_list_foreach_func)(void * data);
 
-st_list *st_list_append(st_list *list, st_pointer data);
+List *st_list_append(List *list, void * data);
 
-st_list *st_list_prepend(st_list *list, st_pointer data);
+List *st_list_prepend(List *list, void * data);
 
-st_list *st_list_concat(st_list *list1, st_list *list2);
+List *st_list_concat(List *list1, List *list2);
 
-void st_list_foreach(st_list *list, st_list_foreach_func func);
+void st_list_foreach(List *list, st_list_foreach_func func);
 
-st_list *st_list_reverse(st_list *list);
+List *st_list_reverse(List *list);
 
-st_uint st_list_length(st_list *list);
+st_uint st_list_length(List *list);
 
-void st_list_destroy(st_list *list);
+void st_list_destroy(List *list);
 
 st_uint st_string_hash(const char *string);
 

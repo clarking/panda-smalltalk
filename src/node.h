@@ -8,39 +8,39 @@
 
 #pragma once
 
-#include "st-types.h"
-#include "st-utils.h"
+#include "types.h"
+#include "utils.h"
 
-void print_variable(st_node *node);
+void print_variable(Node *node);
 
-void print_object(st_oop object);
+void print_object(Oop object);
 
-void print_expression(st_node *expression);
+void print_expression(Node *expression);
 
-void print_tuple(st_oop tuple);
+void print_tuple(Oop tuple);
 
-void node_print_literal(st_node *node);
+void node_print_literal(Node *node);
 
-void print_return(st_node *node);
+void print_return(Node *node);
 
-void print_assign(st_node *node);
+void print_assign(Node *node);
 
 char **extract_keywords(char *selector);
 
-void print_method_node(st_node *node);
+void print_method_node(Node *node);
 
-void print_block(st_node *node);
+void print_block(Node *node);
 
-void print_message(st_node *node);
+void print_message(Node *node);
 
-st_node *st_node_new(st_node_type type);
+Node *st_node_new(NodeType type);
 
-st_node *st_node_list_append(st_node *list, st_node *node);
+Node *st_node_list_append(Node *list, Node *node);
 
-st_node *st_node_list_at(st_node *list, st_uint index);
+Node *st_node_list_at(Node *list, st_uint index);
 
-st_uint st_node_list_length(st_node *list);
+st_uint st_node_list_length(Node *list);
 
-void st_print_method_node(st_node *method);
+void st_print_method_node(Node *method);
 
-void st_node_destroy(st_node *node);
+void st_node_destroy(Node *node);

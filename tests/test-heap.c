@@ -11,7 +11,7 @@
 
 int main(int argc, char *argv[]) {
 	
-	st_heap *heap;
+	MemHeap *heap;
 	heap = st_heap_new(1024 * 1024 * 1024);
 	if (!heap)
 		abort();

@@ -10,16 +10,16 @@
 #include <string.h>
 #include <time.h>
 
-#include "st-types.h"
-#include "st-memory.h"
-#include "st-utils.h"
-#include "st-float.h"
-#include "st-large-integer.h"
-#include "st-object.h"
-#include "st-array.h"
-#include "st-context.h"
-#include "st-method.h"
-#include "st-handle.h"
+#include "types.h"
+#include "memory.h"
+#include "utils.h"
+#include "float.h"
+#include "large-integer.h"
+#include "object.h"
+#include "array.h"
+#include "context.h"
+#include "method.h"
+#include "handle.h"
 
 
 void timer_start(struct timespec *spec) {
@@ -32,7 +32,7 @@ void timer_stop(struct timespec *spec) {
 	st_timespec_difference(spec, &tmp, spec);
 }
 
-void verify(st_oop object) {
+void verify(Oop object) {
 	st_assert (st_object_is_mark(ST_OBJECT_MARK(object)));
 }
 
@@ -47,7 +47,7 @@ void ensure_metadata(void) {
 	
 	size = memory->end - memory->start;
 	bits_size = ((size + 7) / 8);
-	offsets_size = (size / BLOCK_SIZE_OOPS) * sizeof(st_oop *);
+	offsets_size = (size / BLOCK_SIZE_OOPS) * sizeof(Oop *);
 	
 	st_free(memory->mark_bits);
 	st_free(memory->alloc_bits);
@@ -65,24 +65,24 @@ void grow_heap(st_uint min_size_oops) {
 	/* we grow the heap by roughly 0.25 or size_oops, whichever is larger */
 	
 	st_uint size, grow_size;
-	st_heap *heap;
+	MemHeap *heap;
 	
 	heap = memory->heap;
 	size = heap->p - heap->start;
-	grow_size = MAX (size / 4, min_size_oops * sizeof(st_oop));
+	grow_size = MAX (size / 4, min_size_oops * sizeof(Oop));
 	
 	st_heap_grow(heap, grow_size);
 	
-	memory->start = (st_oop *) heap->start;
-	memory->end = (st_oop *) heap->p;
+	memory->start = (Oop *) heap->start;
+	memory->end = (Oop *) heap->p;
 	
 	ensure_metadata();
 }
 
-st_memory *st_memory_new(void) {
-	st_oop *ptr;
+ObjMemory *st_memory_new(void) {
+	Oop *ptr;
 	st_ulong size_bits;
-	st_heap *heap;
+	MemHeap *heap;
 	
 	heap = st_heap_new(RESERVED_SIZE);
 	if (!heap)
@@ -91,11 +91,11 @@ st_memory *st_memory_new(void) {
 	if (!st_heap_grow(heap, INITIAL_COMMIT_SIZE))
 		abort();
 	
-	memory = st_new0 (st_memory);
+	memory = st_new0 (ObjMemory);
 	
 	memory->heap = heap;
-	memory->start = (st_oop *) heap->start;
-	memory->end = (st_oop *) heap->p;
+	memory->start = (Oop *) heap->start;
+	memory->end = (Oop *) heap->p;
 	memory->p = memory->start;
 	
 	memory->roots = ptr_array_new(15);
@@ -124,16 +124,16 @@ void st_memory_destroy(void) {
 	st_free(memory);
 }
 
-void st_memory_add_root(st_oop object) {
-	ptr_array_append(memory->roots, (st_pointer) object);
+void st_memory_add_root(Oop object) {
+	ptr_array_append(memory->roots, (void *) object);
 }
 
-void st_memory_remove_root(st_oop object) {
-	ptr_array_remove_fast(memory->roots, (st_pointer) object);
+void st_memory_remove_root(Oop object) {
+	ptr_array_remove_fast(memory->roots, (void *) object);
 }
 
-st_oop st_memory_allocate(st_uint size) {
-	st_oop *chunk;
+Oop st_memory_allocate(st_uint size) {
+	Oop *chunk;
 	
 	st_assert (size >= 2);
 	
@@ -144,13 +144,13 @@ st_oop st_memory_allocate(st_uint size) {
 	
 	chunk = memory->p;
 	memory->p += size;
-	memory->counter += (size * sizeof(st_oop));
+	memory->counter += (size * sizeof(Oop));
 	
 	return st_tag_pointer(chunk);
 }
 
-st_oop st_memory_allocate_context(void) {
-	st_oop context;
+Oop st_memory_allocate_context(void) {
+	Oop context;
 	
 	if (ST_LIKELY (memory->free_context)) {
 		context = memory->free_context;
@@ -169,7 +169,7 @@ st_oop st_memory_allocate_context(void) {
 	return context;
 }
 
-void st_memory_recycle_context(st_oop context) {
+void st_memory_recycle_context(Oop context) {
 	ST_CONTEXT_PART_SENDER (context) = memory->free_context;
 	memory->free_context = context;
 }
@@ -182,64 +182,64 @@ void set_bit(st_uchar *bits, st_uint index) {
 	bits[index >> 3] |= 1 << (index & 0x7);
 }
 
-st_uint bit_index(st_oop object) {
+st_uint bit_index(Oop object) {
 	return st_detag_pointer(object) - memory->start;
 }
 
-bool ismarked(st_oop object) {
+bool ismarked(Oop object) {
 	return get_bit(memory->mark_bits, bit_index(object));
 }
 
-void set_marked(st_oop object) {
+void set_marked(Oop object) {
 	set_bit(memory->mark_bits, bit_index(object));
 }
 
-bool get_alloc_bit(st_oop object) {
+bool get_alloc_bit(Oop object) {
 	return get_bit(memory->alloc_bits, bit_index(object));
 }
 
-void set_alloc_bit(st_oop object) {
+void set_alloc_bit(Oop object) {
 	set_bit(memory->alloc_bits, bit_index(object));
 }
 
-st_uint get_block_index(st_oop *object) {
+st_uint get_block_index(Oop *object) {
 	return (object - memory->start) / BLOCK_SIZE_OOPS;
 }
 
-st_uint object_size(st_oop object) {
+st_uint object_size(Oop object) {
 	switch (st_object_format(object)) {
 		case ST_FORMAT_OBJECT:
-			return ST_SIZE_OOPS (struct st_header) + st_object_instance_size(object);
+			return ST_SIZE_OOPS (struct ObjHeader) + st_object_instance_size(object);
 		case ST_FORMAT_FLOAT:
 			return ST_SIZE_OOPS (struct st_float);
 		case ST_FORMAT_LARGE_INTEGER:
-			return ST_SIZE_OOPS (struct st_large_integer);
+			return ST_SIZE_OOPS (struct LargeInt);
 		case ST_FORMAT_HANDLE:
-			return ST_SIZE_OOPS (struct st_handle);
+			return ST_SIZE_OOPS (struct Handle);
 		case ST_FORMAT_ARRAY:
-			return ST_SIZE_OOPS (struct st_arrayed_object) + st_smi_value(st_arrayed_object_size(object));
+			return ST_SIZE_OOPS (struct ArrayedObject) + st_smi_value(st_arrayed_object_size(object));
 		case ST_FORMAT_BYTE_ARRAY:
-			return ST_SIZE_OOPS (struct st_arrayed_object) +
+			return ST_SIZE_OOPS (struct ArrayedObject) +
 			       ST_ROUNDED_UP_OOPS (st_smi_value(st_arrayed_object_size(object)) + 1);
 		case ST_FORMAT_WORD_ARRAY:
-			return ST_SIZE_OOPS (struct st_arrayed_object)
-			       + (st_smi_value(st_arrayed_object_size(object)) / (sizeof(st_oop) / sizeof(st_uint)));
+			return ST_SIZE_OOPS (struct ArrayedObject)
+			       + (st_smi_value(st_arrayed_object_size(object)) / (sizeof(Oop) / sizeof(st_uint)));
 		case ST_FORMAT_FLOAT_ARRAY:
-			return ST_SIZE_OOPS (struct st_arrayed_object) +
+			return ST_SIZE_OOPS (struct ArrayedObject) +
 			       (st_smi_value(st_arrayed_object_size(object)) * ST_SIZE_OOPS (double));
 		case ST_FORMAT_INTEGER_ARRAY:
 			/* object format not used yet */
 			abort();
 			break;
 		case ST_FORMAT_CONTEXT:
-			return ST_SIZE_OOPS (struct st_header) + st_object_instance_size(object) + 32;
+			return ST_SIZE_OOPS (struct ObjHeader) + st_object_instance_size(object) + 32;
 	}
 	/* should not reach */
 	abort();
 	return 0;
 }
 
-void object_contents(st_oop object, st_oop **oops, st_uint *size) {
+void object_contents(Oop object, Oop **oops, st_uint *size) {
 	switch (st_object_format(object)) {
 		case ST_FORMAT_OBJECT:
 			*oops = ST_OBJECT_FIELDS (object);
@@ -269,7 +269,7 @@ void object_contents(st_oop object, st_oop **oops, st_uint *size) {
 	}
 }
 
-st_uint compute_ordinal_number(st_memory *memory, st_oop ref) {
+st_uint compute_ordinal_number(ObjMemory *memory, Oop ref) {
 	st_uint i, k, ordinal;
 	
 	ordinal = 0;
@@ -286,10 +286,10 @@ st_uint compute_ordinal_number(st_memory *memory, st_oop ref) {
 	}
 }
 
-st_oop remap_oop(st_oop ref) {
+Oop remap_oop(Oop ref) {
 	st_uint b, i = 0, j = 0;
 	st_uint ordinal;
-	st_oop *offset;
+	Oop *offset;
 	
 	if (!st_object_is_heap(ref) || ref == ST_NIL)
 		return ref;
@@ -313,7 +313,7 @@ st_oop remap_oop(st_oop ref) {
 
 void st_memory_remap(void) {
 	/* Remaps all object references in the heap */
-	st_oop *oops, *p;
+	Oop *oops, *p;
 	st_uint size;
 	
 	p = memory->start;
@@ -327,13 +327,13 @@ void st_memory_remap(void) {
 	}
 }
 
-void basic_finalize(st_oop object) {
+void basic_finalize(Oop object) {
 	if (ST_UNLIKELY (st_object_format(object) == ST_FORMAT_LARGE_INTEGER))
 		mp_clear(st_large_integer_value(object));
 }
 
 void st_memory_compact(void) {
-	st_oop *p, *from, *to;
+	Oop *p, *from, *to;
 	st_uint size;
 	st_uint block = 0;
 	
@@ -388,7 +388,7 @@ void st_memory_compact(void) {
 	
 	out:
 	
-	memory->bytes_collected = (memory->p - to) * sizeof(st_oop);
+	memory->bytes_collected = (memory->p - to) * sizeof(Oop);
 	memory->bytes_allocated -= memory->bytes_collected;
 	memory->p = to;
 }
@@ -397,20 +397,20 @@ st_uint grow_marking_stack(void) {
 	memory->mark_stack_size *= 2;
 	memory->mark_stack = st_realloc(memory->mark_stack, memory->mark_stack_size);
 	
-	return memory->mark_stack_size / sizeof(st_oop);
+	return memory->mark_stack_size / sizeof(Oop);
 }
 
 void st_memory_mark(void) {
-	st_oop object;
-	st_oop *oops, *stack;
+	Oop object;
+	Oop *oops, *stack;
 	st_uint size, stack_size, sp;
 	
 	sp = 0;
 	stack = memory->mark_stack;
-	stack_size = memory->mark_stack_size / sizeof(st_oop);
+	stack_size = memory->mark_stack_size / sizeof(Oop);
 	
 	for (st_uint i = 0; i < memory->roots->length; i++)
-		stack[sp++] = (st_oop) ptr_array_get_index(memory->roots, i);
+		stack[sp++] = (Oop) ptr_array_get_index(memory->roots, i);
 	stack[sp++] = __machine.context;
 	
 	while (sp > 0) {
@@ -440,7 +440,7 @@ void st_memory_mark(void) {
 }
 
 void remap_machine(struct st_machine *machine) {
-	st_oop context, home;
+	Oop context, home;
 	
 	context = remap_oop(machine->context);
 	if (ST_OBJECT_CLASS (context) == ST_BLOCK_CONTEXT_CLASS) {
@@ -475,7 +475,7 @@ void remap_globals(void) {
 	for (i = 0; i < memory->roots->length; i++) {
 		ptr_array_set_index(memory->roots,
 				i,
-				(st_pointer) remap_oop((st_oop) ptr_array_get_index(memory->roots, i)));
+				(void *) remap_oop((Oop) ptr_array_get_index(memory->roots, i)));
 	}
 }
 
@@ -539,6 +539,6 @@ void garbage_collect(void) {
 			times[0], times[1], times[2]);
 }
 
-st_oop st_memory_remap_reference(st_oop reference) {
+Oop st_memory_remap_reference(Oop reference) {
 	return remap_oop(reference);
 }

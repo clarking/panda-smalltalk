@@ -8,8 +8,8 @@
 
 #include <string.h>
 
-#include "st-input.h"
-#include "st-utils.h"
+#include "input.h"
+#include "utils.h"
 
 static char *filter_double_bangs(const char *chunk) {
 	st_uint size, i = 0, count = 0;
@@ -43,7 +43,7 @@ static char *filter_double_bangs(const char *chunk) {
 	return buf;
 }
 
-char *st_input_next_chunk(st_input *input) {
+char *st_input_next_chunk(LexInput *input) {
 	char *chunk_filtered, *chunk = NULL;
 	st_uint start;
 	
@@ -72,23 +72,23 @@ char *st_input_next_chunk(st_input *input) {
 	return NULL;
 }
 
-void st_input_destroy(st_input *input) {
+void st_input_destroy(LexInput *input) {
 	st_assert (input != NULL);
 	st_free(input->text);
 	st_free(input);
 }
 
-st_uint st_input_get_line(st_input *input) {
+st_uint st_input_get_line(LexInput *input) {
 	st_assert (input != NULL);
 	return input->line;
 }
 
-st_uint st_input_get_column(st_input *input) {
+st_uint st_input_get_column(LexInput *input) {
 	st_assert (input != NULL);
 	return input->column;
 }
 
-char st_input_look_ahead(st_input *input, int i) {
+char st_input_look_ahead(LexInput *input, int i) {
 	st_assert (input != NULL);
 	if (ST_UNLIKELY (i == 0))
 		return 0x0000;
@@ -105,21 +105,21 @@ char st_input_look_ahead(st_input *input, int i) {
 	return input->text[input->p + i - 1];
 }
 
-void st_input_mark(st_input *input) {
+void st_input_mark(LexInput *input) {
 	st_assert (input != NULL);
-	input->marker.p = input->p;
-	input->marker.line = input->line;
-	input->marker.column = input->column;
+	input->InputMarker.p = input->p;
+	input->InputMarker.line = input->line;
+	input->InputMarker.column = input->column;
 }
 
-void st_input_rewind(st_input *input) {
+void st_input_rewind(LexInput *input) {
 	st_assert (input != NULL);
-	st_input_seek(input, input->marker.p);
-	input->line = input->marker.line;
-	input->column = input->marker.column;
+	st_input_seek(input, input->InputMarker.p);
+	input->line = input->InputMarker.line;
+	input->column = input->InputMarker.column;
 }
 
-void st_input_seek(st_input *input, st_uint index) {
+void st_input_seek(LexInput *input, st_uint index) {
 	st_assert (input != NULL);
 	if (index <= input->p)
 		input->p = index;
@@ -128,7 +128,7 @@ void st_input_seek(st_input *input, st_uint index) {
 		st_input_consume(input);
 }
 
-void st_input_consume(st_input *input) {
+void st_input_consume(LexInput *input) {
 	st_assert (input != NULL);
 	if (input->p < input->n) {
 		input->column++;
@@ -142,12 +142,12 @@ void st_input_consume(st_input *input) {
 	}
 }
 
-st_uint st_input_size(st_input *input) {
+st_uint st_input_size(LexInput *input) {
 	st_assert (input != NULL);
 	return input->n;
 }
 
-char *st_input_range(st_input *input, st_uint start, st_uint end) {
+char *st_input_range(LexInput *input, st_uint start, st_uint end) {
 	char *buf;
 	st_uint len;
 	
@@ -159,25 +159,25 @@ char *st_input_range(st_input *input, st_uint start, st_uint end) {
 	return buf;
 }
 
-st_uint st_input_index(st_input *input) {
+st_uint st_input_index(LexInput *input) {
 	st_assert (input != NULL);
 	return input->p;
 }
 
-static void initialize_state(st_input *input, const char *string) {
+static void initialize_state(LexInput *input, const char *string) {
 	input->text = (char *) string;
 	input->n = strlen(string);
 	input->line = 1;
 	input->column = 1;
-	input->marker.p = 0;
-	input->marker.line = 0;
-	input->marker.column = 0;
+	input->InputMarker.p = 0;
+	input->InputMarker.line = 0;
+	input->InputMarker.column = 0;
 }
 
-st_input *st_input_new(const char *string) {
-	st_input *input;
+LexInput *st_input_new(const char *string) {
+	LexInput *input;
 	st_assert (string != NULL);
-	input = st_new0 (st_input);
+	input = st_new0 (LexInput);
 	initialize_state(input, strdup(string));
 	return input;
 }

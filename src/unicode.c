@@ -7,8 +7,8 @@
  */
 
 #include <string.h>
-#include "st-unicode.h"
-#include "st-utils.h"
+#include "unicode.h"
+#include "utils.h"
 
 st_unichar st_utf8_get_unichar(const char *p) {
 	st_unichar ch;

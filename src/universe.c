@@ -9,25 +9,25 @@
 
 #include <string.h>
 
-#include "st-types.h"
-#include "st-utils.h"
-#include "st-object.h"
-#include "st-behavior.h"
-#include "st-array.h"
-#include "st-small-integer.h"
-#include "st-dictionary.h"
-#include "st-symbol.h"
-#include "st-universe.h"
-#include "st-compiler.h"
-#include "st-memory.h"
-#include "st-parser.h"
-#include "st-machine.h"
+#include "types.h"
+#include "utils.h"
+#include "object.h"
+#include "behavior.h"
+#include "array.h"
+#include "small-integer.h"
+#include "dictionary.h"
+#include "symbol.h"
+#include "universe.h"
+#include "compiler.h"
+#include "memory.h"
+#include "parser.h"
+#include "machine.h"
 
 static bool verbose_mode = false;
 
-st_memory *memory = NULL;
+ObjMemory *memory = NULL;
 
-st_oop st_global_get(const char *name) {
+Oop st_global_get(const char *name) {
 	st_assert (name != NULL);
 	return st_dictionary_at(ST_GLOBALS, st_symbol_new(name));
 }
@@ -44,10 +44,10 @@ enum {
 	INSTANCE_SIZE_BLOCK_CONTEXT = 6
 };
 
-st_oop class_new(st_format format, st_uint instance_size) {
-	st_oop class;
+Oop class_new(st_format format, st_uint instance_size) {
+	Oop class;
 	
-	class = st_memory_allocate(ST_SIZE_OOPS (struct st_class));
+	class = st_memory_allocate(ST_SIZE_OOPS (struct Class));
 	
 	ST_OBJECT_MARK (class) = 0 | ST_MARK_TAG;
 	ST_OBJECT_CLASS (class) = ST_NIL;
@@ -63,8 +63,8 @@ st_oop class_new(st_format format, st_uint instance_size) {
 	return class;
 }
 
-void add_global(const char *name, st_oop object) {
-	st_oop symbol;
+void add_global(const char *name, Oop object) {
+	Oop symbol;
 	
 	// sanity check for symbol interning
 	st_assert (st_symbol_new(name) == st_symbol_new(name));
@@ -76,9 +76,9 @@ void add_global(const char *name, st_oop object) {
 	st_assert (st_dictionary_at(ST_GLOBALS, symbol) == object);
 }
 
-void initialize_class(const char *name, const char *super_name, st_list *ivarnames) {
-	st_oop metaclass, class, superclass;
-	st_oop names;
+void initialize_class(const char *name, const char *super_name, List *ivarnames) {
+	Oop metaclass, class, superclass;
+	Oop names;
 	st_uint i = 1;
 	
 	if (streq (name, "Object") && streq (super_name, "nil")) {
@@ -120,7 +120,7 @@ void initialize_class(const char *name, const char *super_name, st_list *ivarnam
 	names = ST_NIL;
 	if (st_list_length(ivarnames) != 0) {
 		names = st_object_new_arrayed(ST_ARRAY_CLASS, st_list_length(ivarnames));
-		for (st_list *l = ivarnames; l; l = l->next)
+		for (List *l = ivarnames; l; l = l->next)
 			st_array_at_put(names, i++, st_symbol_new(l->data));
 		ST_BEHAVIOR_INSTANCE_VARIABLES (class) = names;
 	}
@@ -198,8 +198,8 @@ void file_in_classes(void) {
 	}
 }
 
-st_oop create_nil_object(void) {
-	st_oop nil;
+Oop create_nil_object(void) {
+	Oop nil;
 	nil = st_memory_allocate(NIL_SIZE_OOPS);
 	ST_OBJECT_MARK (nil) = 0 | ST_MARK_TAG;
 	ST_OBJECT_CLASS (nil) = nil;
@@ -241,7 +241,7 @@ void init_specials(void) {
 }
 
 void bootstrap_universe(void) {
-	st_oop st_object_class_, st_class_class_;
+	Oop st_object_class_, st_class_class_;
 	st_memory_new();
 	ST_NIL = create_nil_object();
 	st_object_class_ = class_new(ST_FORMAT_OBJECT, 0);

@@ -6,15 +6,15 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include "st-behavior.h"
-#include "st-object.h"
-#include "st-universe.h"
-#include "st-array.h"
-#include "st-handle.h"
+#include "behavior.h"
+#include "object.h"
+#include "universe.h"
+#include "array.h"
+#include "handle.h"
 
-st_list *st_behavior_all_instance_variables(st_oop class) {
-	st_list *list = NULL;
-	st_oop names;
+List *st_behavior_all_instance_variables(Oop class) {
+	List *list = NULL;
+	Oop names;
 	int size;
 	
 	if (class == ST_NIL)
@@ -24,14 +24,14 @@ st_list *st_behavior_all_instance_variables(st_oop class) {
 	if (names != ST_NIL) {
 		size = st_smi_value(st_arrayed_object_size(names));
 		for (int i = 1; i <= size; i++)
-			list = st_list_prepend(list, (st_pointer) st_strdup(st_byte_array_bytes(st_array_at(names, i))));
+			list = st_list_prepend(list, (void *) st_strdup(st_byte_array_bytes(st_array_at(names, i))));
 	}
 	
 	return st_list_concat(st_behavior_all_instance_variables(ST_BEHAVIOR_SUPERCLASS(class)),
 			st_list_reverse(list));
 }
 
-st_oop st_object_new(st_oop class) {
+Oop st_object_new(Oop class) {
 	switch (st_smi_value(ST_BEHAVIOR_FORMAT(class))) {
 		case ST_FORMAT_OBJECT:
 			return st_object_allocate(class);
@@ -48,7 +48,7 @@ st_oop st_object_new(st_oop class) {
 	}
 }
 
-st_oop st_object_new_arrayed(st_oop class, int size) {
+Oop st_object_new_arrayed(Oop class, int size) {
 	switch (st_smi_value(ST_BEHAVIOR_FORMAT (class))) {
 		case ST_FORMAT_ARRAY:
 			return st_array_allocate(class, size);

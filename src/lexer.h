@@ -9,43 +9,43 @@
 #pragma once
 
 #include <stdbool.h>
-#include "st-types.h"
+#include "types.h"
 
-typedef struct st_lexer st_lexer;
-typedef struct st_token st_token;
+typedef struct Lexer Lexer;
+typedef struct Token Token;
 
 
-st_lexer *st_lexer_new(const char *string);
+Lexer *st_lexer_new(const char *string);
 
-st_token *st_lexer_next_token(st_lexer *lexer);
+Token *st_lexer_next_token(Lexer *lexer);
 
-st_token *st_lexer_current_token(st_lexer *lexer);
+Token *st_lexer_current_token(Lexer *lexer);
 
-void st_lexer_destroy(st_lexer *lexer);
+void st_lexer_destroy(Lexer *lexer);
 
-char st_lexer_error_char(st_lexer *lexer);
+char st_lexer_error_char(Lexer *lexer);
 
-st_uint st_lexer_error_line(st_lexer *lexer);
+st_uint st_lexer_error_line(Lexer *lexer);
 
-st_uint st_lexer_error_column(st_lexer *lexer);
+st_uint st_lexer_error_column(Lexer *lexer);
 
-char *st_lexer_error_message(st_lexer *lexer);
+char *st_lexer_error_message(Lexer *lexer);
 
-void st_lexer_filter_comments(st_lexer *lexer, bool filter);
+void st_lexer_filter_comments(Lexer *lexer, bool filter);
 
-st_token_type st_token_get_type(st_token *token);
+TokenType st_token_get_type(Token *token);
 
-char *st_token_get_text(st_token *token);
+char *st_token_get_text(Token *token);
 
-st_uint st_token_get_line(st_token *token);
+st_uint st_token_get_line(Token *token);
 
-st_uint st_token_get_column(st_token *token);
+st_uint st_token_get_column(Token *token);
 
-bool st_number_token_negative(st_token *token);
+bool st_number_token_negative(Token *token);
 
-char *st_number_token_number(st_token *token);
+char *st_number_token_number(Token *token);
 
-st_uint st_number_token_radix(st_token *token);
+st_uint st_number_token_radix(Token *token);
 
-int st_number_token_exponent(st_token *token);
+int st_number_token_exponent(Token *token);
 

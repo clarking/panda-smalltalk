@@ -8,21 +8,22 @@
 
 #include <string.h>
 
-#include "st-array.h"
-#include "st-universe.h"
-#include "st-utils.h"
+#include "array.h"
+#include "universe.h"
+#include "utils.h"
+#include "types.h"
 
-st_oop st_array_allocate(st_oop class, st_uint size) {
-	st_oop array;
-	st_oop *elements;
+Oop st_array_allocate(Oop class, st_uint size) {
+	Oop array;
+	Oop *elements;
 	
 	st_assert (size >= 0);
 	
-	array = st_memory_allocate(ST_SIZE_OOPS (struct st_array) + size);
+	array = st_memory_allocate(ST_SIZE_OOPS (Array) + size);
 	if (array == 0) {
 		st_memory_perform_gc();
 		class = st_memory_remap_reference(class);
-		array = st_memory_allocate(ST_SIZE_OOPS (struct st_array) + size);
+		array = st_memory_allocate(ST_SIZE_OOPS (Array) + size);
 		st_assert (array != 0);
 	}
 	st_object_initialize_header(array, class);
@@ -36,20 +37,20 @@ st_oop st_array_allocate(st_oop class, st_uint size) {
 }
 
 /* ByteArray */
-st_oop st_byte_array_allocate(st_oop class, int size) {
+Oop st_byte_array_allocate(Oop class, int size) {
 	st_uint size_oops;
-	st_oop array;
+	Oop array;
 	
 	st_assert (size >= 0);
 	
 	/* add 1 byte for NULL terminator. Allows toll-free bridging with C string function */
 	size_oops = ST_ROUNDED_UP_OOPS (size + 1);
 	
-	array = st_memory_allocate(ST_SIZE_OOPS (struct st_byte_array) + size_oops);
+	array = st_memory_allocate(ST_SIZE_OOPS (ByteArray) + size_oops);
 	if (array == 0) {
 		st_memory_perform_gc();
 		class = st_memory_remap_reference(class);
-		array = st_memory_allocate(ST_SIZE_OOPS (struct st_array) + size_oops);
+		array = st_memory_allocate(ST_SIZE_OOPS (Array) + size_oops);
 		st_assert (array != 0);
 	}
 	
@@ -61,7 +62,7 @@ st_oop st_byte_array_allocate(st_oop class, int size) {
 	return array;
 }
 
-bool st_byte_array_equal(st_oop object, st_oop other) {
+bool st_byte_array_equal(Oop object, Oop other) {
 	int size, size_other;
 	
 	if (st_object_class(other) != ST_BYTE_ARRAY_CLASS &&
@@ -78,30 +79,30 @@ bool st_byte_array_equal(st_oop object, st_oop other) {
 	return memcmp(st_byte_array_bytes(object), st_byte_array_bytes(other), size) == 0;
 }
 
-st_uint st_byte_array_hash(st_oop object) {
+st_uint st_byte_array_hash(Oop object) {
 	return st_string_hash((char *) st_byte_array_bytes(object));
 }
 
 /* WordArray */
-st_oop st_word_array_allocate(st_oop class, int size) {
-	st_oop array;
+Oop st_word_array_allocate(Oop class, int size) {
+	Oop array;
 	int size_oops;
 	st_uint *elements;
 	
-	st_assert (size >= 0);
+	st_assert(size >= 0);
 	
-	size_oops = size / (sizeof(st_oop) / sizeof(st_uint));
+	size_oops = size / (sizeof(Oop) / sizeof(st_uint));
 	
-	array = st_memory_allocate(ST_SIZE_OOPS (struct st_word_array) + size_oops);
+	array = st_memory_allocate(ST_SIZE_OOPS (WordArray) + size_oops);
 	if (array == 0) {
 		st_memory_perform_gc();
 		class = st_memory_remap_reference(class);
-		array = st_memory_allocate(ST_SIZE_OOPS (struct st_array) + size_oops);
-		st_assert (array != 0);
+		array = st_memory_allocate(ST_SIZE_OOPS (Array) + size_oops);
+		st_assert(array != 0);
 	}
 	st_object_initialize_header(array, class);
 	
-	ST_ARRAYED_OBJECT (array)->size = st_smi_new(size);
+	ST_ARRAYED_OBJECT(array)->size = st_smi_new(size);
 	elements = st_word_array_elements(array);
 	for (int i = 0; i < size; i++)
 		elements[i] = 0;
@@ -110,26 +111,26 @@ st_oop st_word_array_allocate(st_oop class, int size) {
 }
 
 /* FloatArray */
-st_oop st_float_array_allocate(st_oop class, int size) {
-	st_oop object;
+Oop st_float_array_allocate(Oop class, int size) {
+	Oop object;
 	double *elements;
 	int size_oops;
 	
 	st_assert (size >= 0);
 	
 	/* get actual size in oops (dependent on whether system is 64bit or 32bit) */
-	size_oops = size * (sizeof(double) / sizeof(st_oop));
+	size_oops = size * (sizeof(double) / sizeof(Oop));
 	
-	object = st_memory_allocate(ST_SIZE_OOPS (struct st_float_array) + size_oops);
+	object = st_memory_allocate(ST_SIZE_OOPS (FloatArray) + size_oops);
 	if (object == 0) {
 		st_memory_perform_gc();
 		class = st_memory_remap_reference(class);
-		object = st_memory_allocate(ST_SIZE_OOPS (struct st_array) + size_oops);
+		object = st_memory_allocate(ST_SIZE_OOPS (Array) + size_oops);
 		st_assert (object != 0);
 	}
 	st_object_initialize_header(object, class);
 	
-	ST_ARRAYED_OBJECT (object)->size = st_smi_new(size);
+	ST_ARRAYED_OBJECT(object)->size = st_smi_new(size);
 	
 	elements = ST_FLOAT_ARRAY (object)->elements;
 	for (int i = 0; i < size; i++)
@@ -139,54 +140,54 @@ st_oop st_float_array_allocate(st_oop class, int size) {
 }
 
 
-st_oop st_arrayed_object_size(st_oop object) {
-	return ST_ARRAYED_OBJECT (object)->size;
+Oop st_arrayed_object_size(Oop object) {
+	return ST_ARRAYED_OBJECT(object)->size;
 }
 
-st_oop *st_array_elements(st_oop object) {
+Oop *st_array_elements(Oop object) {
 	return ST_ARRAY (object)->elements;
 }
 
-st_oop st_array_at(st_oop object, int i) {
-	return (ST_ARRAY (object)->elements - 1)[i];
+Oop st_array_at(Oop object, int i) {
+	return (ST_ARRAY(object)->elements - 1)[i];
 }
 
-void st_array_at_put(st_oop object, int i, st_oop value) {
-	(ST_ARRAY (object)->elements - 1)[i] = value;
+void st_array_at_put(Oop object, int i, Oop value) {
+	(ST_ARRAY(object)->elements - 1)[i] = value;
 }
 
-st_uint *st_word_array_elements(st_oop object) {
-	return ST_WORD_ARRAY (object)->elements;
+st_uint *st_word_array_elements(Oop object) {
+	return ST_WORD_ARRAY(object)->elements;
 }
 
-st_uint st_word_array_at(st_oop object, int i) {
-	return ST_WORD_ARRAY (object)->elements[i - 1];
+st_uint st_word_array_at(Oop object, int i) {
+	return ST_WORD_ARRAY(object)->elements[i - 1];
 }
 
-void st_word_array_at_put(st_oop object, int i, st_uint value) {
-	ST_WORD_ARRAY (object)->elements[i - 1] = value;
+void st_word_array_at_put(Oop object, int i, st_uint value) {
+	ST_WORD_ARRAY(object)->elements[i - 1] = value;
 }
 
-char *st_byte_array_bytes(st_oop object) {
+char *st_byte_array_bytes(Oop object) {
 	return (char *) ST_BYTE_ARRAY (object)->bytes;
 }
 
-st_uchar st_byte_array_at(st_oop object, int i) {
+st_uchar st_byte_array_at(Oop object, int i) {
 	return st_byte_array_bytes(object)[i - 1];
 }
 
-void st_byte_array_at_put(st_oop object, int i, st_uchar value) {
+void st_byte_array_at_put(Oop object, int i, st_uchar value) {
 	st_byte_array_bytes(object)[i - 1] = value;
 }
 
-double *st_float_array_elements(st_oop array) {
-	return ST_FLOAT_ARRAY (array)->elements;
+double *st_float_array_elements(Oop array) {
+	return ST_FLOAT_ARRAY(array)->elements;
 }
 
-double st_float_array_at(st_oop array, int i) {
-	return ST_FLOAT_ARRAY (array)->elements[i - 1];
+double st_float_array_at(Oop array, int i) {
+	return ST_FLOAT_ARRAY(array)->elements[i - 1];
 }
 
-void st_float_array_at_put(st_oop array, int i, double value) {
-	ST_FLOAT_ARRAY (array)->elements[i - 1] = value;
+void st_float_array_at_put(Oop array, int i, double value) {
+	ST_FLOAT_ARRAY(array)->elements[i - 1] = value;
 }

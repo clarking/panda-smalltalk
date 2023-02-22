@@ -10,26 +10,26 @@
 #include <stdlib.h>
 #include <setjmp.h>
 
-#include "st-types.h"
-#include "st-compiler.h"
-#include "st-universe.h"
-#include "st-dictionary.h"
-#include "st-object.h"
-#include "st-behavior.h"
-#include "st-context.h"
-#include "st-primitives.h"
-#include "st-method.h"
-#include "st-array.h"
-#include "st-association.h"
-#include "st-memory.h"
+#include "types.h"
+#include "compiler.h"
+#include "universe.h"
+#include "dictionary.h"
+#include "object.h"
+#include "behavior.h"
+#include "context.h"
+#include "primitives.h"
+#include "method.h"
+#include "array.h"
+#include "association.h"
+#include "memory.h"
 
 st_machine __machine;
 
-static inline st_oop method_context_new(st_machine *machine) {
+static inline Oop method_context_new(st_machine *machine) {
 	
-	st_oop context;
+	Oop context;
 	st_uint temp_count;
-	st_oop *stack;
+	Oop *stack;
 	temp_count = st_method_get_arg_count(machine->new_method) + st_method_get_temp_count(machine->new_method);
 	context = st_memory_allocate_context();
 	
@@ -47,9 +47,9 @@ static inline st_oop method_context_new(st_machine *machine) {
 	return context;
 }
 
-static st_oop block_context_new(st_machine *machine, st_uint initial_ip, st_uint argcount) {
-	st_oop home;
-	st_oop context;
+static Oop block_context_new(st_machine *machine, st_uint initial_ip, st_uint argcount) {
+	Oop home;
+	Oop context;
 	st_uint stack_size;
 	
 	stack_size = 32;
@@ -76,9 +76,9 @@ static st_oop block_context_new(st_machine *machine, st_uint initial_ip, st_uint
 }
 
 static void create_actual_message(st_machine *machine) {
-	st_oop *elements;
-	st_oop message;
-	st_oop array;
+	Oop *elements;
+	Oop message;
+	Oop array;
 	
 	array = st_object_new_arrayed(ST_ARRAY_CLASS, machine->message_argcount);
 	elements = st_array_elements(array);
@@ -101,15 +101,15 @@ static void create_actual_message(st_machine *machine) {
 	machine->message_argcount = 1;
 }
 
-static st_oop lookup_method(st_machine *machine, st_oop class) {
-	st_oop method, dict, parent;
+static Oop lookup_method(st_machine *machine, Oop class) {
+	Oop method, dict, parent;
 	st_uint hash;
 	
 	parent = class;
 	hash = st_byte_array_hash(machine->message_selector);
 	while (parent != ST_NIL) {
 		
-		st_oop el;
+		Oop el;
 		st_uint mask, i;
 		dict = ST_BEHAVIOR_METHOD_DICTIONARY (parent);
 		mask = st_smi_value(st_arrayed_object_size(ST_OBJECT_FIELDS (dict)[2])) - 1;
@@ -136,7 +136,7 @@ static st_oop lookup_method(st_machine *machine, st_oop class) {
 	return lookup_method(machine, class);
 }
 
-st_oop st_machine_lookup_method(st_machine *machine, st_oop class) {
+Oop st_machine_lookup_method(st_machine *machine, Oop class) {
 	return lookup_method(machine, class);
 }
 
@@ -149,8 +149,8 @@ st_oop st_machine_lookup_method(st_machine *machine, st_oop class) {
  *
  */
 static inline void activate_method(st_machine *machine) {
-	st_oop context;
-	st_oop *arguments;
+	Oop context;
+	Oop *arguments;
 	
 	context = method_context_new(machine);
 	
@@ -179,8 +179,8 @@ void st_machine_execute_method(st_machine *machine) {
 	activate_method(machine);
 }
 
-void st_machine_set_active_context(st_machine *machine, st_oop context) {
-	st_oop home;
+void st_machine_set_active_context(st_machine *machine, Oop context) {
+	Oop home;
 	
 	/* save executation state of active context */
 	if (ST_UNLIKELY (machine->context != ST_NIL)) {
@@ -215,7 +215,7 @@ void st_machine_set_active_context(st_machine *machine, st_oop context) {
 
 #ifdef HAVE_COMPUTED_GOTO
 #define SWITCH(ip)                            \
-static const st_pointer labels[] =            \
+static const void * labels[] =            \
 {                                             \
     && PUSH_TEMP,                             \
     && PUSH_INSTVAR,                          \
@@ -365,7 +365,7 @@ static inline bool lookup_method_in_cache(st_machine *machine) {
 
 void st_machine_main(st_machine *machine) {
 	register const st_uchar *ip;
-	register st_oop *sp = machine->stack;
+	register Oop *sp = machine->stack;
 	
 	if (setjmp (machine->main_loop))
 		goto out;
@@ -467,7 +467,7 @@ void st_machine_main(st_machine *machine) {
 		
 		PUSH_LITERAL_VAR:
 		{
-			st_oop var;
+			Oop var;
 			var = ST_ASSOCIATION_VALUE (st_array_elements(ST_METHOD_LITERALS(machine->method))[ip[1]]);
 			STACK_PUSH (var);
 			ip += 2;
@@ -579,7 +579,7 @@ void st_machine_main(st_machine *machine) {
 		}
 		SEND_MOD:
 		{
-			st_oop a, b;
+			Oop a, b;
 			if (ST_LIKELY (st_object_is_smi(sp[-1]) && st_object_is_smi(sp[-2]))) {
 				b = STACK_POP ();
 				a = STACK_POP ();
@@ -606,7 +606,7 @@ void st_machine_main(st_machine *machine) {
 		}
 		SEND_BITSHIFT:
 		{
-			st_oop a, b;
+			Oop a, b;
 			
 			if (ST_LIKELY (st_object_is_smi(sp[-1]) && st_object_is_smi(sp[-2]))) {
 				b = STACK_POP ();
@@ -628,7 +628,7 @@ void st_machine_main(st_machine *machine) {
 		}
 		SEND_BITAND:
 		{
-			st_oop a, b;
+			Oop a, b;
 			if (ST_LIKELY (st_object_is_smi(sp[-1]) && st_object_is_smi(sp[-2]))) {
 				b = STACK_POP ();
 				a = STACK_POP ();
@@ -646,7 +646,7 @@ void st_machine_main(st_machine *machine) {
 		}
 		SEND_BITOR:
 		{
-			st_oop a, b;
+			Oop a, b;
 			if (ST_LIKELY (st_object_is_smi(sp[-1]) && st_object_is_smi(sp[-2]))) {
 				b = STACK_POP ();
 				a = STACK_POP ();
@@ -664,7 +664,7 @@ void st_machine_main(st_machine *machine) {
 		}
 		SEND_BITXOR:
 		{
-			st_oop a, b;
+			Oop a, b;
 			if (ST_LIKELY (st_object_is_smi(sp[-1]) && st_object_is_smi(sp[-2]))) {
 				b = STACK_POP ();
 				a = STACK_POP ();
@@ -681,7 +681,7 @@ void st_machine_main(st_machine *machine) {
 		}
 		SEND_LT:
 		{
-			st_oop a, b;
+			Oop a, b;
 			if (ST_LIKELY (st_object_is_smi(sp[-1]) && st_object_is_smi(sp[-2]))) {
 				b = STACK_POP ();
 				a = STACK_POP ();
@@ -699,7 +699,7 @@ void st_machine_main(st_machine *machine) {
 		}
 		SEND_GT:
 		{
-			st_oop a, b;
+			Oop a, b;
 			if (ST_LIKELY (st_object_is_smi(sp[-1]) && st_object_is_smi(sp[-2]))) {
 				b = STACK_POP ();
 				a = STACK_POP ();
@@ -716,7 +716,7 @@ void st_machine_main(st_machine *machine) {
 		}
 		SEND_LE:
 		{
-			st_oop a, b;
+			Oop a, b;
 			if (ST_LIKELY (st_object_is_smi(sp[-1]) && st_object_is_smi(sp[-2]))) {
 				b = STACK_POP ();
 				a = STACK_POP ();
@@ -734,7 +734,7 @@ void st_machine_main(st_machine *machine) {
 		}
 		SEND_GE:
 		{
-			st_oop a, b;
+			Oop a, b;
 			if (ST_LIKELY (st_object_is_smi(sp[-1]) && st_object_is_smi(sp[-2]))) {
 				b = STACK_POP ();
 				a = STACK_POP ();
@@ -806,7 +806,7 @@ void st_machine_main(st_machine *machine) {
 		}
 		SEND_IDENTITY_EQ:
 		{
-			st_oop a, b;
+			Oop a, b;
 			a = STACK_POP ();
 			b = STACK_POP ();
 			STACK_PUSH ((a == b) ? ST_TRUE : ST_FALSE);
@@ -853,8 +853,8 @@ void st_machine_main(st_machine *machine) {
 		{
 			st_uint prim_index;
 			st_method_flags flags;
-			st_oop context;
-			st_oop *arguments;
+			Oop context;
+			Oop *arguments;
 			
 			machine->message_argcount = ip[1];
 			machine->message_selector = st_array_elements(ST_METHOD_LITERALS (machine->method))[ip[2]];
@@ -909,7 +909,7 @@ void st_machine_main(st_machine *machine) {
 		}
 		SEND_SUPER:
 		{
-			st_oop index;
+			Oop index;
 			machine->message_argcount = ip[1];
 			machine->message_selector = st_array_elements(ST_METHOD_LITERALS (machine->method))[ip[2]];
 			machine->message_receiver = sp[-machine->message_argcount - 1];
@@ -934,8 +934,8 @@ void st_machine_main(st_machine *machine) {
 		}
 		BLOCK_COPY:
 		{
-			st_oop block;
-			st_oop home;
+			Oop block;
+			Oop home;
 			st_uint argcount = ip[1];
 			st_uint initial_ip;
 			
@@ -953,9 +953,9 @@ void st_machine_main(st_machine *machine) {
 		}
 		RETURN_STACK_TOP:
 		{
-			st_oop sender;
-			st_oop value;
-			st_oop home;
+			Oop sender;
+			Oop value;
+			Oop home;
 			
 			value = STACK_PEEK ();
 			
@@ -981,9 +981,9 @@ void st_machine_main(st_machine *machine) {
 		}
 		BLOCK_RETURN:
 		{
-			st_oop caller;
-			st_oop value;
-			st_oop home;
+			Oop caller;
+			Oop value;
+			Oop home;
 			
 			caller = ST_CONTEXT_PART_SENDER (machine->context);
 			value = STACK_PEEK ();
@@ -1004,12 +1004,12 @@ void st_machine_main(st_machine *machine) {
 }
 
 void st_machine_clear_caches(st_machine *machine) {
-	memset(machine->method_cache, 0, ST_METHOD_CACHE_SIZE * 3 * sizeof(st_oop));
+	memset(machine->method_cache, 0, ST_METHOD_CACHE_SIZE * 3 * sizeof(Oop));
 }
 
 void st_machine_initialize(st_machine *machine) {
-	st_oop context;
-	st_oop method;
+	Oop context;
+	Oop method;
 	
 	/* clear contents */
 	machine->context = ST_NIL;

@@ -22,9 +22,9 @@ int main(int argc, char *argv[]) {
 	buffer[i] = '\0';
 	
 	bootstrap_universe();
-	st_lexer *lexer = st_lexer_new(buffer);
-	st_compiler_error error;
-	st_node *node = st_parser_parse(lexer, &error);
+	Lexer *lexer = st_lexer_new(buffer);
+	CompilerError error;
+	Node *node = st_parser_parse(lexer, &error);
 	
 	if (!node) {
 		fprintf(stderr, "test-parser:%i: %s\n", error.line, error.message);

@@ -8,13 +8,13 @@
 
 #include <string.h>
 
-#include "st-symbol.h"
-#include "st-dictionary.h"
-#include "st-array.h"
-#include "st-behavior.h"
-#include "st-object.h"
+#include "symbol.h"
+#include "dictionary.h"
+#include "array.h"
+#include "behavior.h"
+#include "object.h"
 
-bool st_symbol_equal(st_oop object, st_oop other) {
+bool st_symbol_equal(Oop object, Oop other) {
 	if (object == other)
 		return true;
 	
@@ -24,8 +24,8 @@ bool st_symbol_equal(st_oop object, st_oop other) {
 	return st_byte_array_equal(object, other);
 }
 
-static st_oop string_new(st_oop class, const char *bytes) {
-	st_oop string;
+static Oop string_new(Oop class, const char *bytes) {
+	Oop string;
 	char *data;
 	int len;
 	
@@ -36,10 +36,10 @@ static st_oop string_new(st_oop class, const char *bytes) {
 	return string;
 }
 
-st_oop st_string_new(const char *bytes) {
+Oop st_string_new(const char *bytes) {
 	return string_new(ST_STRING_CLASS, bytes);
 }
 
-st_oop st_symbol_new(const char *bytes) {
+Oop st_symbol_new(const char *bytes) {
 	return st_set_intern_cstring(ST_SYMBOLS, bytes);
 }

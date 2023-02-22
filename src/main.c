@@ -10,21 +10,18 @@
 #include <stdbool.h>
 #include <sys/time.h>
 
-#include "st-types.h"
-#include "st-compiler.h"
-#include "st-machine.h"
-#include "st-array.h"
+#include "types.h"
+#include "compiler.h"
+#include "machine.h"
+#include "array.h"
 
-static global globals;
+static VmOptions options;
 
 static void init_globals(void) {
-	globals.width = 79;
-	globals.maxhelppos = 24;
-	globals.indent = 2;
-	globals.helppfx = "  ";
-	globals.filepath = "";
-	globals.verbose = false;
-	globals.repl = false;
+	options.filepath = "";
+	options.verbose = false;
+	options.repl = false;
+	options.prog = "";
 }
 
 #define BUF_SIZE 2000
@@ -36,8 +33,8 @@ static char *str_empty = "";
 
 static void read_compile_stdin(void) {
 	
-	st_compiler_error error;
-	st_oop value;
+	CompilerError error;
+	Oop value;
 	
 	char *string;
 	char c;
@@ -46,7 +43,7 @@ static void read_compile_stdin(void) {
 	char buffer[BUF_SIZE];
 	memset(buffer, 0x00, BUF_SIZE);
 	
-	if (globals.repl) {
+	if (options.repl) {
 		while ((c = getchar()) != EOF && i < (BUF_SIZE - 1)) {
 			if (c == '\n') {
 				
@@ -73,9 +70,8 @@ static void read_compile_stdin(void) {
 			buffer[i] = '\0';
 		}
 	} else {
-		if (!st_file_get_contents(globals.filepath, &string)) {
+		if (!st_file_get_contents(options.filepath, &string))
 			exit(1);
-		}
 		
 		if (!st_compile_string(ST_UNDEFINED_OBJECT_CLASS, string, &error)) {
 			fprintf(stderr, "'byte_string%s\n", error.message);
@@ -102,7 +98,7 @@ static double get_elapsed_time(struct timeval before, struct timeval after) {
 }
 
 static void parse_args(int argc, char *argv[]) {
-	globals.prog = argv[0];
+	options.prog = argv[0];
 	char *arg;
 	char *val = NULL;
 	int i;
@@ -113,25 +109,25 @@ static void parse_args(int argc, char *argv[]) {
 			val = argv[i + 1];
 		
 		if (strcmp(arg, "-d") == 0) {
-			globals.filepath = val;
+			options.filepath = val;
 		} else if (strcmp(arg, "-h") == 0) {
 			print_help();
 		} else if (strcmp(arg, "-r") == 0) {
-			globals.repl = true;
+			options.repl = true;
 			//break;
 		} else if (strcmp(arg, "-V") == 0) {
-			st_set_verbose_mode(globals.verbose);
+			st_set_verbose_mode(options.verbose);
 		} else if (strcmp(arg, "-v") == 0) {
 			printf(version);
 			exit(0);
 		} else {
-			globals.filepath = val;
+			options.filepath = val;
 		}
 	}
 }
 
 int main(int argc, char *argv[]) {
-	st_oop value;
+	Oop value;
 	init_globals();
 	parse_args(argc, argv);
 	bootstrap_universe();

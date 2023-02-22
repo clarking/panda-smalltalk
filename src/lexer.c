@@ -12,21 +12,21 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "st-types.h"
-#include "st-lexer.h"
-#include "st-input.h"
-#include "st-utils.h"
-#include "st-unicode.h"
+#include "types.h"
+#include "lexer.h"
+#include "input.h"
+#include "utils.h"
+#include "unicode.h"
 
 #define lookahead(self, k)   ((char) st_input_look_ahead (self->input, k))
 #define consume(self)        (st_input_consume (self->input))
 #define mark(self)           (st_input_mark (self->input))
 #define rewind(self)         (st_input_rewind (self->input))
 
-static void make_token(st_lexer *lexer, st_token_type type, char *text) {
-	st_token *token;
+static void make_token(Lexer *lexer, TokenType type, char *text) {
+	Token *token;
 	
-	token = st_new0 (st_token);
+	token = st_new0 (Token);
 	token->type = type;
 	token->text = text ? text : st_strdup("");
 	token->type = type;
@@ -38,10 +38,10 @@ static void make_token(st_lexer *lexer, st_token_type type, char *text) {
 	lexer->allocated_tokens = st_list_prepend(lexer->allocated_tokens, token);
 }
 
-static void make_number_token(st_lexer *lexer, int radix, int exponent, char *number, bool negative) {
-	st_token *token;
+static void make_number_token(Lexer *lexer, int radix, int exponent, char *number, bool negative) {
+	Token *token;
 	
-	token = st_new0 (st_token);
+	token = st_new0 (Token);
 	token->type = TOKEN_NUMBER_CONST;
 	token->line = lexer->line;
 	token->column = lexer->column;
@@ -55,7 +55,7 @@ static void make_number_token(st_lexer *lexer, int radix, int exponent, char *nu
 	lexer->allocated_tokens = st_list_prepend(lexer->allocated_tokens, token);
 }
 
-static void raise_error(st_lexer *lexer, err_code error_code, char error_char) {
+static void raise_error(Lexer *lexer, ErrCode error_code, char error_char) {
 	lexer->failed = true;
 	lexer->error_code = error_code;
 	lexer->error_char = error_char;
@@ -67,13 +67,13 @@ static void raise_error(st_lexer *lexer, err_code error_code, char error_char) {
 	longjmp(lexer->main_loop, 0); // go back to main loop
 }
 
-static void match_range(st_lexer *lexer, char a, char b) {
+static void match_range(Lexer *lexer, char a, char b) {
 	if (lookahead (lexer, 1) < a || lookahead (lexer, 1) > b)
 		raise_error(lexer, ERROR_MISMATCHED_CHAR, lookahead (lexer, 1));
 	consume (lexer);
 }
 
-static void match(st_lexer *lexer, char c) {
+static void match(Lexer *lexer, char c) {
 	if (lookahead (lexer, 1) != c) {
 		// mismatch error
 		raise_error(lexer, ERROR_MISMATCHED_CHAR, lookahead (lexer, 1));
@@ -124,7 +124,7 @@ static bool is_radix_numeral(st_uint radix, char c) {
 /* Numbers. We do just do basic matching here. Actual parsing and conversion can
  * be done in the parser. 
  */
-static void match_number(st_lexer *lexer) {
+static void match_number(Lexer *lexer) {
 	// We don't match any leading '-'.
 	// The parser will resolve whether a '-' specifies a negative number or a binary selector
 	
@@ -196,7 +196,7 @@ static void match_number(st_lexer *lexer) {
 	make_number_token(lexer, radix, exponent, st_input_range(lexer->input, k, j), negative);
 }
 
-static void match_identifier(st_lexer *lexer, bool create_token) {
+static void match_identifier(Lexer *lexer, bool create_token) {
 	if (isalpha (lookahead(lexer, 1)))
 		consume (lexer);
 	else {
@@ -218,7 +218,7 @@ static void match_identifier(st_lexer *lexer, bool create_token) {
 		make_token(lexer, TOKEN_IDENTIFIER, st_input_range(lexer->input, lexer->start, st_input_index(lexer->input)));
 }
 
-static void match_keyword_or_identifier(st_lexer *lexer, bool create_token) {
+static void match_keyword_or_identifier(Lexer *lexer, bool create_token) {
 	if (isalpha (lookahead(lexer, 1)))
 		consume (lexer);
 	else
@@ -235,7 +235,7 @@ static void match_keyword_or_identifier(st_lexer *lexer, bool create_token) {
 			break;
 	}
 	
-	st_token_type token_type;
+	TokenType token_type;
 	if (lookahead (lexer, 1) == ':' && lookahead (lexer, 2) != '=') {
 		consume (lexer);
 		token_type = TOKEN_KEYWORD_SELECTOR;
@@ -252,7 +252,7 @@ static void match_keyword_or_identifier(st_lexer *lexer, bool create_token) {
 	}
 }
 
-static void match_string_constant(st_lexer *lexer) {
+static void match_string_constant(Lexer *lexer) {
 	mark (lexer);
 	match(lexer, '\'');
 	while (lookahead (lexer, 1) != '\'') {
@@ -269,7 +269,7 @@ static void match_string_constant(st_lexer *lexer) {
 	make_token(lexer, TOKEN_STRING_CONST, string);
 }
 
-static void match_comment(st_lexer *lexer) {
+static void match_comment(Lexer *lexer) {
 	mark (lexer);
 	match(lexer, '"');
 	while (lookahead (lexer, 1) != '"') {
@@ -288,13 +288,13 @@ static void match_comment(st_lexer *lexer) {
 	}
 }
 
-static void match_tuple_begin(st_lexer *lexer) {
+static void match_tuple_begin(Lexer *lexer) {
 	match(lexer, '#');
 	match(lexer, '(');
 	make_token(lexer, TOKEN_TUPLE_BEGIN, st_strdup("#("));
 }
 
-static void match_binary_selector(st_lexer *lexer, bool create_token) {
+static void match_binary_selector(Lexer *lexer, bool create_token) {
 	if (lookahead (lexer, 1) == '-') {
 		match(lexer, '-');
 		if (is_special_char(lookahead (lexer, 1)))
@@ -313,7 +313,7 @@ static void match_binary_selector(st_lexer *lexer, bool create_token) {
 				st_input_range(lexer->input, lexer->start, st_input_index(lexer->input)));
 }
 
-static void match_symbol_constant(st_lexer *lexer) {
+static void match_symbol_constant(Lexer *lexer) {
 	match(lexer, '#');
 	
 	if (isalpha (lookahead(lexer, 1))) {
@@ -331,27 +331,27 @@ static void match_symbol_constant(st_lexer *lexer) {
 	make_token(lexer, TOKEN_SYMBOL_CONST, symbol_text);
 }
 
-static void match_block_begin(st_lexer *lexer) {
+static void match_block_begin(Lexer *lexer) {
 	match(lexer, '[');
 	make_token(lexer, TOKEN_BLOCK_BEGIN, NULL);
 }
 
-static void match_block_end(st_lexer *lexer) {
+static void match_block_end(Lexer *lexer) {
 	match(lexer, ']');
 	make_token(lexer, TOKEN_BLOCK_END, NULL);
 }
 
-static void match_lparen(st_lexer *lexer) {
+static void match_lparen(Lexer *lexer) {
 	match(lexer, '(');
 	make_token(lexer, TOKEN_LPAREN, NULL);
 }
 
-static void match_rparen(st_lexer *lexer) {
+static void match_rparen(Lexer *lexer) {
 	match(lexer, ')');
 	make_token(lexer, TOKEN_RPAREN, NULL);
 }
 
-static void match_char_constant(st_lexer *lexer) {
+static void match_char_constant(Lexer *lexer) {
 	char ch = 0;
 	match(lexer, '$');
 	if (lookahead (lexer, 1) == '\\') {
@@ -397,12 +397,12 @@ static void match_char_constant(st_lexer *lexer) {
 	make_token(lexer, TOKEN_CHARACTER_CONST, st_strdup(outbuf));
 }
 
-static void match_eof(st_lexer *lexer) {
+static void match_eof(Lexer *lexer) {
 	match(lexer, ST_INPUT_EOF);
 	make_token(lexer, TOKEN_EOF, NULL);
 }
 
-static void match_white_space(st_lexer *lexer) {
+static void match_white_space(Lexer *lexer) {
 	// gobble up white space
 	while (true) {
 		switch (lookahead (lexer, 1)) {
@@ -419,34 +419,34 @@ static void match_white_space(st_lexer *lexer) {
 	}
 }
 
-static void match_colon(st_lexer *lexer) {
+static void match_colon(Lexer *lexer) {
 	match(lexer, ':');
 	make_token(lexer, TOKEN_COLON, NULL);
 }
 
-static void match_semicolon(st_lexer *lexer) {
+static void match_semicolon(Lexer *lexer) {
 	match(lexer, ';');
 	make_token(lexer, TOKEN_SEMICOLON, NULL);
 }
 
-static void match_assign(st_lexer *lexer) {
+static void match_assign(Lexer *lexer) {
 	match(lexer, ':');
 	match(lexer, '=');
 	make_token(lexer, TOKEN_ASSIGN, NULL);
 }
 
-static void match_period(st_lexer *lexer) {
+static void match_period(Lexer *lexer) {
 	match(lexer, '.');
 	make_token(lexer, TOKEN_PERIOD, NULL);
 }
 
-static void match_return(st_lexer *lexer) {
+static void match_return(Lexer *lexer) {
 	match(lexer, '^');
 	make_token(lexer, TOKEN_RETURN, NULL);
 }
 
 /* st_lexer_next_token:
- * lexer: a st_lexer
+ * lexer: a Lexer
  *
  * Returns the next matched token from the input stream. Caller takes
  * ownership of returned token.
@@ -457,7 +457,7 @@ static void match_return(st_lexer *lexer) {
  *
  */
 
-st_token *st_lexer_next_token(st_lexer *lexer) {
+Token *st_lexer_next_token(Lexer *lexer) {
 	st_assert (lexer != NULL);
 	
 	while (true) {
@@ -561,7 +561,7 @@ st_token *st_lexer_next_token(st_lexer *lexer) {
 	}
 }
 
-static void lexer_initialize(st_lexer *lexer, st_input *input) {
+static void lexer_initialize(Lexer *lexer, LexInput *input) {
 	lexer->input = input;
 	lexer->token = NULL;
 	lexer->line = 1;
@@ -573,12 +573,12 @@ static void lexer_initialize(st_lexer *lexer, st_input *input) {
 	lexer->allocated_tokens = NULL;
 }
 
-st_lexer *st_lexer_new(const char *string) {
-	st_lexer *lexer;
-	st_input *input;
+Lexer *st_lexer_new(const char *string) {
+	Lexer *lexer;
+	LexInput *input;
 	
 	st_assert (string != NULL);
-	lexer = st_new0 (st_lexer);
+	lexer = st_new0 (Lexer);
 	input = st_input_new(string);
 	if (!input)
 		return NULL;
@@ -587,7 +587,7 @@ st_lexer *st_lexer_new(const char *string) {
 	return lexer;
 }
 
-void destroy_token(st_token *token) {
+void destroy_token(Token *token) {
 	if (token->type != TOKEN_NUMBER_CONST)
 		st_free(token->text);
 	else
@@ -596,7 +596,7 @@ void destroy_token(st_token *token) {
 	st_free(token);
 }
 
-void st_lexer_destroy(st_lexer *lexer) {
+void st_lexer_destroy(Lexer *lexer) {
 	st_assert (lexer != NULL);
 	st_input_destroy(lexer->input);
 	st_list_foreach(lexer->allocated_tokens, (st_list_foreach_func) destroy_token);
@@ -604,42 +604,42 @@ void st_lexer_destroy(st_lexer *lexer) {
 	st_free(lexer);
 }
 
-st_token_type st_token_get_type(st_token *token) {
+TokenType st_token_get_type(Token *token) {
 	st_assert (token != NULL);
 	return token->type;
 }
 
-char *st_token_get_text(st_token *token) {
+char *st_token_get_text(Token *token) {
 	st_assert (token != NULL);
 	return token->text;
 }
 
-st_uint st_token_get_line(st_token *token) {
+st_uint st_token_get_line(Token *token) {
 	st_assert (token != NULL);
 	return token->line;
 }
 
-st_uint st_token_get_column(st_token *token) {
+st_uint st_token_get_column(Token *token) {
 	st_assert (token != NULL);
 	return token->column;
 }
 
-st_uint st_lexer_error_line(st_lexer *lexer) {
+st_uint st_lexer_error_line(Lexer *lexer) {
 	st_assert (lexer != NULL);
 	return lexer->error_line;
 }
 
-st_uint st_lexer_error_column(st_lexer *lexer) {
+st_uint st_lexer_error_column(Lexer *lexer) {
 	st_assert (lexer != NULL);
 	return lexer->error_column;
 }
 
-char st_lexer_error_char(st_lexer *lexer) {
+char st_lexer_error_char(Lexer *lexer) {
 	st_assert (lexer != NULL);
 	return lexer->error_char;
 }
 
-char *st_lexer_error_message(st_lexer *lexer) {
+char *st_lexer_error_message(Lexer *lexer) {
 	st_assert (lexer != NULL);
 	static const char *msgformats[] = {
 			"mismatched character \\%04X",
@@ -668,26 +668,26 @@ char *st_lexer_error_message(st_lexer *lexer) {
 	}
 }
 
-st_token *st_lexer_current_token(st_lexer *lexer) {
+Token *st_lexer_current_token(Lexer *lexer) {
 	return lexer->token;
 }
 
-void st_lexer_filter_comments(st_lexer *lexer, bool filter) {
+void st_lexer_filter_comments(Lexer *lexer, bool filter) {
 	lexer->filter_comments = filter;
 }
 
-bool st_number_token_negative(st_token *token) {
+bool st_number_token_negative(Token *token) {
 	return token->negative;
 }
 
-char *st_number_token_number(st_token *token) {
+char *st_number_token_number(Token *token) {
 	return token->number;
 }
 
-st_uint st_number_token_radix(st_token *token) {
+st_uint st_number_token_radix(Token *token) {
 	return token->radix;
 }
 
-int st_number_token_exponent(st_token *token) {
+int st_number_token_exponent(Token *token) {
 	return token->exponent;
 }

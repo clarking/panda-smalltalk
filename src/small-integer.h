@@ -8,35 +8,29 @@
 
 #pragma once
 
-#include "st-types.h"
+#include "types.h"
 
-static inline st_oop
-st_smi_new(int num) {
-	return (((st_oop) num) << ST_TAG_SIZE) + ST_SMI_TAG;
+static inline Oop st_smi_new(int num) {
+	return (((Oop) num) << ST_TAG_SIZE) + ST_SMI_TAG;
 }
 
-static inline int
-st_smi_value(st_oop smi) {
+static inline int st_smi_value(Oop smi) {
 	return ((int) smi) >> ST_TAG_SIZE;
 }
 
-static inline st_oop
-st_smi_increment(st_oop smi) {
+static inline Oop st_smi_increment(Oop smi) {
 	return st_smi_new(st_smi_value(smi) + 1);
 }
 
-static inline st_oop
-st_smi_decrement(st_oop smi) {
+static inline Oop st_smi_decrement(Oop smi) {
 	return st_smi_new(st_smi_value(smi) - 1);
 }
 
-static inline bool
-st_smi_equal(st_oop m, st_oop n) {
+static inline bool st_smi_equal(Oop m, Oop n) {
 	return m == n;
 }
 
-static inline int
-st_smi_hash(st_oop smi) {
+static inline int st_smi_hash(Oop smi) {
 	return st_smi_value(smi);
 }
 

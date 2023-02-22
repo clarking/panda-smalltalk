@@ -10,13 +10,13 @@
 #pragma once
 
 #include <stdio.h>
-#include "st-types.h"
+#include "types.h"
 
 
-st_uint st_identity_hashtable_hash(st_identity_hashtable *ht, st_oop object);
+st_uint st_identity_hashtable_hash(IdentityHashTable *ht, Oop object);
 
-st_identity_hashtable *st_identity_hashtable_new(void);
+IdentityHashTable *st_identity_hashtable_new(void);
 
-void st_identity_hashtable_remove(st_identity_hashtable *ht, st_oop object);
+void st_identity_hashtable_remove(IdentityHashTable *ht, Oop object);
 
-void st_identity_hashtable_rehash_object(st_identity_hashtable *ht, st_oop old, st_oop new);
+void st_identity_hashtable_rehash_object(IdentityHashTable *ht, Oop old, Oop new);

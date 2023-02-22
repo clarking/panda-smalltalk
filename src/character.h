@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include "st-types.h"
+#include "types.h"
 
-st_oop st_character_new(wchar_t wc);
+Oop st_character_new(wchar_t wc);
 
-wchar_t st_character_value(st_oop character);
+wchar_t st_character_value(Oop character);
 
-bool st_character_equal(st_oop m, st_oop n);
+bool st_character_equal(Oop m, Oop n);
 
-int st_character_hash(st_oop character);
+int st_character_hash(Oop character);

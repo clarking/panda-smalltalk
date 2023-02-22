@@ -9,14 +9,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "st-compiler.h"
-#include "st-universe.h"
-#include "st-dictionary.h"
-#include "st-behavior.h"
-#include "st-input.h"
-#include "st-node.h"
-#include "st-lexer.h"
-#include "st-array.h"
+#include "compiler.h"
+#include "universe.h"
+#include "dictionary.h"
+#include "behavior.h"
+#include "input.h"
+#include "node.h"
+#include "lexer.h"
+#include "array.h"
 
 /*
  * st_compile_string:
@@ -27,10 +27,10 @@
  * This function will compile a source string into a new CompiledMethod,
  * and place the method in the methodDictionary of the given class.
  */
-bool st_compile_string(st_oop class, const char *string, st_compiler_error *error) {
-	st_node *node;
-	st_oop method;
-	st_lexer *lexer;
+bool st_compile_string(Oop class, const char *string, CompilerError *error) {
+	Node *node;
+	Oop method;
+	Lexer *lexer;
 	
 	st_assert (class != ST_NIL);
 	
@@ -55,14 +55,14 @@ bool st_compile_string(st_oop class, const char *string, st_compiler_error *erro
 	return true;
 }
 
-void filein_error(st_filein *parser, st_token *token, const char *message) {
+void filein_error(FileIn *parser, Token *token, const char *message) {
 	fprintf(stderr, "%s: %i: %s\n", parser->filename, parser->line + ((token) ? st_token_get_line(token) : -90),
 			message);
 	exit(1);
 }
 
-st_token *next_token(st_filein *parser, st_lexer *lexer) {
-	st_token *token;
+Token *next_token(FileIn *parser, Lexer *lexer) {
+	Token *token;
 	token = st_lexer_next_token(lexer);
 	if (st_token_get_type(token) == TOKEN_COMMENT)
 		return next_token(parser, lexer);
@@ -72,8 +72,8 @@ st_token *next_token(st_filein *parser, st_lexer *lexer) {
 	return token;
 }
 
-st_lexer *next_chunk(st_filein *parser) {
-	st_lexer *lexer;
+Lexer *next_chunk(FileIn *parser) {
+	Lexer *lexer;
 	char *chunk;
 	
 	parser->line = st_input_get_line(parser->input);
@@ -86,10 +86,10 @@ st_lexer *next_chunk(st_filein *parser) {
 	return lexer;
 }
 
-void compile_method(st_filein *parser, st_lexer *lexer, char *class_name, bool class_method) {
-	st_token *token = NULL;
-	st_oop class;
-	st_compiler_error error;
+void compile_method(FileIn *parser, Lexer *lexer, char *class_name, bool class_method) {
+	Token *token = NULL;
+	Oop class;
+	CompilerError error;
 	
 	st_lexer_destroy(lexer);
 	
@@ -106,8 +106,8 @@ void compile_method(st_filein *parser, st_lexer *lexer, char *class_name, bool c
 	if (!lexer)
 		filein_error(parser, token, "expected method definition");
 	
-	st_node *node;
-	st_oop method;
+	Node *node;
+	Oop method;
 	
 	node = st_parser_parse(lexer, &error);
 	if (node == NULL)
@@ -132,12 +132,12 @@ void compile_method(st_filein *parser, st_lexer *lexer, char *class_name, bool c
 	exit(1);
 }
 
-void compile_class(st_filein *parser, st_lexer *lexer, char *name) {
+void compile_class(FileIn *parser, Lexer *lexer, char *name) {
 	printf("%s", "TODO: Not implemented yet");
 }
 
-void compile_chunk(st_filein *parser, st_lexer *lexer) {
-	st_token *token;
+void compile_chunk(FileIn *parser, Lexer *lexer) {
+	Token *token;
 	char *name;
 	token = next_token(parser, lexer);
 	if (st_token_get_type(token) == TOKEN_IDENTIFIER) {
@@ -160,8 +160,8 @@ void compile_chunk(st_filein *parser, st_lexer *lexer) {
 	filein_error(parser, token, "unrecognised syntax");
 }
 
-void compile_chunks(st_filein *parser) {
-	st_lexer *lexer;
+void compile_chunks(FileIn *parser) {
+	Lexer *lexer;
 	while (st_input_look_ahead(parser->input, 1) != ST_INPUT_EOF) {
 		lexer = next_chunk(parser);
 		if (!lexer)
@@ -172,13 +172,13 @@ void compile_chunks(st_filein *parser) {
 
 void compile_file_in(const char *filename) {
 	char *buffer;
-	st_filein *parser;
+	FileIn *parser;
 	
 	st_assert (filename != NULL);
 	if (!st_file_get_contents(filename, &buffer))
 		return;
 	
-	parser = st_new0 (st_filein);
+	parser = st_new0 (FileIn);
 	parser->input = st_input_new(buffer);
 	
 	if (!parser->input) {

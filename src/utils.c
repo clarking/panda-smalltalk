@@ -14,7 +14,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdarg.h>
-#include "st-utils.h"
+#include "utils.h"
 
 int vasprintf(char **strp, const char *fmt, va_list ap);
 
@@ -22,7 +22,7 @@ extern char *program_invocation_short_name;
 
 extern bool st_get_verbose_mode(void) ST_GNUC_PURE;
 
-st_pointer st_malloc(size_t size) {
+void * st_malloc(size_t size) {
 	void *ptr;
 	
 	ptr = malloc(size);
@@ -32,7 +32,7 @@ st_pointer st_malloc(size_t size) {
 	return ptr;
 }
 
-st_pointer st_malloc0(size_t size) {
+void * st_malloc0(size_t size) {
 	void *ptr;
 	
 	ptr = calloc(1, size);
@@ -42,7 +42,7 @@ st_pointer st_malloc0(size_t size) {
 	return ptr;
 }
 
-st_pointer st_realloc(st_pointer mem, size_t size) {
+void * st_realloc(void * mem, size_t size) {
 	void *ptr;
 	
 	ptr = realloc(mem, size);
@@ -52,7 +52,7 @@ st_pointer st_realloc(st_pointer mem, size_t size) {
 	return ptr;
 }
 
-void st_free(st_pointer mem) {
+void st_free(void * mem) {
 	if (ST_UNLIKELY (mem != NULL))
 		free(mem);
 }
@@ -202,10 +202,10 @@ void st_timespec_add(struct timespec *t1, struct timespec *t2, struct timespec *
 	}
 }
 
-st_list *st_list_append(st_list *list, st_pointer data) {
-	st_list *new_list, *l;
+List *st_list_append(List *list, void * data) {
+	List *new_list, *l;
 	
-	new_list = st_new (st_list);
+	new_list = st_new (List);
 	new_list->data = data;
 	new_list->next = NULL;
 	
@@ -221,18 +221,18 @@ st_list *st_list_append(st_list *list, st_pointer data) {
 	return list;
 }
 
-st_list *st_list_prepend(st_list *list, st_pointer data) {
-	st_list *new_list;
+List *st_list_prepend(List *list, void * data) {
+	List *new_list;
 	
-	new_list = st_new (st_list);
+	new_list = st_new (List);
 	new_list->data = data;
 	new_list->next = list;
 	
 	return new_list;
 }
 
-st_list *st_list_reverse(st_list *list) {
-	st_list *next, *prev = NULL;
+List *st_list_reverse(List *list) {
+	List *next, *prev = NULL;
 	
 	while (list) {
 		next = list->next;
@@ -244,8 +244,8 @@ st_list *st_list_reverse(st_list *list) {
 	return prev;
 }
 
-st_list *st_list_concat(st_list *list1, st_list *list2) {
-	st_list *l;
+List *st_list_concat(List *list1, List *list2) {
+	List *l;
 	
 	if (list1 == NULL)
 		return list2;
@@ -261,8 +261,8 @@ st_list *st_list_concat(st_list *list1, st_list *list2) {
 	return list1;
 }
 
-st_uint st_list_length(st_list *list) {
-	st_list *l = list;
+st_uint st_list_length(List *list) {
+	List *l = list;
 	st_uint len = 0;
 	
 	for (; l; l = l->next)
@@ -271,13 +271,13 @@ st_uint st_list_length(st_list *list) {
 	return len;
 }
 
-void st_list_foreach(st_list *list, st_list_foreach_func func) {
-	for (st_list *l = list; l; l = l->next)
+void st_list_foreach(List *list, st_list_foreach_func func) {
+	for (List *l = list; l; l = l->next)
 		func(l->data);
 }
 
-void st_list_destroy(st_list *list) {
-	st_list *next, *current;
+void st_list_destroy(List *list) {
+	List *next, *current;
 	
 	current = list;
 	

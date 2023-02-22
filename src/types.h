@@ -37,14 +37,14 @@
 #define ST_SMALL_INTEGER_MAX  536870911
 
 // threshold is 8 Mb or 16 Mb depending on whether system is 32 or 64 bits
-#define ST_COLLECTION_THRESHOLD (sizeof (st_oop) * 2 * 1024 * 1024)
+#define ST_COLLECTION_THRESHOLD (sizeof (Oop) * 2 * 1024 * 1024)
 
 #define ST_TAG_SIZE 2
 
 // bit utilities
 #define ST_NTH_BIT(n)         (1 << (n))
 #define ST_NTH_MASK(n)        (ST_NTH_BIT(n) - 1)
-#define NIL_SIZE_OOPS (sizeof (struct st_header) / sizeof (st_oop))
+#define NIL_SIZE_OOPS (sizeof (struct ObjHeader) / sizeof (Oop))
 
 enum {
 	ST_SMI_TAG,
@@ -82,43 +82,41 @@ typedef enum st_format {
 	ST_NUM_FORMATS
 } st_format;
 
+
+typedef struct StInteger {
+	uint64_t dummy:1;
+	uint64_t value:63;
+} StInteger;
+
 /* basic oop pointer:
  * integral type wide enough to hold a C pointer.
  * Can either point to a heap object or contain a smi or Character immediate.
  */
-typedef uintptr_t st_oop;
+
+typedef uintptr_t Oop;
 
 typedef unsigned char st_uchar;
 typedef unsigned short st_ushort;
 typedef unsigned long st_ulong;
 typedef unsigned int st_uint;
-typedef void *st_pointer;
+
 typedef st_uint st_unichar;
 
-static inline st_oop
-st_tag_pointer(st_pointer p) {
-	return ((st_oop) p) + ST_POINTER_TAG;
+static inline Oop st_tag_pointer(void * p) {
+	return ((Oop) p) + ST_POINTER_TAG;
 }
 
-static inline st_oop *
-st_detag_pointer(st_oop oop) {
-	return (st_oop *) (oop - ST_POINTER_TAG);
+static inline Oop *st_detag_pointer(Oop oop) {
+	return (Oop *) (oop - ST_POINTER_TAG);
 }
 
-struct _global {
-	int width, maxhelppos, indent;
-	const char *helppfx;
+typedef struct VmOptions {
 	const char *filepath;
-	char sf[3]; // Initialised to 0 from here on.
-	const char *prog, *usage, *message, *helplf;
-	char helpsf, **argv;
-	struct opt_spec *opts, *curr;
-	int opts1st, helppos;
+	char *prog;
 	bool verbose;
 	bool repl;
-};
+}VmOptions;
 
-typedef struct _global global;
 
 
 /*
@@ -132,101 +130,101 @@ typedef struct _global global;
  * unused: 	not used yet (haven't implemented GC)
  *
  */
-typedef struct st_header {
-	st_oop mark;
-	st_oop class;
-	st_oop fields[];
-} st_header;
+typedef struct ObjHeader {
+	Oop mark;
+	Oop class;
+	Oop fields[];
+} ObjHeader;
 
-typedef struct st_arrayed_object {
-	st_header parent;
-	st_oop size;
-} st_arrayed_object;
+typedef struct ArrayedObject {
+	ObjHeader parent;
+	Oop size;
+} ArrayedObject;
 
-typedef struct st_array {
-	st_arrayed_object parent;
-	st_oop elements[];
-} st_array;
+typedef struct Array {
+	ArrayedObject parent;
+	Oop elements[];
+} Array;
 
-typedef struct st_word_array {
-	st_arrayed_object parent;
+typedef struct WordArray {
+	ArrayedObject parent;
 	st_uint elements[];
-} st_word_array;
+} WordArray;
 
-typedef struct st_float_array {
-	st_arrayed_object parent;
+typedef struct FloatArray {
+	ArrayedObject parent;
 	double elements[];
-} st_float_array;
+} FloatArray;
 
-typedef struct st_byte_array {
-	st_arrayed_object parent;
+typedef struct ByteArray {
+	ArrayedObject parent;
 	st_uchar bytes[];
-} st_byte_array;
+} ByteArray;
 
-typedef struct st_association {
-	st_header parent;
-	st_oop key;
-	st_oop value;
-} st_association;
+typedef struct Association {
+	ObjHeader parent;
+	Oop key;
+	Oop value;
+} Association;
 
-typedef struct st_hashed_collection {
-	struct st_header header;
-	st_oop size;
-	st_oop deleted;
-	st_oop array;
-} st_hashed_collection;
+typedef struct HashedCollection {
+	struct ObjHeader header;
+	Oop size;
+	Oop deleted;
+	Oop array;
+} HashedCollection;
 
-typedef struct st_behavior {
-	st_header header;
-	st_oop format;
-	st_oop superclass;
-	st_oop instance_size;
-	st_oop method_dictionary;
-	st_oop instance_variables;
-} st_behavior;
+typedef struct Behavior {
+	ObjHeader header;
+	Oop format;
+	Oop superclass;
+	Oop instance_size;
+	Oop method_dictionary;
+	Oop instance_variables;
+} Behavior;
 
-typedef struct st_class {
-	st_behavior parent;
-	st_oop name;
-} st_class;
+typedef struct Class {
+	Behavior parent;
+	Oop name;
+} Class;
 
-typedef struct st_metaclass {
-	st_behavior parent;
-	st_oop instance_class;
-} st_metaclass;
+typedef struct MetaClass {
+	Behavior parent;
+	Oop instance_class;
+} MetaClass;
 
-typedef struct st_list st_list;
-typedef struct st_list {
-	st_pointer data;
-	st_list *next;
-} st_list;
+typedef struct List List;
+typedef struct List {
+	void * data;
+	List *next;
+} List;
 
-typedef struct marker {
+typedef struct InputMarker {
 	int p;
 	int line;
 	int column;
-} marker;
+} InputMarker;
 
-typedef struct st_input {
+typedef struct LexInput {
 	char *text;
 	st_uint p;        /* current index into text */
 	st_uint n;        /* total number of chars in text */
 	st_uint line;     /* current line number, starting from 1 */
 	st_uint column;   /* current column number, starting from 1 */
-	marker marker;
-} st_input;
+	InputMarker InputMarker;
+} LexInput;
 
-typedef struct st_filein {
+typedef struct FileIn {
 	const char *filename;
-	st_input *input;
+	LexInput *input;
 	int line;
-} st_filein;
+} FileIn;
 
-typedef struct st_compiler_error {
+typedef struct CompilerError {
 	char message[255];
 	st_uint line;
 	st_uint column;
-} st_compiler_error;
+} CompilerError;
 
 typedef enum {
 	TOKEN_INVALID,
@@ -250,10 +248,10 @@ typedef enum {
 	TOKEN_BINARY_SELECTOR,
 	TOKEN_KEYWORD_SELECTOR,
 	TOKEN_EOF
-} st_token_type;
+} TokenType;
 
-typedef struct st_token {
-	st_token_type type;
+typedef struct Token {
+	TokenType type;
 	int line;
 	int column;
 	union {
@@ -267,7 +265,7 @@ typedef struct st_token {
 			int exponent;
 		};
 	};
-} st_token;
+} Token;
 
 typedef enum {
 	ERROR_MISMATCHED_CHAR,
@@ -279,10 +277,10 @@ typedef enum {
 	ERROR_INVALID_CHAR_CONST,
 	ERROR_NO_ALT_FOR_POUND,
 	
-} err_code;
+} ErrCode;
 
-typedef struct st_lexer {
-	st_input *input;
+typedef struct Lexer {
+	LexInput *input;
 	bool filter_comments;
 	bool token_matched;
 	
@@ -290,28 +288,28 @@ typedef struct st_lexer {
 	st_uint line;
 	st_uint column;
 	st_uint start;
-	st_token *token;
+	Token *token;
 	
 	// error control
 	bool failed;
 	jmp_buf main_loop;
 	
 	// last error information
-	err_code error_code;
+	ErrCode error_code;
 	st_uint error_line;
 	st_uint error_column;
 	char error_char;
 	
-	st_list *allocated_tokens; // delayed deallocation
-} st_lexer;
+	List *allocated_tokens; // delayed deallocation
+} Lexer;
 
 
-typedef struct st_parser {
-	st_lexer *lexer;
+typedef struct Parser {
+	Lexer *lexer;
 	bool in_block;
-	st_compiler_error *error;
+	CompilerError *error;
 	jmp_buf jmploc;
-} st_parser;
+} Parser;
 
 typedef enum {
 	ST_METHOD_NODE,
@@ -322,36 +320,36 @@ typedef enum {
 	ST_MESSAGE_NODE,
 	ST_CASCADE_NODE,
 	ST_LITERAL_NODE,
-} st_node_type;
+} NodeType;
 
 typedef enum {
 	ST_UNARY_PRECEDENCE,
 	ST_BINARY_PRECEDENCE,
 	ST_KEYWORD_PRECEDENCE,
-} st_msg_precedence;
+} MsgPrecedence;
 
-typedef struct st_node st_node;
-typedef struct st_node {
-	st_node_type type;
+typedef struct Node Node;
+typedef struct Node {
+	NodeType type;
 	int line;
-	st_node *next;
+	Node *next;
 	union {
 		struct {
-			st_msg_precedence precedence;
+			MsgPrecedence precedence;
 			int primitive;
-			st_oop selector;
-			st_node *statements;
-			st_node *temporaries;
-			st_node *arguments;
+			Oop selector;
+			Node *statements;
+			Node *temporaries;
+			Node *arguments;
 			
 		} method;
 		
 		struct {
-			st_msg_precedence precedence;
+			MsgPrecedence precedence;
 			bool is_statement;
-			st_oop selector;
-			st_node *receiver;
-			st_node *arguments;
+			Oop selector;
+			Node *receiver;
+			Node *arguments;
 			bool super_send;
 		} msg;
 		
@@ -360,98 +358,97 @@ typedef struct st_node {
 		} variable;
 		
 		struct {
-			st_oop value;
+			Oop value;
 		} literal;
 		
 		struct {
-			st_node *assignee;
-			st_node *expression;
+			Node *assignee;
+			Node *expression;
 		} assign;
 		
 		struct {
-			st_node *expression;
+			Node *expression;
 		} retrn;
 		
 		struct {
-			st_node *statements;
-			st_node *temporaries;
-			st_node *arguments;
+			Node *statements;
+			Node *temporaries;
+			Node *arguments;
 		} block;
 		
 		struct {
-			st_node *receiver;
-			st_list *messages;
+			Node *receiver;
+			List *messages;
 			bool is_statement;
 		} cascade;
 	};
 	
-} st_node;
+} Node;
 
-typedef struct st_handle {
-	st_header header;
+typedef struct Handle {
+	ObjHeader header;
 	uintptr_t value;
-} st_handle;
+} Handle;
 
-typedef struct st_generator {
-	st_oop class;
+typedef struct Generator {
+	Oop class;
 	jmp_buf jmploc;
-	st_compiler_error *error;
-	st_list *temporaries; // names of temps, in order of appearance
-	st_list *instvars;    // names of instvars, in order they were defined
-	st_list *literals;    // literal frame for the compiled code
-} st_generator;
+	CompilerError *error;
+	List *temporaries; // names of temps, in order of appearance
+	List *instvars;    // names of instvars, in order they were defined
+	List *literals;    // literal frame for the compiled code
+} Generator;
 
-typedef struct st_bytecode {
+typedef struct Bytecode {
 	st_uchar *buffer;
 	st_uint size;
 	st_uint alloc;
 	st_uint max_stack_depth;
-} st_bytecode;
+} Bytecode;
 
-typedef struct st_cell {
-	st_oop object;
+typedef struct Cell {
+	Oop object;
 	st_uint hash;
-} st_cell;
+} Cell;
 
-typedef struct st_identity_hashtable {
-	st_cell *table;
+typedef struct IdentityHashTable {
+	Cell *table;
 	st_uint alloc;
 	st_uint size;
 	st_uint deleted;
 	st_uint current_hash;
-	
-} st_identity_hashtable;
+} IdentityHashTable;
 
-typedef struct st_heap {
+typedef struct MemHeap {
 	st_uchar *start;        // start of reserved address space
 	st_uchar *p;            // end of committed address space (`start' to `p' is thus writeable memory)
 	st_uchar *end;          // end of reserved address space
-} st_heap;
+} MemHeap;
 
-typedef struct st_memory {
-	st_heap *heap;
-	st_oop *start, *end;
-	st_oop *p;
-	st_oop *mark_stack;
+typedef struct ObjMemory {
+	MemHeap *heap;
+	Oop *start, *end;
+	Oop *p;
+	Oop *mark_stack;
 	st_uint mark_stack_size;
 	st_uchar *mark_bits;
 	st_uchar *alloc_bits;
 	st_uint bits_size;                   // in bytes
-	st_oop **offsets;
+	Oop **offsets;
 	st_uint offsets_size;                // in bytes
 	ptr_array roots;
 	st_uint counter;
-	st_oop free_context;                 // free context pool
+	Oop free_context;                 // free context pool
 	struct timespec total_pause_time;    // total accumulated pause time
 	st_ulong bytes_allocated;            // current number of allocated bytes
 	st_ulong bytes_collected;            // number of bytes collected in last compaction
 	
-	st_identity_hashtable *ht;
+	IdentityHashTable *ht;
 	
-} st_memory;
+} ObjMemory;
 
 
-typedef struct st_large_integer {
-	struct st_header parent;
+typedef struct LargeInt {
+	ObjHeader parent;
 	mp_int value;
-} st_large_integer;
+} LargeInt;

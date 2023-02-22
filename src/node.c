@@ -8,21 +8,21 @@
 
 #include <string.h>
 
-#include "st-node.h"
-#include "st-array.h"
-#include "st-types.h"
-#include "st-object.h"
-#include "st-float.h"
-#include "st-character.h"
-#include "st-unicode.h"
+#include "node.h"
+#include "array.h"
+#include "types.h"
+#include "object.h"
+#include "float.h"
+#include "character.h"
+#include "unicode.h"
 
 
-void print_variable(st_node *node) {
+void print_variable(Node *node) {
 	st_assert (node->type == ST_VARIABLE_NODE);
 	printf(node->variable.name);
 }
 
-void print_object(st_oop object) {
+void print_object(Oop object) {
 	if (st_object_is_smi(object))
 		printf("%i", st_smi_value(object));
 	else if (st_object_is_symbol(object))
@@ -39,7 +39,7 @@ void print_object(st_oop object) {
 		print_tuple(object);
 }
 
-void print_tuple(st_oop tuple) {
+void print_tuple(Oop tuple) {
 	
 	int size;
 	size = st_smi_value(st_arrayed_object_size(tuple));
@@ -52,18 +52,18 @@ void print_tuple(st_oop tuple) {
 	printf(")");
 }
 
-void node_print_literal(st_node *node) {
+void node_print_literal(Node *node) {
 	st_assert (node->type == ST_LITERAL_NODE);
 	print_object(node->literal.value);
 }
 
-void print_return(st_node *node) {
+void print_return(Node *node) {
 	st_assert (node->type == ST_RETURN_NODE);
 	printf("^ ");
 	print_expression(node->retrn.expression);
 }
 
-void print_assign(st_node *node) {
+void print_assign(Node *node) {
 	st_assert (node->type == ST_ASSIGN_NODE);
 	print_variable(node->assign.assignee);
 	printf(" := ");
@@ -79,12 +79,12 @@ char **extract_keywords(char *selector) {
 	return keywords;
 }
 
-void print_method_node(st_node *node) {
+void print_method_node(Node *node) {
 	st_assert (node->type == ST_METHOD_NODE);
 	if (node->method.precedence == ST_KEYWORD_PRECEDENCE) {
 		char *selector = (char *) st_byte_array_bytes(node->method.selector);
 		char **keywords = extract_keywords(selector);
-		st_node *arguments = node->method.arguments;
+		Node *arguments = node->method.arguments;
 		for (char **keyword = keywords; *keyword; keyword++) {
 			printf("%s: ", *keyword);
 			print_variable(arguments);
@@ -103,7 +103,7 @@ void print_method_node(st_node *node) {
 	
 	if (node->method.temporaries != NULL) {
 		printf("| ");
-		st_node *temp = node->method.temporaries;
+		Node *temp = node->method.temporaries;
 		for (; temp; temp = temp->next) {
 			print_variable(temp);
 			printf(" ");
@@ -114,7 +114,7 @@ void print_method_node(st_node *node) {
 	if (node->method.primitive >= 0)
 		printf("<primitive: %i>\n", node->method.primitive);
 	
-	st_node *stm = node->method.statements;
+	Node *stm = node->method.statements;
 	for (; stm; stm = stm->next) {
 		if (stm->type == ST_RETURN_NODE)
 			print_return(stm);
@@ -124,11 +124,11 @@ void print_method_node(st_node *node) {
 	}
 }
 
-void print_block(st_node *node) {
+void print_block(Node *node) {
 	st_assert (node->type == ST_BLOCK_NODE);
 	printf("[ ");
 	if (node->block.arguments != NULL) {
-		st_node *arg = node->block.arguments;
+		Node *arg = node->block.arguments;
 		for (; arg; arg = arg->next) {
 			printf(":");
 			print_variable(arg);
@@ -140,7 +140,7 @@ void print_block(st_node *node) {
 	
 	if (node->block.temporaries != NULL) {
 		printf("| ");
-		st_node *temp = node->block.temporaries;
+		Node *temp = node->block.temporaries;
 		for (; temp; temp = temp->next) {
 			print_variable(temp);
 			printf(" ");
@@ -149,7 +149,7 @@ void print_block(st_node *node) {
 		printf(" ");
 	}
 	
-	st_node *stm = node->block.statements;
+	Node *stm = node->block.statements;
 	for (; stm; stm = stm->next) {
 		if (stm->type == ST_RETURN_NODE)
 			print_return(stm);
@@ -163,7 +163,7 @@ void print_block(st_node *node) {
 	printf(" ]");
 }
 
-void print_message(st_node *node) {
+void print_message(Node *node) {
 	
 	if (node->msg.precedence == ST_UNARY_PRECEDENCE) {
 		if (node->msg.receiver->type == ST_MESSAGE_NODE &&
@@ -212,7 +212,7 @@ void print_message(st_node *node) {
 		char *selector = (char *) st_byte_array_bytes(node->msg.selector);
 		
 		char **keywords = extract_keywords(selector);
-		st_node *arguments = node->msg.arguments;
+		Node *arguments = node->msg.arguments;
 		
 		if (node->msg.receiver->type == ST_MESSAGE_NODE && node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE)
 			printf("(");
@@ -246,7 +246,7 @@ void print_message(st_node *node) {
 	}
 }
 
-void print_expression(st_node *node) {
+void print_expression(Node *node) {
 	switch (node->type) {
 		case ST_LITERAL_NODE:
 			node_print_literal(node);
@@ -272,13 +272,13 @@ void print_expression(st_node *node) {
 	}
 }
 
-void st_print_method_node(st_node *node) {
+void st_print_method_node(Node *node) {
 	st_assert (node && node->type == ST_METHOD_NODE);
 	print_method_node(node);
 }
 
-st_node *st_node_new(st_node_type type) {
-	st_node *node = st_new0 (st_node);
+Node *st_node_new(NodeType type) {
+	Node *node = st_new0 (Node);
 	node->type = type;
 	
 	if (node->type == ST_MESSAGE_NODE)
@@ -290,8 +290,8 @@ st_node *st_node_new(st_node_type type) {
 	return node;
 }
 
-st_node *st_node_list_append(st_node *list, st_node *node) {
-	st_node *l = list;
+Node *st_node_list_append(Node *list, Node *node) {
+	Node *l = list;
 	if (list == NULL)
 		return node;
 	while (l->next)
@@ -300,23 +300,23 @@ st_node *st_node_list_append(st_node *list, st_node *node) {
 	return list;
 }
 
-st_uint st_node_list_length(st_node *list) {
-	st_node *l = list;
+st_uint st_node_list_length(Node *list) {
+	Node *l = list;
 	int len = 0;
 	for (; l; l = l->next)
 		++len;
 	return len;
 }
 
-st_node *st_node_list_at(st_node *list, st_uint index) {
+Node *st_node_list_at(Node *list, st_uint index) {
 	st_uint i = 0;
-	st_node *l;
+	Node *l;
 	for (l = list; i < index; i++)
 		l = l->next;
 	return l;
 }
 
-void st_node_destroy(st_node *node) {
+void st_node_destroy(Node *node) {
 	if (node == NULL)
 		return;
 	

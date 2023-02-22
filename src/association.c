@@ -7,15 +7,15 @@
  */
 
 
-#include "st-association.h"
-#include "st-behavior.h"
+#include "association.h"
+#include "behavior.h"
 
-st_uint st_association_hash(st_oop object) {
+st_uint st_association_hash(Oop object) {
 	return st_object_hash(ST_ASSOCIATION (object)->key) ^ st_object_hash(ST_ASSOCIATION (object)->value);
 }
 
-bool st_association_equal(st_oop object, st_oop other) {
-	struct st_association *m, *n;
+bool st_association_equal(Oop object, Oop other) {
+	struct Association *m, *n;
 	
 	if (st_object_class(other) != ST_ASSOCIATION_CLASS)
 		return false;
@@ -26,8 +26,8 @@ bool st_association_equal(st_oop object, st_oop other) {
 	return st_object_equal(m->key, n->key) && st_object_equal(m->value, n->value);
 }
 
-st_oop st_association_new(st_oop key, st_oop value) {
-	st_oop assoc = st_object_new(ST_ASSOCIATION_CLASS);
+Oop st_association_new(Oop key, Oop value) {
+	Oop assoc = st_object_new(ST_ASSOCIATION_CLASS);
 	
 	ST_ASSOCIATION_KEY (assoc) = key;
 	ST_ASSOCIATION_VALUE (assoc) = value;

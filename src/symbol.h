@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include "st-types.h"
-#include "st-memory.h"
+#include "types.h"
+#include "memory.h"
 
-st_oop st_string_new(const char *bytes);
+Oop st_string_new(const char *bytes);
 
-st_oop st_symbol_new(const char *bytes);
+Oop st_symbol_new(const char *bytes);
 
-bool st_symbol_equal(st_oop object, st_oop other);
+bool st_symbol_equal(Oop object, Oop other);

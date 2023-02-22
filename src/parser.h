@@ -8,82 +8,82 @@
 
 #pragma once
 
-#include "st-types.h"
+#include "types.h"
 
-void parse_error(st_parser *parser, const char *message, st_token *token);
+void parse_error(Parser *parser, const char *message, Token *token);
 
-void print_parse_error(const char *message, st_token *token);
+void print_parse_error(const char *message, Token *token);
 
 /* adaptor for st_lexer_next_token(). Catches lexer errors and filters out comments */
-st_token *next(st_parser *parser);
+Token *next(Parser *parser);
 
-st_token *current(st_lexer *lexer);
+Token *current(Lexer *lexer);
 
-st_node *parse_statements(st_parser *parser);
+Node *parse_statements(Parser *parser);
 
-st_node *parse_temporaries(st_parser *parser);
+Node *parse_temporaries(Parser *parser);
 
-st_node *parse_subexpression(st_parser *parser);
+Node *parse_subexpression(Parser *parser);
 
-st_node *parse_expression(st_parser *parser);
+Node *parse_expression(Parser *parser);
 
-int parse_primitive(st_parser *parser);
+int parse_primitive(Parser *parser);
 
-st_node *parse_block_arguments(st_parser *parser);
+Node *parse_block_arguments(Parser *parser);
 
-st_node *parse_block(st_parser *parser);
+Node *parse_block(Parser *parser);
 
-st_node *parse_number(st_parser *parser);
+Node *parse_number(Parser *parser);
 
-st_node *parse_primary(st_parser *parser);
+Node *parse_primary(Parser *parser);
 
-st_node *parse_tuple(st_parser *parser);
+Node *parse_tuple(Parser *parser);
 
 /* identifiers, literals, blocks */
-st_node *parse_primary(st_parser *parser);
+Node *parse_primary(Parser *parser);
 
-st_node *parse_unary_message(st_parser *parser, st_node *receiver);
+Node *parse_unary_message(Parser *parser, Node *receiver);
 
-st_node *parse_binary_argument(st_parser *parser, st_node *receiver);
+Node *parse_binary_argument(Parser *parser, Node *receiver);
 
-st_node *parse_binary_message(st_parser *parser, st_node *receiver);
+Node *parse_binary_message(Parser *parser, Node *receiver);
 
-st_node *parse_keyword_argument(st_parser *parser, st_node *receiver);
+Node *parse_keyword_argument(Parser *parser, Node *receiver);
 
-st_node *parse_keyword_message(st_parser *parser, st_node *receiver);
+Node *parse_keyword_message(Parser *parser, Node *receiver);
 
 /* parses an expression from left to right, by recursively parsing subexpressions */
-st_node *parse_message(st_parser *parser, st_node *receiver);
+Node *parse_message(Parser *parser, Node *receiver);
 
-st_node *parse_assign(st_parser *parser, st_node *assignee);
+Node *parse_assign(Parser *parser, Node *assignee);
 
-st_node *parse_cascade(st_parser *parser, st_node *first_message);
+Node *parse_cascade(Parser *parser, Node *first_message);
 
-st_node *parse_expression(st_parser *parser);
+Node *parse_expression(Parser *parser);
 
-st_node *parse_subexpression(st_parser *parser);
+Node *parse_subexpression(Parser *parser);
 
-st_node *parse_return(st_parser *parser);
+Node *parse_return(Parser *parser);
 
-st_node *parse_statement(st_parser *parser);
+Node *parse_statement(Parser *parser);
 
-st_node *parse_statements(st_parser *parser);
+Node *parse_statements(Parser *parser);
 
-int parse_primitive(st_parser *parser);
+int parse_primitive(Parser *parser);
 
-st_node *parse_temporaries(st_parser *parser);
+Node *parse_temporaries(Parser *parser);
 
-void parse_message_pattern(st_parser *parser, st_node *method);
+void parse_message_pattern(Parser *parser, Node *method);
 
-st_node *st_parse_method(st_parser *parser);
+Node *st_parse_method(Parser *parser);
 
-bool parse_variable_names(st_lexer *lexer, st_list **varnames);
+bool parse_variable_names(Lexer *lexer, List **varnames);
 
-void parse_class(st_lexer *lexer, st_token *token);
+void parse_class(Lexer *lexer, Token *token);
 
 void parse_classes(const char *filename);
 
-st_node *st_parser_parse(st_lexer *lexer, st_compiler_error *error);
+Node *st_parser_parse(Lexer *lexer, CompilerError *error);
 
 
 

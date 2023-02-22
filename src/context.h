@@ -7,30 +7,30 @@
 
 #pragma once
 
-#include "st-types.h"
-#include "st-object.h"
+#include "types.h"
+#include "object.h"
 
 struct st_context_part {
-	struct st_header parent;
-	st_oop sender;
-	st_oop ip;
-	st_oop sp;
+	struct ObjHeader parent;
+	Oop sender;
+	Oop ip;
+	Oop sp;
 	
 };
 
 struct st_method_context {
 	struct st_context_part parent;
-	st_oop method;
-	st_oop receiver;
-	st_oop stack[];
+	Oop method;
+	Oop receiver;
+	Oop stack[];
 };
 
 struct st_block_context {
 	struct st_context_part parent;
-	st_oop initial_ip;
-	st_oop argcount;
-	st_oop home;
-	st_oop stack[];
+	Oop initial_ip;
+	Oop argcount;
+	Oop home;
+	Oop stack[];
 };
 
 #define ST_CONTEXT_PART(oop)       ((struct st_context_part *)   st_detag_pointer (oop))

@@ -6,12 +6,12 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include "st-float.h"
-#include "st-behavior.h"
+#include "float.h"
+#include "behavior.h"
 
-st_oop st_float_allocate(st_oop class) {
+Oop st_float_allocate(Oop class) {
 	st_uint size;
-	st_oop object;
+	Oop object;
 	
 	size = ST_SIZE_OOPS (struct st_float);
 	object = st_memory_allocate(size);
@@ -27,8 +27,8 @@ st_oop st_float_allocate(st_oop class) {
 	return object;
 }
 
-st_oop st_float_new(double value) {
-	st_oop object;
+Oop st_float_new(double value) {
+	Oop object;
 	object = st_object_new(ST_FLOAT_CLASS);
 	st_float_set_value(object, value);
 	return object;

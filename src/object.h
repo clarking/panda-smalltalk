@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include "st-types.h"
-#include "st-small-integer.h"
-#include "st-utils.h"
-#include "st-universe.h"
+#include "types.h"
+#include "small-integer.h"
+#include "utils.h"
+#include "universe.h"
 
-#define ST_HEADER(oop)        ((st_header *) st_detag_pointer (oop))
+#define ST_HEADER(oop)        ((ObjHeader *) st_detag_pointer (oop))
 #define ST_OBJECT_MARK(oop)   (ST_HEADER (oop)->mark)
 #define ST_OBJECT_CLASS(oop)  (ST_HEADER (oop)->class)
 #define ST_OBJECT_FIELDS(oop) (ST_HEADER (oop)->fields)
@@ -25,44 +25,44 @@
     (((bitfield) >> _ST_OBJECT_##field##_SHIFT) & _ST_OBJECT_##field##_MASK)
 
 
-st_oop st_object_allocate(st_oop class);
+Oop st_object_allocate(Oop class);
 
-void st_object_initialize_header(st_oop object, st_oop class);
+void st_object_initialize_header(Oop object, Oop class);
 
-bool st_object_equal(st_oop object, st_oop other);
+bool st_object_equal(Oop object, Oop other);
 
-st_uint st_object_hash(st_oop object);
+st_uint st_object_hash(Oop object);
 
-void st_object_set_format(st_oop object, st_format format);
+void st_object_set_format(Oop object, st_format format);
 
-st_format st_object_format(st_oop object);
+st_format st_object_format(Oop object);
 
-void st_object_set_hashed(st_oop object, bool hashed);
+void st_object_set_hashed(Oop object, bool hashed);
 
-bool st_object_is_hashed(st_oop object);
+bool st_object_is_hashed(Oop object);
 
-st_uint st_object_instance_size(st_oop object);
+st_uint st_object_instance_size(Oop object);
 
-st_uint st_object_set_instance_size(st_oop object, st_uint size);
+st_uint st_object_set_instance_size(Oop object, st_uint size);
 
-int st_object_tag(st_oop object);
+int st_object_tag(Oop object);
 
-bool st_object_is_heap(st_oop object);
+bool st_object_is_heap(Oop object);
 
-bool st_object_is_smi(st_oop object);
+bool st_object_is_smi(Oop object);
 
-bool st_object_is_character(st_oop object);
+bool st_object_is_character(Oop object);
 
-bool st_object_is_mark(st_oop object);
+bool st_object_is_mark(Oop object);
 
-st_oop st_object_class(st_oop object);
+Oop st_object_class(Oop object);
 
-bool st_object_is_symbol(st_oop object);
+bool st_object_is_symbol(Oop object);
 
-bool st_object_is_string(st_oop object);
+bool st_object_is_string(Oop object);
 
-bool st_object_is_array(st_oop object);
+bool st_object_is_array(Oop object);
 
-bool st_object_is_byte_array(st_oop object);
+bool st_object_is_byte_array(Oop object);
 
-bool st_object_is_float(st_oop object);
+bool st_object_is_float(Oop object);

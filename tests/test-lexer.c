@@ -28,8 +28,8 @@ static const char *const token_names[] = {
 		"TOKEN_EOF",
 };
 
-static void print_token(st_lexer *lexer, st_token *token) {
-	st_token_type type;
+static void print_token(Lexer *lexer, Token *token) {
+	TokenType type;
 	char *string;
 	type = st_token_get_type(token);
 	switch (type) {
@@ -64,9 +64,9 @@ static void print_token(st_lexer *lexer, st_token *token) {
 #define BUF_SIZE 10000
 
 int main(int argc, char *argv[]) {
-	st_lexer *lexer;
-	st_token *token;
-	st_token_type type;
+	Lexer *lexer;
+	Token *token;
+	TokenType type;
 	
 	printf("Enter or pipe some Smalltalk code on stdin:\n\n");
 	

@@ -6,13 +6,13 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include "st-large-integer.h"
-#include "st-universe.h"
-#include "st-types.h"
+#include "large-integer.h"
+#include "universe.h"
+#include "types.h"
 
 #define VALUE(oop)  (&(ST_LARGE_INTEGER(oop)->value))
 
-st_oop st_large_integer_new_from_string(const char *string, st_uint radix) {
+Oop st_large_integer_new_from_string(const char *string, st_uint radix) {
 	mp_int value;
 	int result;
 	
@@ -34,7 +34,7 @@ st_oop st_large_integer_new_from_string(const char *string, st_uint radix) {
 	return ST_NIL;
 }
 
-char *st_large_integer_to_string(st_oop integer, st_uint radix) {
+char *st_large_integer_to_string(Oop integer, st_uint radix) {
 	int result;
 	int size;
 	
@@ -51,11 +51,11 @@ char *st_large_integer_to_string(st_oop integer, st_uint radix) {
 	return NULL;
 }
 
-st_oop st_large_integer_allocate(st_oop class, mp_int *value) {
-	st_oop object;
+Oop st_large_integer_allocate(Oop class, mp_int *value) {
+	Oop object;
 	st_uint size;
 	
-	size = ST_SIZE_OOPS (struct st_large_integer);
+	size = ST_SIZE_OOPS (struct LargeInt);
 	object = st_memory_allocate(size);
 	if (object == 0) {
 		st_memory_perform_gc();
@@ -72,6 +72,6 @@ st_oop st_large_integer_allocate(st_oop class, mp_int *value) {
 	return object;
 }
 
-st_oop st_large_integer_new(mp_int *value) {
+Oop st_large_integer_new(mp_int *value) {
 	return st_large_integer_allocate(ST_LARGE_INTEGER_CLASS, value);
 }

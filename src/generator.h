@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "st-types.h"
-#include "st-utils.h"
+#include "types.h"
+#include "utils.h"
 
 #define DEFAULT_CODE_SIZE 20
 #define CSTRING(string) ((char *) st_byte_array_bytes (string))
@@ -20,127 +20,127 @@
 
 #define FORMAT(ip) (formats[sizes[*ip]-1])
 
-typedef void (*CodeGenerationFunc)(st_generator *gt, st_bytecode *code, st_node *node);
+typedef void (*CodeGenerationFunc)(Generator *gt, Bytecode *code, Node *node);
 
-typedef bool (*OptimisationMatchFunc)(st_node *node);
+typedef bool (*OptimisationMatchFunc)(Node *node);
 
 static st_uint sizes[255] = {0,};
 
 void check_init(void);
 
-void generation_error(st_generator *gt, const char *message, st_node *node);
+void generation_error(Generator *gt, const char *message, Node *node);
 
-void bytecode_init(st_bytecode *code);
+void bytecode_init(Bytecode *code);
 
-void bytecode_destroy(st_bytecode *code);
+void bytecode_destroy(Bytecode *code);
 
-st_list *get_temporaries(st_generator *gt, st_list *instvars, st_node *arguments, st_node *temporaries);
+List *get_temporaries(Generator *gt, List *instvars, Node *arguments, Node *temporaries);
 
-st_generator *generator_new(void);
+Generator *generator_new(void);
 
-void generator_destroy(st_generator *gt);
+void generator_destroy(Generator *gt);
 
-st_oop create_literals_array(st_generator *gt);
+Oop create_literals_array(Generator *gt);
 
-st_oop create_bytecode_array(st_bytecode *code);
+Oop create_bytecode_array(Bytecode *code);
 
-void emit(st_bytecode *code, st_uchar value);
+void emit(Bytecode *code, st_uchar value);
 
-int find_instvar(st_generator *gt, char *name);
+int find_instvar(Generator *gt, char *name);
 
-int find_temporary(st_generator *gt, char *name);
+int find_temporary(Generator *gt, char *name);
 
-int find_literal_const(st_generator *gt, st_oop literal);
+int find_literal_const(Generator *gt, Oop literal);
 
-int find_literal_var(st_generator *gt, char *name);
+int find_literal_var(Generator *gt, char *name);
 
-void jump_offset(st_bytecode *code, int offset);
+void jump_offset(Bytecode *code, int offset);
 
-void assign_temp(st_bytecode *code, int index, bool pop);
+void assign_temp(Bytecode *code, int index, bool pop);
 
-void assign_instvar(st_bytecode *code, int index, bool pop);
+void assign_instvar(Bytecode *code, int index, bool pop);
 
-void assign_literal_var(st_bytecode *code, int index, bool pop);
+void assign_literal_var(Bytecode *code, int index, bool pop);
 
-void push(st_bytecode *code, st_uchar value, st_uchar index);
+void push(Bytecode *code, st_uchar value, st_uchar index);
 
-void generate_assign(st_generator *gt, st_bytecode *code, st_node *node, bool pop);
+void generate_assign(Generator *gt, Bytecode *code, Node *node, bool pop);
 
-int size_assign(st_generator *gt, st_node *node);
+int size_assign(Generator *gt, Node *node);
 
-void generate_return(st_generator *gt, st_bytecode *code, st_node *node);
+void generate_return(Generator *gt, Bytecode *code, Node *node);
 
-int size_return(st_generator *gt, st_node *node);
+int size_return(Generator *gt, Node *node);
 
-st_list *get_block_temporaries(st_generator *gt, st_node *temporaries);
+List *get_block_temporaries(Generator *gt, Node *temporaries);
 
-void generate_block(st_generator *gt, st_bytecode *code, st_node *node);
+void generate_block(Generator *gt, Bytecode *code, Node *node);
 
-int size_block(st_generator *gt, st_node *node);
+int size_block(Generator *gt, Node *node);
 
-bool match_ifTrue(st_node *node);
+bool match_ifTrue(Node *node);
 
-void generate_ifTrue(st_generator *gt, st_bytecode *code, st_node *node);
+void generate_ifTrue(Generator *gt, Bytecode *code, Node *node);
 
-bool match_ifFalse(st_node *node);
+bool match_ifFalse(Node *node);
 
-void generate_ifFalse(st_generator *gt, st_bytecode *code, st_node *node);
+void generate_ifFalse(Generator *gt, Bytecode *code, Node *node);
 
-bool match_ifTrueifFalse(st_node *node);
+bool match_ifTrueifFalse(Node *node);
 
-void generate_ifTrueifFalse(st_generator *gt, st_bytecode *code, st_node *node);
+void generate_ifTrueifFalse(Generator *gt, Bytecode *code, Node *node);
 
-bool match_ifFalseifTrue(st_node *node);
+bool match_ifFalseifTrue(Node *node);
 
-void generate_ifFalseifTrue(st_generator *gt, st_bytecode *code, st_node *node);
+void generate_ifFalseifTrue(Generator *gt, Bytecode *code, Node *node);
 
-bool match_whileTrue(st_node *node);
+bool match_whileTrue(Node *node);
 
-void generate_whileTrue(st_generator *gt, st_bytecode *code, st_node *node);
+void generate_whileTrue(Generator *gt, Bytecode *code, Node *node);
 
-bool match_whileFalse(st_node *node);
+bool match_whileFalse(Node *node);
 
-void generate_whileFalse(st_generator *gt, st_bytecode *code, st_node *node);
+void generate_whileFalse(Generator *gt, Bytecode *code, Node *node);
 
-bool match_whileTrueArg(st_node *node);
+bool match_whileTrueArg(Node *node);
 
-void generate_whileTrueArg(st_generator *gt, st_bytecode *code, st_node *node);
+void generate_whileTrueArg(Generator *gt, Bytecode *code, Node *node);
 
-bool match_whileFalseArg(st_node *node);
+bool match_whileFalseArg(Node *node);
 
-void generate_whileFalseArg(st_generator *gt, st_bytecode *code, st_node *node);
+void generate_whileFalseArg(Generator *gt, Bytecode *code, Node *node);
 
-bool match_and(st_node *node);
+bool match_and(Node *node);
 
-void generate_and(st_generator *gt, st_bytecode *code, st_node *node);
+void generate_and(Generator *gt, Bytecode *code, Node *node);
 
-bool match_or(st_node *node);
+bool match_or(Node *node);
 
-void generate_or(st_generator *gt, st_bytecode *code, st_node *node);
+void generate_or(Generator *gt, Bytecode *code, Node *node);
 
-int size_message(st_generator *gt, st_node *node);
+int size_message(Generator *gt, Node *node);
 
-int size_expression(st_generator *gt, st_node *node);
+int size_expression(Generator *gt, Node *node);
 
-int size_statements(st_generator *gt, st_node *node);
+int size_statements(Generator *gt, Node *node);
 
-void generate_expression(st_generator *gt, st_bytecode *code, st_node *node);
+void generate_expression(Generator *gt, Bytecode *code, Node *node);
 
-void generate_statements(st_generator *gt, st_bytecode *code, st_node *statements);
+void generate_statements(Generator *gt, Bytecode *code, Node *statements);
 
-void generate_method_statements(st_generator *gt, st_bytecode *code, st_node *statements);
+void generate_method_statements(Generator *gt, Bytecode *code, Node *statements);
 
-st_list *collect_temporaries(st_generator *gt, st_node *node);
+List *collect_temporaries(Generator *gt, Node *node);
 
-st_oop st_generate_method(st_oop class, st_node *node, st_compiler_error *error);
+Oop st_generate_method(Oop class, Node *node, CompilerError *error);
 
-void print_bytecodes(st_oop literals, char *codes, int len);
+void print_bytecodes(Oop literals, char *codes, int len);
 
-void gen_print_literal(st_oop lit);
+void gen_print_literal(Oop lit);
 
-void print_literals(st_oop literals);
+void print_literals(Oop literals);
 
-void st_print_generated_method(st_oop method);
+void st_print_generated_method(Oop method);
 
 const struct optimisers {
 	CodeGenerationFunc generation_func;

@@ -7,7 +7,7 @@
  */
 
 
-#include "st-machine.h"
+#include "machine.h"
 
 
 #define VALUE(oop) (&(ST_LARGE_INTEGER(oop)->value))

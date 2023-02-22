@@ -10,7 +10,7 @@
 #pragma once
 
 #include <setjmp.h>
-#include "st-types.h"
+#include "types.h"
 
 // cache size must be a power of 2
 #define ST_METHOD_CACHE_SIZE      1024
@@ -21,32 +21,32 @@
 #define ST_NUM_SELECTORS 24
 
 typedef struct st_method_cache {
-	st_oop class;
-	st_oop selector;
-	st_oop method;
+	Oop class;
+	Oop selector;
+	Oop method;
 } st_method_cache;
 
 typedef struct st_machine st_machine;
 
 struct st_machine {
-	st_oop context;
-	st_oop receiver;
-	st_oop method;
+	Oop context;
+	Oop receiver;
+	Oop method;
 	st_uchar *bytecode;
-	st_oop *temps;
-	st_oop *stack;
-	st_oop lookup_class;
-	st_oop message_receiver;
-	st_oop message_selector;
+	Oop *temps;
+	Oop *stack;
+	Oop lookup_class;
+	Oop message_receiver;
+	Oop message_selector;
 	size_t message_argcount;
-	st_oop new_method;
+	Oop new_method;
 	bool success;
 	st_uint ip;
 	st_uint sp;
 	jmp_buf main_loop;
 	st_method_cache method_cache[ST_METHOD_CACHE_SIZE];
-	st_oop globals[ST_NUM_GLOBALS];
-	st_oop selectors[ST_NUM_SELECTORS];
+	Oop globals[ST_NUM_GLOBALS];
+	Oop selectors[ST_NUM_SELECTORS];
 };
 
 extern st_machine __machine;
@@ -60,11 +60,11 @@ void st_machine_main(st_machine *machine);
 
 void st_machine_initialize(st_machine *machine);
 
-void st_machine_set_active_context(st_machine *machine, st_oop context);
+void st_machine_set_active_context(st_machine *machine, Oop context);
 
 void st_machine_execute_method(st_machine *machine);
 
-st_oop st_machine_lookup_method(st_machine *machine, st_oop class);
+Oop st_machine_lookup_method(st_machine *machine, Oop class);
 
 void st_machine_clear_caches(st_machine *machine);
 

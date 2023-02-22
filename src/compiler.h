@@ -8,33 +8,33 @@
 
 #pragma once
 
-#include "st-types.h"
-#include "st-utils.h"
-#include "st-lexer.h"
-#include "st-node.h"
+#include "types.h"
+#include "utils.h"
+#include "lexer.h"
+#include "node.h"
 
 /* isn't declared in glibc string.h */
 char *basename(const char *FILENAME);
 
-bool st_compile_string(st_oop class, const char *string, st_compiler_error *error);
+bool st_compile_string(Oop class, const char *string, CompilerError *error);
 
-void filein_error(st_filein *parser, st_token *token, const char *message);
+void filein_error(FileIn *parser, Token *token, const char *message);
 
-st_token *next_token(st_filein *parser, st_lexer *lexer);
+Token *next_token(FileIn *parser, Lexer *lexer);
 
-st_lexer *next_chunk(st_filein *parser);
+Lexer *next_chunk(FileIn *parser);
 
-void compile_method(st_filein *parser, st_lexer *lexer, char *class_name, bool class_method);
+void compile_method(FileIn *parser, Lexer *lexer, char *class_name, bool class_method);
 
-void compile_class(st_filein *parser, st_lexer *lexer, char *name);
+void compile_class(FileIn *parser, Lexer *lexer, char *name);
 
-void compile_chunk(st_filein *parser, st_lexer *lexer);
+void compile_chunk(FileIn *parser, Lexer *lexer);
 
-void compile_chunks(st_filein *parser);
+void compile_chunks(FileIn *parser);
 
-st_node *st_parser_parse(st_lexer *lexer, st_compiler_error *error);
+Node *st_parser_parse(Lexer *lexer, CompilerError *error);
 
-st_oop st_generate_method(st_oop class, st_node *node, st_compiler_error *error);
+Oop st_generate_method(Oop class, Node *node, CompilerError *error);
 
 void compile_file_in(const char *filename);
 
