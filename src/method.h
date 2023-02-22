@@ -12,15 +12,15 @@
 #include "object.h"
 #include "array.h"
 
-#define ST_METHOD(oop) ((struct st_method *) (st_detag_pointer (oop)))
+#define ST_METHOD(oop) ((Method *) (st_detag_pointer (oop)))
 
-struct st_method {
-	struct ObjHeader parent;
+typedef struct Method {
+	ObjHeader parent;
 	Oop header;
 	Oop bytecode;
 	Oop literals;
 	Oop selector;
-};
+} Method;
 
 typedef enum {
 	ST_METHOD_NORMAL,
@@ -29,7 +29,7 @@ typedef enum {
 	ST_METHOD_RETURN_LITERAL,
 	ST_METHOD_PRIMITIVE,
 	
-} st_method_flags;
+} MethodFlags;
 
 typedef enum {
 	ST_METHOD_LITERAL_NIL,
@@ -40,7 +40,7 @@ typedef enum {
 	ST_METHOD_LITERAL_ONE,
 	ST_METHOD_LITERAL_TWO,
 	
-} st_method_literal_type;
+} MethodLiteralType;
 
 #define ST_METHOD_HEADER(oop)   (ST_METHOD (oop)->header)
 #define ST_METHOD_LITERALS(oop) (ST_METHOD (oop)->literals)
@@ -147,11 +147,11 @@ static inline int st_method_get_prim_index(Oop method) {
 	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), PRIMITIVE);
 }
 
-static inline st_method_flags st_method_get_flags(Oop method) {
+static inline MethodFlags st_method_get_flags(Oop method) {
 	return _ST_METHOD_GET_BITFIELD (ST_METHOD_HEADER(method), FLAG);
 }
 
-static inline void st_method_set_flags(Oop method, st_method_flags flags) {
+static inline void st_method_set_flags(Oop method, MethodFlags flags) {
 	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), FLAG, flags);
 }
 
@@ -175,7 +175,7 @@ static inline void st_method_set_instvar_index(Oop method, int index) {
 	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), INSTVAR, index);
 }
 
-static inline void st_method_set_literal_type(Oop method, st_method_literal_type literal_type) {
+static inline void st_method_set_literal_type(Oop method, MethodLiteralType literal_type) {
 	_ST_METHOD_SET_BITFIELD (ST_METHOD_HEADER(method), LITERAL, literal_type);
 }
 

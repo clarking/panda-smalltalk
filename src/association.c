@@ -10,12 +10,12 @@
 #include "association.h"
 #include "behavior.h"
 
-st_uint st_association_hash(Oop object) {
+uint st_association_hash(Oop object) {
 	return st_object_hash(ST_ASSOCIATION (object)->key) ^ st_object_hash(ST_ASSOCIATION (object)->value);
 }
 
 bool st_association_equal(Oop object, Oop other) {
-	struct Association *m, *n;
+	Association *m, *n;
 	
 	if (st_object_class(other) != ST_ASSOCIATION_CLASS)
 		return false;

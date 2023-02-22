@@ -12,18 +12,17 @@
 #include "utils.h"
 
 static char *filter_double_bangs(const char *chunk) {
-	st_uint size, i = 0, count = 0;
+	uint size, i = 0, count = 0;
 	const char *p = chunk;
 	char *buf;
 	
 	size = strlen(chunk);
-	
 	if (size < 2)
 		return st_strdup(chunk);
 	
 	// count number of redundant bangs
 	while (p[0] && p[1]) {
-		if (ST_UNLIKELY (p[0] == '!' && p[1] == '!'))
+		if (ST_UNLIKELY(p[0] == '!' && p[1] == '!'))
 			count++;
 		p++;
 	}
@@ -45,7 +44,7 @@ static char *filter_double_bangs(const char *chunk) {
 
 char *st_input_next_chunk(LexInput *input) {
 	char *chunk_filtered, *chunk = NULL;
-	st_uint start;
+	uint start;
 	
 	start = st_input_index(input);
 	while (st_input_look_ahead(input, 1) != ST_INPUT_EOF) {
@@ -78,22 +77,22 @@ void st_input_destroy(LexInput *input) {
 	st_free(input);
 }
 
-st_uint st_input_get_line(LexInput *input) {
+uint st_input_get_line(LexInput *input) {
 	st_assert (input != NULL);
 	return input->line;
 }
 
-st_uint st_input_get_column(LexInput *input) {
+uint st_input_get_column(LexInput *input) {
 	st_assert (input != NULL);
 	return input->column;
 }
 
 char st_input_look_ahead(LexInput *input, int i) {
 	st_assert (input != NULL);
-	if (ST_UNLIKELY (i == 0))
+	if (ST_UNLIKELY(i == 0))
 		return 0x0000;
 	
-	if (ST_UNLIKELY (i < 0)) {
+	if (ST_UNLIKELY(i < 0)) {
 		i++;
 		if ((input->p + i - 1) < 0)
 			return ST_INPUT_EOF;
@@ -119,7 +118,7 @@ void st_input_rewind(LexInput *input) {
 	input->column = input->InputMarker.column;
 }
 
-void st_input_seek(LexInput *input, st_uint index) {
+void st_input_seek(LexInput *input, uint index) {
 	st_assert (input != NULL);
 	if (index <= input->p)
 		input->p = index;
@@ -142,14 +141,14 @@ void st_input_consume(LexInput *input) {
 	}
 }
 
-st_uint st_input_size(LexInput *input) {
+uint st_input_size(LexInput *input) {
 	st_assert (input != NULL);
 	return input->n;
 }
 
-char *st_input_range(LexInput *input, st_uint start, st_uint end) {
+char *st_input_range(LexInput *input, uint start, uint end) {
 	char *buf;
-	st_uint len;
+	uint len;
 	
 	st_assert ((end - start) >= 0);
 	len = end - start;
@@ -159,7 +158,7 @@ char *st_input_range(LexInput *input, st_uint start, st_uint end) {
 	return buf;
 }
 
-st_uint st_input_index(LexInput *input) {
+uint st_input_index(LexInput *input) {
 	st_assert (input != NULL);
 	return input->p;
 }

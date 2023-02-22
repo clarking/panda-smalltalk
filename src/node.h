@@ -37,9 +37,9 @@ Node *st_node_new(NodeType type);
 
 Node *st_node_list_append(Node *list, Node *node);
 
-Node *st_node_list_at(Node *list, st_uint index);
+Node *st_node_list_at(Node *list, uint index);
 
-st_uint st_node_list_length(Node *list);
+uint st_node_list_length(Node *list);
 
 void st_print_method_node(Node *method);
 

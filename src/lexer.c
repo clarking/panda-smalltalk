@@ -112,7 +112,7 @@ static bool is_special_char(char c) {
  * for example, 2r1010301 is an invalid number since the '3' is not within the radix.
  * 
  **/
-static bool is_radix_numeral(st_uint radix, char c) {
+static bool is_radix_numeral(uint radix, char c) {
 	st_assert (radix >= 2 && radix <= 36);
 	
 	if (radix > 10)
@@ -143,12 +143,14 @@ static void match_number(Lexer *lexer) {
 	
 	do {
 		match_range(lexer, '0', '9');
-	} while (isdigit (lookahead(lexer, 1)));
+	}
+	while (isdigit (lookahead(lexer, 1)));
 	
 	if (lookahead (lexer, 1) != 'r') {
 		j = st_input_index(lexer->input);
 		goto out1;
-	} else {
+	}
+	else {
 		string = st_input_range(lexer->input, k, st_input_index(lexer->input));
 		radix = strtol(string, NULL, 10);
 		st_free(string);
@@ -169,7 +171,8 @@ static void match_number(Lexer *lexer) {
 		consume (lexer);
 		do {
 			consume (lexer);
-		} while (is_radix_numeral(radix, lookahead (lexer, 1)));
+		}
+		while (is_radix_numeral(radix, lookahead (lexer, 1)));
 	}
 	
 	j = st_input_index(lexer->input);
@@ -239,7 +242,8 @@ static void match_keyword_or_identifier(Lexer *lexer, bool create_token) {
 	if (lookahead (lexer, 1) == ':' && lookahead (lexer, 2) != '=') {
 		consume (lexer);
 		token_type = TOKEN_KEYWORD_SELECTOR;
-	} else
+	}
+	else
 		token_type = TOKEN_IDENTIFIER;
 	
 	if (create_token) {
@@ -300,17 +304,19 @@ static void match_binary_selector(Lexer *lexer, bool create_token) {
 		if (is_special_char(lookahead (lexer, 1)))
 			match(lexer, lookahead (lexer, 1));
 		
-	} else if (is_special_char(lookahead (lexer, 1))) {
+	}
+	else if (is_special_char(lookahead (lexer, 1))) {
 		match(lexer, lookahead (lexer, 1));
 		if (is_special_char(lookahead (lexer, 1)))
 			match(lexer, lookahead (lexer, 1));
 		
-	} else
+	}
+	else
 		raise_error(lexer, ERROR_NO_VIABLE_ALT_FOR_CHAR, lookahead (lexer, 1));
 	
 	if (create_token)
 		make_token(lexer, TOKEN_BINARY_SELECTOR,
-				st_input_range(lexer->input, lexer->start, st_input_index(lexer->input)));
+		           st_input_range(lexer->input, lexer->start, st_input_index(lexer->input)));
 }
 
 static void match_symbol_constant(Lexer *lexer) {
@@ -319,11 +325,14 @@ static void match_symbol_constant(Lexer *lexer) {
 	if (isalpha (lookahead(lexer, 1))) {
 		do {
 			match_keyword_or_identifier(lexer, false);
-		} while (isalpha (lookahead(lexer, 1)));
+		}
+		while (isalpha (lookahead(lexer, 1)));
 		
-	} else if (lookahead (lexer, 1) == '-' || is_special_char(lookahead (lexer, 1))) {
+	}
+	else if (lookahead (lexer, 1) == '-' || is_special_char(lookahead (lexer, 1))) {
 		match_binary_selector(lexer, false);
-	} else
+	}
+	else
 		raise_error(lexer, ERROR_NO_ALT_FOR_POUND, lookahead (lexer, 1));
 	
 	// discard #
@@ -359,37 +368,45 @@ static void match_char_constant(Lexer *lexer) {
 			ch = '\t';
 			consume (lexer);
 			consume (lexer);
-		} else if (lookahead (lexer, 2) == 'f') {
+		}
+		else if (lookahead (lexer, 2) == 'f') {
 			ch = '\f';
 			consume (lexer);
 			consume (lexer);
-		} else if (lookahead (lexer, 2) == 'n') {
+		}
+		else if (lookahead (lexer, 2) == 'n') {
 			ch = '\n';
 			consume (lexer);
 			consume (lexer);
-		} else if (lookahead (lexer, 2) == 'r') {
+		}
+		else if (lookahead (lexer, 2) == 'r') {
 			ch = '\r';
 			consume (lexer);
 			consume (lexer);
-		} else if (isxdigit (lookahead(lexer, 2))) {
+		}
+		else if (isxdigit (lookahead(lexer, 2))) {
 			consume (lexer);
 			int start = st_input_index(lexer->input);
 			do {
 				consume (lexer);
-			} while (isxdigit (lookahead(lexer, 1)));
+			}
+			while (isxdigit (lookahead(lexer, 1)));
 			
 			char *string = st_input_range(lexer->input, start, st_input_index(lexer->input));
 			ch = strtol(string, NULL, 16);
 			st_free(string);
-		} else {
+		}
+		else {
 			ch = '\\';  // just match a single '\' char
 			consume (lexer);
 		}
 		
-	} else if (isgraph (lookahead(lexer, 1))) {
+	}
+	else if (isgraph (lookahead(lexer, 1))) {
 		ch = lookahead (lexer, 1);
 		consume (lexer);
-	} else
+	}
+	else
 		raise_error(lexer, ERROR_INVALID_CHAR_CONST, lookahead (lexer, 1));
 	
 	char outbuf[6];
@@ -614,22 +631,22 @@ char *st_token_get_text(Token *token) {
 	return token->text;
 }
 
-st_uint st_token_get_line(Token *token) {
+uint st_token_get_line(Token *token) {
 	st_assert (token != NULL);
 	return token->line;
 }
 
-st_uint st_token_get_column(Token *token) {
+uint st_token_get_column(Token *token) {
 	st_assert (token != NULL);
 	return token->column;
 }
 
-st_uint st_lexer_error_line(Lexer *lexer) {
+uint st_lexer_error_line(Lexer *lexer) {
 	st_assert (lexer != NULL);
 	return lexer->error_line;
 }
 
-st_uint st_lexer_error_column(Lexer *lexer) {
+uint st_lexer_error_column(Lexer *lexer) {
 	st_assert (lexer != NULL);
 	return lexer->error_column;
 }
@@ -642,14 +659,14 @@ char st_lexer_error_char(Lexer *lexer) {
 char *st_lexer_error_message(Lexer *lexer) {
 	st_assert (lexer != NULL);
 	static const char *msgformats[] = {
-			"mismatched character \\%04X",
-			"no viable alternative for character \\%04X",
-			"illegal character \\%04X",
-			"unterminated comment",
-			"unterminated string literal",
-			"invalid radix for number",
-			"non-whitespace character expected after '$'",
-			"expected '(' after '#'",
+		"mismatched character \\%04X",
+		"no viable alternative for character \\%04X",
+		"illegal character \\%04X",
+		"unterminated comment",
+		"unterminated string literal",
+		"invalid radix for number",
+		"non-whitespace character expected after '$'",
+		"expected '(' after '#'",
 	};
 	
 	switch (lexer->error_code) {
@@ -684,7 +701,7 @@ char *st_number_token_number(Token *token) {
 	return token->number;
 }
 
-st_uint st_number_token_radix(Token *token) {
+uint st_number_token_radix(Token *token) {
 	return token->radix;
 }
 

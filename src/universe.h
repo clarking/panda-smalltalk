@@ -39,8 +39,8 @@
 #define ST_SYMBOL_CLASS               __machine.globals[23]
 #define ST_WIDE_STRING_CLASS          __machine.globals[24]
 #define ST_COMPILED_METHOD_CLASS      __machine.globals[25]
-#define ST_METHOD_CONTEXT_CLASS       __machine.globals[26]
-#define ST_BLOCK_CONTEXT_CLASS        __machine.globals[27]
+#define MethodContext_CLASS       __machine.globals[26]
+#define BlockContext_CLASS        __machine.globals[27]
 #define ST_SYSTEM_CLASS               __machine.globals[28]
 #define ST_HANDLE_CLASS               __machine.globals[29]
 #define ST_MESSAGE_CLASS              __machine.globals[30]
@@ -77,7 +77,7 @@
 
 extern ObjMemory *memory;
 
-Oop class_new(st_format format, st_uint instance_size);
+Oop class_new(st_format format, uint instance_size);
 
 void add_global(const char *name, Oop object);
 

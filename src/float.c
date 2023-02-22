@@ -10,10 +10,10 @@
 #include "behavior.h"
 
 Oop st_float_allocate(Oop class) {
-	st_uint size;
+	uint size;
 	Oop object;
 	
-	size = ST_SIZE_OOPS (struct st_float);
+	size = ST_SIZE_OOPS(Float);
 	object = st_memory_allocate(size);
 	if (object == 0) {
 		st_memory_perform_gc();

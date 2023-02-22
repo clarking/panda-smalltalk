@@ -57,7 +57,7 @@ bool st_compile_string(Oop class, const char *string, CompilerError *error) {
 
 void filein_error(FileIn *parser, Token *token, const char *message) {
 	fprintf(stderr, "%s: %i: %s\n", parser->filename, parser->line + ((token) ? st_token_get_line(token) : -90),
-			message);
+	        message);
 	exit(1);
 }
 
@@ -152,7 +152,8 @@ void compile_chunk(FileIn *parser, Lexer *lexer) {
 			compile_class(parser, lexer, name);
 		else
 			goto error;
-	} else
+	}
+	else
 		goto error;
 	
 	return;

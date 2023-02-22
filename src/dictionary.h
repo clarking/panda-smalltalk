@@ -25,7 +25,7 @@ Oop st_dictionary_association_at(Oop dict, Oop key);
 
 Oop st_set_new(void);
 
-st_uint set_find_cstring(Oop set, const char *string);
+uint set_find_cstring(Oop set, const char *string);
 
 Oop st_set_intern_cstring(Oop set, const char *string);
 
@@ -37,17 +37,17 @@ Oop st_set_like(Oop set, Oop object);
 
 void st_set_add(Oop set, Oop object);
 
-st_uint dict_find(Oop dict, Oop object);
+uint dict_find(Oop dict, Oop object);
 
-st_uint set_find(Oop set, Oop object);
+uint set_find(Oop set, Oop object);
 
 void dict_no_check_add(Oop dict, Oop object);
 
 void set_no_check_add(Oop set, Oop object);
 
-st_uint occupied(Oop collection);
+uint occupied(Oop collection);
 
-st_uint size_for_capacity(st_uint capacity);
+uint size_for_capacity(uint capacity);
 
 void initialize(Oop collection, int capacity);
 

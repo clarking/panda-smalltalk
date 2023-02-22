@@ -20,11 +20,17 @@
 
 #define FORMAT(ip) (formats[sizes[*ip]-1])
 
+
 typedef void (*CodeGenerationFunc)(Generator *gt, Bytecode *code, Node *node);
 
 typedef bool (*OptimisationMatchFunc)(Node *node);
 
-static st_uint sizes[255] = {0,};
+typedef struct OptimizerFunc {
+	CodeGenerationFunc generation_func;
+	OptimisationMatchFunc match_func;
+} OptimizerFunc;
+
+static uint sizes[255] = {0,};
 
 void check_init(void);
 
@@ -44,7 +50,7 @@ Oop create_literals_array(Generator *gt);
 
 Oop create_bytecode_array(Bytecode *code);
 
-void emit(Bytecode *code, st_uchar value);
+void emit(Bytecode *code, uchar value);
 
 int find_instvar(Generator *gt, char *name);
 
@@ -62,7 +68,7 @@ void assign_instvar(Bytecode *code, int index, bool pop);
 
 void assign_literal_var(Bytecode *code, int index, bool pop);
 
-void push(Bytecode *code, st_uchar value, st_uchar index);
+void push(Bytecode *code, uchar value, uchar index);
 
 void generate_assign(Generator *gt, Bytecode *code, Node *node, bool pop);
 
@@ -141,20 +147,3 @@ void gen_print_literal(Oop lit);
 void print_literals(Oop literals);
 
 void st_print_generated_method(Oop method);
-
-const struct optimisers {
-	CodeGenerationFunc generation_func;
-	OptimisationMatchFunc match_func;
-	
-} optimisers[] = {
-		{generate_ifTrue,        match_ifTrue},
-		{generate_ifFalse,       match_ifFalse},
-		{generate_ifTrueifFalse, match_ifTrueifFalse},
-		{generate_ifFalseifTrue, match_ifFalseifTrue},
-		{generate_whileTrue,     match_whileTrue},
-		{generate_whileFalse,    match_whileFalse},
-		{generate_whileTrueArg,  match_whileTrueArg},
-		{generate_whileFalseArg, match_whileFalseArg},
-		{generate_and,           match_and},
-		{generate_or,            match_or}
-};

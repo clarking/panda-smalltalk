@@ -18,7 +18,7 @@ IdentityHashTable *st_identity_hashtable_new(void) {
 	
 	IdentityHashTable *ht;
 	ht = st_new (IdentityHashTable);
-	ht->table = st_malloc0(sizeof(struct Cell) * INITIAL_CAPACITY);
+	ht->table = st_malloc0(sizeof(Cell) * INITIAL_CAPACITY);
 	ht->alloc = INITIAL_CAPACITY;
 	ht->size = 0;
 	ht->deleted = 0;
@@ -27,8 +27,8 @@ IdentityHashTable *st_identity_hashtable_new(void) {
 }
 
 // find an object which may already be stored somewhere in table
-static st_uint identity_hashtable_find(IdentityHashTable *ht, Oop object) {
-	st_uint mask, i;
+static uint identity_hashtable_find(IdentityHashTable *ht, Oop object) {
+	uint mask, i;
 	mask = ht->alloc - 1;
 	i = (st_detag_pointer(object) - memory->start) & mask;
 	
@@ -40,8 +40,8 @@ static st_uint identity_hashtable_find(IdentityHashTable *ht, Oop object) {
 }
 
 // find a place to insert object
-static st_uint identity_hashtable_find_available_cell(IdentityHashTable *ht, Oop object) {
-	st_uint mask, i;
+static uint identity_hashtable_find_available_cell(IdentityHashTable *ht, Oop object) {
+	uint mask, i;
 	
 	mask = ht->alloc - 1;
 	i = (st_detag_pointer(object) - memory->start) & mask;
@@ -55,7 +55,7 @@ static st_uint identity_hashtable_find_available_cell(IdentityHashTable *ht, Oop
 
 static void
 identity_hashtable_check_grow(IdentityHashTable *ht) {
-	st_uint alloc, index;
+	uint alloc, index;
 	struct Cell *table;
 	
 	// ensure table is at least half-full
@@ -66,9 +66,9 @@ identity_hashtable_check_grow(IdentityHashTable *ht) {
 	table = ht->table;
 	ht->alloc *= 2;
 	ht->deleted = 0;
-	ht->table = st_malloc0(sizeof(struct Cell) * ht->alloc);
+	ht->table = st_malloc0(sizeof(Cell) * ht->alloc);
 	
-	for (st_uint i = 0; i <= alloc; i++) {
+	for (uint i = 0; i <= alloc; i++) {
 		if (table[i].object != 0 && (table[i].object != (Oop) ht)) {
 			index = identity_hashtable_find_available_cell(ht, table[i].object);
 			ht->table[index].object = table[i].object;
@@ -81,7 +81,7 @@ identity_hashtable_check_grow(IdentityHashTable *ht) {
 
 void st_identity_hashtable_remove(IdentityHashTable *ht, Oop object) {
 	
-	st_uint index;
+	uint index;
 	index = identity_hashtable_find(ht, object);
 	if (ht->table[index].object != 0) {
 		ht->table[index].object = (Oop) ht;
@@ -94,9 +94,9 @@ void st_identity_hashtable_remove(IdentityHashTable *ht, Oop object) {
 	st_assert_not_reached ();
 }
 
-st_uint st_identity_hashtable_hash(IdentityHashTable *ht, Oop object) {
+uint st_identity_hashtable_hash(IdentityHashTable *ht, Oop object) {
 	// assigns an identity hash for an object
-	st_uint index;
+	uint index;
 	index = identity_hashtable_find(ht, object);
 	if (ht->table[index].object == 0) {
 		ht->size++;
@@ -109,7 +109,7 @@ st_uint st_identity_hashtable_hash(IdentityHashTable *ht, Oop object) {
 }
 
 void st_identity_hashtable_rehash_object(IdentityHashTable *ht, Oop old, Oop new) {
-	st_uint hash, index;
+	uint hash, index;
 	
 	index = identity_hashtable_find(ht, old);
 	st_assert (ht->table[index].object != 0);

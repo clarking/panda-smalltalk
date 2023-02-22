@@ -13,24 +13,24 @@
 #include "utils.h"
 #include "types.h"
 
-Oop st_array_allocate(Oop class, st_uint size) {
+Oop st_array_allocate(Oop class, uint size) {
 	Oop array;
 	Oop *elements;
 	
 	st_assert (size >= 0);
 	
-	array = st_memory_allocate(ST_SIZE_OOPS (Array) + size);
+	array = st_memory_allocate(ST_SIZE_OOPS(Array) + size);
 	if (array == 0) {
 		st_memory_perform_gc();
 		class = st_memory_remap_reference(class);
-		array = st_memory_allocate(ST_SIZE_OOPS (Array) + size);
+		array = st_memory_allocate(ST_SIZE_OOPS(Array) + size);
 		st_assert (array != 0);
 	}
 	st_object_initialize_header(array, class);
 	
 	ST_ARRAYED_OBJECT (array)->size = st_smi_new(size);
 	elements = ST_ARRAY (array)->elements;
-	for (st_uint i = 0; i < size; i++)
+	for (uint i = 0; i < size; i++)
 		elements[i] = ST_NIL;
 	
 	return array;
@@ -38,7 +38,7 @@ Oop st_array_allocate(Oop class, st_uint size) {
 
 /* ByteArray */
 Oop st_byte_array_allocate(Oop class, int size) {
-	st_uint size_oops;
+	uint size_oops;
 	Oop array;
 	
 	st_assert (size >= 0);
@@ -46,11 +46,11 @@ Oop st_byte_array_allocate(Oop class, int size) {
 	/* add 1 byte for NULL terminator. Allows toll-free bridging with C string function */
 	size_oops = ST_ROUNDED_UP_OOPS (size + 1);
 	
-	array = st_memory_allocate(ST_SIZE_OOPS (ByteArray) + size_oops);
+	array = st_memory_allocate(ST_SIZE_OOPS(ByteArray) + size_oops);
 	if (array == 0) {
 		st_memory_perform_gc();
 		class = st_memory_remap_reference(class);
-		array = st_memory_allocate(ST_SIZE_OOPS (Array) + size_oops);
+		array = st_memory_allocate(ST_SIZE_OOPS(Array) + size_oops);
 		st_assert (array != 0);
 	}
 	
@@ -79,7 +79,7 @@ bool st_byte_array_equal(Oop object, Oop other) {
 	return memcmp(st_byte_array_bytes(object), st_byte_array_bytes(other), size) == 0;
 }
 
-st_uint st_byte_array_hash(Oop object) {
+uint st_byte_array_hash(Oop object) {
 	return st_string_hash((char *) st_byte_array_bytes(object));
 }
 
@@ -87,17 +87,17 @@ st_uint st_byte_array_hash(Oop object) {
 Oop st_word_array_allocate(Oop class, int size) {
 	Oop array;
 	int size_oops;
-	st_uint *elements;
+	uint *elements;
 	
 	st_assert(size >= 0);
 	
-	size_oops = size / (sizeof(Oop) / sizeof(st_uint));
+	size_oops = size / (sizeof(Oop) / sizeof(uint));
 	
-	array = st_memory_allocate(ST_SIZE_OOPS (WordArray) + size_oops);
+	array = st_memory_allocate(ST_SIZE_OOPS(WordArray) + size_oops);
 	if (array == 0) {
 		st_memory_perform_gc();
 		class = st_memory_remap_reference(class);
-		array = st_memory_allocate(ST_SIZE_OOPS (Array) + size_oops);
+		array = st_memory_allocate(ST_SIZE_OOPS(Array) + size_oops);
 		st_assert(array != 0);
 	}
 	st_object_initialize_header(array, class);
@@ -121,11 +121,11 @@ Oop st_float_array_allocate(Oop class, int size) {
 	/* get actual size in oops (dependent on whether system is 64bit or 32bit) */
 	size_oops = size * (sizeof(double) / sizeof(Oop));
 	
-	object = st_memory_allocate(ST_SIZE_OOPS (FloatArray) + size_oops);
+	object = st_memory_allocate(ST_SIZE_OOPS(FloatArray) + size_oops);
 	if (object == 0) {
 		st_memory_perform_gc();
 		class = st_memory_remap_reference(class);
-		object = st_memory_allocate(ST_SIZE_OOPS (Array) + size_oops);
+		object = st_memory_allocate(ST_SIZE_OOPS(Array) + size_oops);
 		st_assert (object != 0);
 	}
 	st_object_initialize_header(object, class);
@@ -156,15 +156,15 @@ void st_array_at_put(Oop object, int i, Oop value) {
 	(ST_ARRAY(object)->elements - 1)[i] = value;
 }
 
-st_uint *st_word_array_elements(Oop object) {
+uint *st_word_array_elements(Oop object) {
 	return ST_WORD_ARRAY(object)->elements;
 }
 
-st_uint st_word_array_at(Oop object, int i) {
+uint st_word_array_at(Oop object, int i) {
 	return ST_WORD_ARRAY(object)->elements[i - 1];
 }
 
-void st_word_array_at_put(Oop object, int i, st_uint value) {
+void st_word_array_at_put(Oop object, int i, uint value) {
 	ST_WORD_ARRAY(object)->elements[i - 1] = value;
 }
 
@@ -172,11 +172,11 @@ char *st_byte_array_bytes(Oop object) {
 	return (char *) ST_BYTE_ARRAY (object)->bytes;
 }
 
-st_uchar st_byte_array_at(Oop object, int i) {
+uchar st_byte_array_at(Oop object, int i) {
 	return st_byte_array_bytes(object)[i - 1];
 }
 
-void st_byte_array_at_put(Oop object, int i, st_uchar value) {
+void st_byte_array_at_put(Oop object, int i, uchar value) {
 	st_byte_array_bytes(object)[i - 1] = value;
 }
 

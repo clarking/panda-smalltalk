@@ -24,12 +24,12 @@
 
 /* Common methods */
 
-st_uint occupied(Oop collection) {
+uint occupied(Oop collection) {
 	return st_smi_value(SIZE (collection)) + st_smi_value(DELETED (collection));
 }
 
-st_uint size_for_capacity(st_uint capacity) {
-	st_uint size;
+uint size_for_capacity(uint capacity) {
+	uint size;
 	size = MINIMUM_CAPACITY;
 	while (size < capacity)
 		size = size + size;
@@ -47,7 +47,7 @@ void initialize(Oop collection, int capacity) {
 
 void dict_check_grow(Oop dict) {
 	Oop old, object;
-	st_uint size, n;
+	uint size, n;
 	size = n = ARRAY_SIZE (ARRAY(dict));
 	
 	if (occupied(dict) * 2 <= size)
@@ -58,7 +58,7 @@ void dict_check_grow(Oop dict) {
 	ARRAY (dict) = st_object_new_arrayed(ST_ARRAY_CLASS, size);
 	DELETED (dict) = st_smi_new(0);
 	
-	for (st_uint i = 1; i <= n; i++) {
+	for (uint i = 1; i <= n; i++) {
 		object = st_array_at(old, i);
 		if (object != ST_NIL) {
 			st_array_at_put(ARRAY (dict), dict_find(dict, ST_ASSOCIATION_KEY (object)), object);
@@ -66,10 +66,10 @@ void dict_check_grow(Oop dict) {
 	}
 }
 
-st_uint dict_find(Oop dict, Oop key) {
+uint dict_find(Oop dict, Oop key) {
 	Oop el;
-	st_uint mask;
-	st_uint i;
+	uint mask;
+	uint i;
 	
 	mask = ARRAY_SIZE (ARRAY(dict)) - 1;
 	i = (st_object_hash(key) & mask) + 1;
@@ -83,7 +83,7 @@ st_uint dict_find(Oop dict, Oop key) {
 }
 
 void st_dictionary_at_put(Oop dict, Oop key, Oop value) {
-	st_uint index;
+	uint index;
 	Oop assoc;
 	
 	index = dict_find(dict, key);
@@ -93,7 +93,8 @@ void st_dictionary_at_put(Oop dict, Oop key, Oop value) {
 		st_array_at_put(ARRAY (dict), index, st_association_new(key, value));
 		SIZE (dict) = st_smi_increment(SIZE (dict));
 		dict_check_grow(dict);
-	} else {
+	}
+	else {
 		ST_ASSOCIATION_VALUE (assoc) = value;
 	}
 }
@@ -125,9 +126,9 @@ Oop st_dictionary_new_with_capacity(int capacity) {
 
 /* Set implementation */
 
-st_uint set_find_cstring(Oop set, const char *string) {
+uint set_find_cstring(Oop set, const char *string) {
 	Oop el;
-	st_uint mask, i;
+	uint mask, i;
 	
 	mask = ARRAY_SIZE (ARRAY(set)) - 1;
 	i = (st_string_hash(string) & mask) + 1;
@@ -140,9 +141,9 @@ st_uint set_find_cstring(Oop set, const char *string) {
 	}
 }
 
-st_uint set_find(Oop set, Oop object) {
+uint set_find(Oop set, Oop object) {
 	Oop el;
-	st_uint mask, i;
+	uint mask, i;
 	
 	mask = ARRAY_SIZE (ARRAY(set)) - 1;
 	i = (st_object_hash(object) & mask) + 1;
@@ -157,7 +158,7 @@ st_uint set_find(Oop set, Oop object) {
 
 void set_check_grow(Oop set) {
 	Oop old, object;
-	st_uint size, n;
+	uint size, n;
 	
 	size = n = ARRAY_SIZE (ARRAY(set));
 	if (occupied(set) * 2 <= size)
@@ -168,7 +169,7 @@ void set_check_grow(Oop set) {
 	ARRAY (set) = st_object_new_arrayed(ST_ARRAY_CLASS, size);
 	DELETED (set) = st_smi_new(0);
 	
-	for (st_uint i = 1; i <= n; i++) {
+	for (uint i = 1; i <= n; i++) {
 		object = st_array_at(old, i);
 		if (object != ST_NIL)
 			st_array_at_put(ARRAY (set), set_find(set, object), object);
@@ -177,7 +178,7 @@ void set_check_grow(Oop set) {
 
 Oop st_set_intern_cstring(Oop set, const char *string) {
 	Oop intern;
-	st_uint i, len;
+	uint i, len;
 	
 	st_assert (string != NULL);
 	

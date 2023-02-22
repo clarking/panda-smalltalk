@@ -175,12 +175,12 @@ asInteger
 
 SmallInteger method!
 asFloat    
-	<primitive: 'small_int_asFloat'>
+	<primitive: 'small_int_as_float'>
 	self primitiveFailed!
 
 SmallInteger method!
 asLargeInteger    
-	<primitive: 'small_int_asLargeInt'>
+	<primitive: 'small_int_as_large_int'>
 	self primitiveFailed!
 
 SmallInteger method!

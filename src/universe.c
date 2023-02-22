@@ -44,13 +44,13 @@ enum {
 	INSTANCE_SIZE_BLOCK_CONTEXT = 6
 };
 
-Oop class_new(st_format format, st_uint instance_size) {
+Oop class_new(st_format format, uint instance_size) {
 	Oop class;
 	
-	class = st_memory_allocate(ST_SIZE_OOPS (struct Class));
+	class = st_memory_allocate(ST_SIZE_OOPS(struct Class));
 	
-	ST_OBJECT_MARK (class) = 0 | ST_MARK_TAG;
-	ST_OBJECT_CLASS (class) = ST_NIL;
+	ST_OBJECT_MARK(class) = 0 | ST_MARK_TAG;
+	ST_OBJECT_CLASS(class) = ST_NIL;
 	st_object_set_format(class, ST_FORMAT_OBJECT);
 	st_object_set_instance_size(class, INSTANCE_SIZE_CLASS);
 	
@@ -79,7 +79,7 @@ void add_global(const char *name, Oop object) {
 void initialize_class(const char *name, const char *super_name, List *ivarnames) {
 	Oop metaclass, class, superclass;
 	Oop names;
-	st_uint i = 1;
+	uint i = 1;
 	
 	if (streq (name, "Object") && streq (super_name, "nil")) {
 		
@@ -89,14 +89,15 @@ void initialize_class(const char *name, const char *super_name, List *ivarnames)
 		metaclass = st_object_class(class);
 		if (metaclass == ST_NIL) {
 			metaclass = st_object_new(ST_METACLASS_CLASS);
-			ST_OBJECT_CLASS (class) = metaclass;
+			ST_OBJECT_CLASS(class) = metaclass;
 		}
 		
 		ST_BEHAVIOR_SUPERCLASS (class) = ST_NIL;
 		ST_BEHAVIOR_INSTANCE_SIZE (class) = st_smi_new(0);
 		ST_BEHAVIOR_SUPERCLASS (metaclass) = st_dictionary_at(ST_GLOBALS, st_symbol_new("Class"));
 		
-	} else {
+	}
+	else {
 		superclass = st_global_get(super_name);
 		if (superclass == ST_NIL)
 			st_assert (superclass != ST_NIL);
@@ -108,13 +109,13 @@ void initialize_class(const char *name, const char *super_name, List *ivarnames)
 		metaclass = ST_HEADER (class)->class;
 		if (metaclass == ST_NIL) {
 			metaclass = st_object_new(ST_METACLASS_CLASS);
-			ST_OBJECT_CLASS (class) = metaclass;
+			ST_OBJECT_CLASS(class) = metaclass;
 		}
 		
 		ST_BEHAVIOR_SUPERCLASS (class) = superclass;
 		ST_BEHAVIOR_SUPERCLASS (metaclass) = ST_HEADER (superclass)->class;
 		ST_BEHAVIOR_INSTANCE_SIZE (class) = st_smi_new(
-				st_list_length(ivarnames) + st_smi_value(ST_BEHAVIOR_INSTANCE_SIZE (superclass)));
+			st_list_length(ivarnames) + st_smi_value(ST_BEHAVIOR_INSTANCE_SIZE (superclass)));
 	}
 	
 	names = ST_NIL;
@@ -144,54 +145,54 @@ void file_in_classes(void) {
 	parse_classes("../st/class-defs.st");
 	
 	static const char *files[] = {
-			"Stream.st",
-			"PositionableStream.st",
-			"WriteStream.st",
-			"Collection.st",
-			"SequenceableCollection.st",
-			"ArrayedCollection.st",
-			"HashedCollection.st",
-			"Set.st",
-			"Dictionary.st",
-			"IdentitySet.st",
-			"IdentityDictionary.st",
-			"Bag.st",
-			"Array.st",
-			"ByteArray.st",
-			"WordArray.st",
-			"FloatArray.st",
-			"Association.st",
-			"Magnitude.st",
-			"Number.st",
-			"Integer.st",
-			"SmallInteger.st",
-			"LargeInteger.st",
-			"Fraction.st",
-			"Float.st",
-			"Object.st",
-			"UndefinedObject.st",
-			"String.st",
-			"Symbol.st",
-			"ByteString.st",
-			"WideString.st",
-			"Character.st",
-			"Behavior.st",
-			"Boolean.st",
-			"True.st",
-			"False.st",
-			"Behavior.st",
-			"ContextPart.st",
-			"BlockContext.st",
-			"Message.st",
-			"OrderedCollection.st",
-			"List.st",
-			"System.st",
-			"CompiledMethod.st",
-			"FileStream.st",
-			"pidigits.st"
+		"Stream.st",
+		"PositionableStream.st",
+		"WriteStream.st",
+		"Collection.st",
+		"SequenceableCollection.st",
+		"ArrayedCollection.st",
+		"HashedCollection.st",
+		"Set.st",
+		"Dictionary.st",
+		"IdentitySet.st",
+		"IdentityDictionary.st",
+		"Bag.st",
+		"Array.st",
+		"ByteArray.st",
+		"WordArray.st",
+		"FloatArray.st",
+		"Association.st",
+		"Magnitude.st",
+		"Number.st",
+		"Integer.st",
+		"SmallInteger.st",
+		"LargeInteger.st",
+		"Fraction.st",
+		"Float.st",
+		"Object.st",
+		"UndefinedObject.st",
+		"String.st",
+		"Symbol.st",
+		"ByteString.st",
+		"WideString.st",
+		"Character.st",
+		"Behavior.st",
+		"Boolean.st",
+		"True.st",
+		"False.st",
+		"Behavior.st",
+		"ContextPart.st",
+		"BlockContext.st",
+		"Message.st",
+		"OrderedCollection.st",
+		"List.st",
+		"System.st",
+		"CompiledMethod.st",
+		"FileStream.st",
+		"pidigits.st"
 	};
 	
-	for (st_uint i = 0; i < ST_N_ELEMENTS (files); i++) {
+	for (uint i = 0; i < ST_N_ELEMENTS (files); i++) {
 		filename = st_strconcat("..", ST_DIR_SEPARATOR_S, "st", ST_DIR_SEPARATOR_S, files[i], NULL);
 		compile_file_in(filename);
 		st_free(filename);
@@ -201,8 +202,8 @@ void file_in_classes(void) {
 Oop create_nil_object(void) {
 	Oop nil;
 	nil = st_memory_allocate(NIL_SIZE_OOPS);
-	ST_OBJECT_MARK (nil) = 0 | ST_MARK_TAG;
-	ST_OBJECT_CLASS (nil) = nil;
+	ST_OBJECT_MARK(nil) = 0 | ST_MARK_TAG;
+	ST_OBJECT_CLASS(nil) = nil;
 	st_object_set_format(nil, ST_FORMAT_OBJECT);
 	st_object_set_instance_size(nil, 0);
 	return nil;
@@ -266,8 +267,8 @@ void bootstrap_universe(void) {
 	ST_WIDE_STRING_CLASS = class_new(ST_FORMAT_WORD_ARRAY, 0);
 	ST_ASSOCIATION_CLASS = class_new(ST_FORMAT_OBJECT, INSTANCE_SIZE_ASSOCIATION);
 	ST_COMPILED_METHOD_CLASS = class_new(ST_FORMAT_OBJECT, 0);
-	ST_METHOD_CONTEXT_CLASS = class_new(ST_FORMAT_CONTEXT, INSTANCE_SIZE_METHOD_CONTEXT);
-	ST_BLOCK_CONTEXT_CLASS = class_new(ST_FORMAT_CONTEXT, INSTANCE_SIZE_BLOCK_CONTEXT);
+	MethodContext_CLASS = class_new(ST_FORMAT_CONTEXT, INSTANCE_SIZE_METHOD_CONTEXT);
+	BlockContext_CLASS = class_new(ST_FORMAT_CONTEXT, INSTANCE_SIZE_BLOCK_CONTEXT);
 	ST_SYSTEM_CLASS = class_new(ST_FORMAT_OBJECT, INSTANCE_SIZE_SYSTEM);
 	ST_HANDLE_CLASS = class_new(ST_FORMAT_HANDLE, 0);
 	ST_MESSAGE_CLASS = class_new(ST_FORMAT_OBJECT, 2);
@@ -304,8 +305,8 @@ void bootstrap_universe(void) {
 	add_global("IdentityDictionary", ST_DICTIONARY_CLASS);
 	add_global("Association", ST_ASSOCIATION_CLASS);
 	add_global("CompiledMethod", ST_COMPILED_METHOD_CLASS);
-	add_global("MethodContext", ST_METHOD_CONTEXT_CLASS);
-	add_global("BlockContext", ST_BLOCK_CONTEXT_CLASS);
+	add_global("MethodContext", MethodContext_CLASS);
+	add_global("BlockContext", BlockContext_CLASS);
 	add_global("Handle", ST_HANDLE_CLASS);
 	add_global("Message", ST_MESSAGE_CLASS);
 	add_global("System", ST_SYSTEM_CLASS);

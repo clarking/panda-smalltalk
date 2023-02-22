@@ -10,21 +10,25 @@
 #include "unicode.h"
 #include "utils.h"
 
-st_unichar st_utf8_get_unichar(const char *p) {
-	st_unichar ch;
+unichar st_utf8_get_unichar(const char *p) {
+	unichar ch;
 	
 	if (p == NULL)
 		return 0x00;
 	
 	if ((p[0] & 0x80) == 0x00) {
 		ch = p[0];
-	} else if ((p[0] & 0xe0) == 0xc0) {
+	}
+	else if ((p[0] & 0xe0) == 0xc0) {
 		ch = ((p[0] & 0x1f) << 6) | (p[1] & 0x3f);
-	} else if ((p[0] & 0xf0) == 0xe0) {
+	}
+	else if ((p[0] & 0xf0) == 0xe0) {
 		ch = ((p[0] & 0xf) << 12) | ((p[1] & 0x3f) << 6) | (p[2] & 0x3f);
-	} else if ((p[0] & 0xf8) == 0xf0) {
+	}
+	else if ((p[0] & 0xf8) == 0xf0) {
 		ch = ((p[0] & 0x7) << 18) | ((p[1] & 0x3f) << 12) | ((p[2] & 0x3f) << 6) | (p[3] & 0x3f);
-	} else
+	}
+	else
 		ch = 0x00; /* undefined */
 	return ch;
 }
@@ -32,29 +36,35 @@ st_unichar st_utf8_get_unichar(const char *p) {
 /* Derived from FontConfig
  * Copyright (C) 2006 Keith Packard
  */
-int st_unichar_to_utf8(st_unichar ch, char *outbuf) {
+int st_unichar_to_utf8(unichar ch, char *outbuf) {
 	int bits;
 	char *d = outbuf;
 	
 	if (ch < 0x80) {
 		*d++ = ch;
 		bits = -6;
-	} else if (ch < 0x800) {
+	}
+	else if (ch < 0x800) {
 		*d++ = ((ch >> 6) & 0x1f) | 0xc0;
 		bits = 0;
-	} else if (ch < 0x10000) {
+	}
+	else if (ch < 0x10000) {
 		*d++ = ((ch >> 12) & 0x0f) | 0xe0;
 		bits = 6;
-	} else if (ch < 0x200000) {
+	}
+	else if (ch < 0x200000) {
 		*d++ = ((ch >> 18) & 0x07) | 0xf0;
 		bits = 12;
-	} else if (ch < 0x4000000) {
+	}
+	else if (ch < 0x4000000) {
 		*d++ = ((ch >> 24) & 0x03) | 0xf8;
 		bits = 18;
-	} else if (ch < 0x80000000) {
+	}
+	else if (ch < 0x80000000) {
 		*d++ = ((ch >> 30) & 0x01) | 0xfC;
 		bits = 24;
-	} else
+	}
+	else
 		return 0;
 	
 	for (; bits >= 0; bits -= 6) {
@@ -95,29 +105,33 @@ bool st_utf8_validate(const char *string, ssize_t max_len) {
 	 *    11110xxx 10xxxxxx 10xxxxxx 10xxxxxx           valid 4-byte
 	 */
 	for (ix = 0; ix < max_len;) {      /* string is 0-terminated */
-		st_uchar c;
+		uchar c;
 		
 		c = string[ix];
 		if ((c & 0x80) == 0x00) {    /* 1-byte code, starts with 10 */
 			ix++;
-		} else if ((c & 0xe0) == 0xc0) {/* 2-byte code, starts with 110 */
+		}
+		else if ((c & 0xe0) == 0xc0) {/* 2-byte code, starts with 110 */
 			if (((ix + 1) >= max_len) || (string[ix + 1] & 0xc0) != 0x80)
 				return false;
 			ix += 2;
-		} else if ((c & 0xf0) == 0xe0) {/* 3-byte code, starts with 1110 */
+		}
+		else if ((c & 0xf0) == 0xe0) {/* 3-byte code, starts with 1110 */
 			if (((ix + 2) >= max_len) ||
 			    ((string[ix + 1] & 0xc0) != 0x80) ||
 			    ((string[ix + 2] & 0xc0) != 0x80))
 				return false;
 			ix += 3;
-		} else if ((c & 0xf8) == 0xf0) {/* 4-byte code, starts with 11110 */
+		}
+		else if ((c & 0xf8) == 0xf0) {/* 4-byte code, starts with 11110 */
 			if (((ix + 3) >= max_len) ||
 			    ((string[ix + 1] & 0xc0) != 0x80) ||
 			    ((string[ix + 2] & 0xc0) != 0x80) ||
 			    ((string[ix + 3] & 0xc0) != 0x80))
 				return false;
 			ix += 4;
-		} else {/* unknown encoding */
+		}
+		else {/* unknown encoding */
 			return false;
 		}
 	}
@@ -154,13 +168,16 @@ int st_utf8_strlen(const char *string) {
 					if ((string[0] & 0xf8) != 0xf0 || (string[3] & 0xc0) != 0x80)
 						return (-1);
 					string += 4;
-				} else {
+				}
+				else {
 					string += 3;
 				}
-			} else {
+			}
+			else {
 				string += 2;
 			}
-		} else {
+		}
+		else {
 			string++;
 		}
 		ret++;
@@ -168,37 +185,41 @@ int st_utf8_strlen(const char *string) {
 	return (ret);
 }
 
-const char *st_utf8_offset_to_pointer(const char *string, st_uint offset) {
+const char *st_utf8_offset_to_pointer(const char *string, uint offset) {
 	const char *p = string;
-	for (st_uint i = 0; i < offset; i++)
+	for (uint i = 0; i < offset; i++)
 		p = st_utf8_next_char (p);
 	return p;
 }
 
-st_unichar *st_utf8_to_ucs4(const char *string) {
-	const st_uchar *p = (const st_uchar *) string;
-	st_unichar *buffer, c;
-	st_uint index = 0;
+unichar *st_utf8_to_ucs4(const char *string) {
+	const uchar *p = (const uchar *) string;
+	unichar *buffer, c;
+	uint index = 0;
 	
 	if (string == NULL)
 		return NULL;
 	
-	buffer = st_malloc(sizeof(st_unichar) * (st_utf8_strlen(string) + 1));
+	buffer = st_malloc(sizeof(unichar) * (st_utf8_strlen(string) + 1));
 	
 	while (p[0]) {
 		if ((p[0] & 0x80) == 0x00) {
 			c = p[0];
 			p += 1;
-		} else if ((p[0] & 0xe0) == 0xc0) {
+		}
+		else if ((p[0] & 0xe0) == 0xc0) {
 			c = ((p[0] & 0x1f) << 6) | (p[1] & 0x3f);
 			p += 2;
-		} else if ((p[0] & 0xf0) == 0xe0) {
+		}
+		else if ((p[0] & 0xf0) == 0xe0) {
 			c = ((p[0] & 0xf) << 12) | ((p[1] & 0x3f) << 6) | (p[2] & 0x3f);
 			p += 3;
-		} else if ((p[0] & 0xf8) == 0xf0) {
+		}
+		else if ((p[0] & 0xf8) == 0xf0) {
 			c = ((p[0] & 0x7) << 18) | ((p[1] & 0x3f) << 12) | ((p[2] & 0x3f) << 6) | (p[3] & 0x3f);
 			p += 4;
-		} else
+		}
+		else
 			break;
 		
 		buffer[index++] = c;

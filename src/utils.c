@@ -22,38 +22,38 @@ extern char *program_invocation_short_name;
 
 extern bool st_get_verbose_mode(void) ST_GNUC_PURE;
 
-void * st_malloc(size_t size) {
+void *st_malloc(size_t size) {
 	void *ptr;
 	
 	ptr = malloc(size);
-	if (ST_UNLIKELY (ptr == NULL))
+	if (ST_UNLIKELY(ptr == NULL))
 		abort();
 	
 	return ptr;
 }
 
-void * st_malloc0(size_t size) {
+void *st_malloc0(size_t size) {
 	void *ptr;
 	
 	ptr = calloc(1, size);
-	if (ST_UNLIKELY (ptr == NULL))
+	if (ST_UNLIKELY(ptr == NULL))
 		abort();
 	
 	return ptr;
 }
 
-void * st_realloc(void * mem, size_t size) {
+void *st_realloc(void *mem, size_t size) {
 	void *ptr;
 	
 	ptr = realloc(mem, size);
-	if (ST_UNLIKELY (ptr == NULL))
+	if (ST_UNLIKELY(ptr == NULL))
 		abort();
 	
 	return ptr;
 }
 
-void st_free(void * mem) {
-	if (ST_UNLIKELY (mem != NULL))
+void st_free(void *mem) {
+	if (ST_UNLIKELY(mem != NULL))
 		free(mem);
 }
 
@@ -186,7 +186,8 @@ void st_timespec_difference(struct timespec *start, struct timespec *end, struct
 	if ((end->tv_nsec - start->tv_nsec) < 0) {
 		diff->tv_sec = end->tv_sec - start->tv_sec - 1;
 		diff->tv_nsec = 1000000000 + end->tv_nsec - start->tv_nsec;
-	} else {
+	}
+	else {
 		diff->tv_sec = end->tv_sec - start->tv_sec;
 		diff->tv_nsec = end->tv_nsec - start->tv_nsec;
 	}
@@ -196,13 +197,14 @@ void st_timespec_add(struct timespec *t1, struct timespec *t2, struct timespec *
 	if ((t1->tv_nsec + t2->tv_nsec) >= 1000000000) {
 		result->tv_sec = t1->tv_sec + t2->tv_sec + 1;
 		result->tv_nsec = t1->tv_nsec + t2->tv_nsec - 1000000000;
-	} else {
+	}
+	else {
 		result->tv_sec = t1->tv_sec + t2->tv_sec;
 		result->tv_nsec = t1->tv_nsec + t2->tv_nsec;
 	}
 }
 
-List *st_list_append(List *list, void * data) {
+List *st_list_append(List *list, void *data) {
 	List *new_list, *l;
 	
 	new_list = st_new (List);
@@ -221,7 +223,7 @@ List *st_list_append(List *list, void * data) {
 	return list;
 }
 
-List *st_list_prepend(List *list, void * data) {
+List *st_list_prepend(List *list, void *data) {
 	List *new_list;
 	
 	new_list = st_new (List);
@@ -261,9 +263,9 @@ List *st_list_concat(List *list1, List *list2) {
 	return list1;
 }
 
-st_uint st_list_length(List *list) {
+uint st_list_length(List *list) {
 	List *l = list;
-	st_uint len = 0;
+	uint len = 0;
 	
 	for (; l; l = l->next)
 		++len;
@@ -308,7 +310,8 @@ char **st_strsplit(const char *string, const char *delimiter, int max_tokens) {
 		vector[0] = st_strdup("");
 		size++;
 		string += strlen(delimiter);
-	} else {
+	}
+	else {
 		vector = NULL;
 	}
 	
@@ -317,7 +320,8 @@ char **st_strsplit(const char *string, const char *delimiter, int max_tokens) {
 		if (strncmp(string, delimiter, strlen(delimiter)) == 0) {
 			token = st_strdup("");
 			string += strlen(delimiter);
-		} else {
+		}
+		else {
 			while (*string && strncmp(string, delimiter, strlen(delimiter)) != 0) {
 				string++;
 			}
@@ -333,7 +337,8 @@ char **st_strsplit(const char *string, const char *delimiter, int max_tokens) {
 				if (strcmp(string, delimiter) != 0) {
 					string += strlen(delimiter);
 				}
-			} else {
+			}
+			else {
 				token = st_strdup(c);
 			}
 		}
@@ -351,7 +356,8 @@ char **st_strsplit(const char *string, const char *delimiter, int max_tokens) {
 	if (vector == NULL) {
 		vector = (char **) st_malloc(2 * sizeof(vector));
 		vector[0] = NULL;
-	} else if (size > 0) {
+	}
+	else if (size > 0) {
 		vector[size - 1] = NULL;
 	}
 	
@@ -374,9 +380,9 @@ void st_strfreev(char **str_array) {
 /* Derived from eglib (part of Mono) Copyright (C) 2006 Novell, Inc.*/
 /* This is not a macro, because I dont want to put _GNU_SOURCE in the glib.h header */
 char *st_strndup(const char *str, size_t n) {
-	#ifdef HAVE_STRNDUP
+#ifdef HAVE_STRNDUP
 	return strndup (str, n);
-	#else
+#else
 	if (str) {
 		char *retval = malloc(n + 1);
 		if (retval) {
@@ -385,12 +391,12 @@ char *st_strndup(const char *str, size_t n) {
 		return retval;
 	}
 	return NULL;
-	#endif
+#endif
 }
 
-st_uint st_string_hash(const char *string) {
+uint st_string_hash(const char *string) {
 	const signed char *p = (signed const char *) string;
-	st_uint h = *p;
+	uint h = *p;
 	
 	if (*p == 0)
 		return h;

@@ -10,13 +10,13 @@
 
 #include "types.h"
 
-st_uint st_system_pagesize(void);
+uint st_system_pagesize(void);
 
-void * st_system_reserve_memory(void * addr, st_uint size);
+void *st_system_reserve_memory(void *addr, uint size);
 
-void * st_system_commit_memory(void * addr, st_uint size);
+void *st_system_commit_memory(void *addr, uint size);
 
-void * st_system_decommit_memory(void * addr, st_uint size);
+void *st_system_decommit_memory(void *addr, uint size);
 
-void st_system_release_memory(void * addr, st_uint size);
+void st_system_release_memory(void *addr, uint size);
 

@@ -16,8 +16,14 @@
 
 #define OP_PROLOGUE             \
     mp_int value;               \
-    mp_init (&value);
-
+    mp_err err;                 \
+    err = mp_init (&value);     \
+	if(err!=MP_OKAY) {           \
+		fprintf(stderr, "%s", mp_error_to_string(err)); \
+	abort();                       \
+	}
+	
+	
 #define BINARY_OP(op, a, b)    \
 OP_PROLOGUE                    \
     result = op (VALUE (a), VALUE (b), &value);
@@ -31,16 +37,16 @@ OP_PROLOGUE                          \
     result = op (VALUE (a), &value);
 
 
-#define ST_DIGIT_RADIX (1L << DIGIT_BIT)
+#define ST_DIGIT_RADIX (1L << MP_DIGIT_BIT)
 
-typedef void (*st_prim_func)(struct st_machine *machine);
+typedef void (*PrimitiveFunc)(VirtualMachine *machine);
 
-struct st_primitive {
+typedef struct Primitive {
 	const char *name;
-	st_prim_func func;
-};
+	PrimitiveFunc func;
+} Primitive;
 
-extern const struct st_primitive st_primitives[];
+extern const Primitive st_primitives[];
 
 int st_prim_index_for_name(const char *name);
 

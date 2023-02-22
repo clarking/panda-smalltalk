@@ -37,7 +37,7 @@ void verify(Oop object);
 
 void ensure_metadata(void);
 
-void grow_heap(st_uint min_size_oops);
+void grow_heap(uint min_size_oops);
 
 ObjMemory *st_memory_new(void);
 
@@ -47,17 +47,17 @@ void st_memory_add_root(Oop object);
 
 void st_memory_remove_root(Oop object);
 
-Oop st_memory_allocate(st_uint size);
+Oop st_memory_allocate(uint size);
 
 Oop st_memory_allocate_context(void);
 
 void st_memory_recycle_context(Oop context);
 
-bool get_bit(st_uchar *bits, st_uint index);
+bool get_bit(uchar *bits, uint index);
 
-void set_bit(st_uchar *bits, st_uint index);
+void set_bit(uchar *bits, uint index);
 
-st_uint bit_index(Oop object);
+uint bit_index(Oop object);
 
 bool ismarked(Oop object);
 

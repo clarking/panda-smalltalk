@@ -12,15 +12,15 @@
 #include "object.h"
 #include "types.h"
 
-#define ST_LARGE_INTEGER(oop) ((struct LargeInt *) st_detag_pointer (oop))
+#define ST_LARGE_INTEGER(oop) ((LargeInt *) st_detag_pointer (oop))
 
 Oop st_large_integer_new(mp_int *value);
 
 Oop st_large_integer_new_from_smi(int integer);
 
-Oop st_large_integer_new_from_string(const char *string, st_uint radix);
+Oop st_large_integer_new_from_string(const char *string, uint radix);
 
-char *st_large_integer_to_string(Oop integer, st_uint radix);
+char *st_large_integer_to_string(Oop integer, uint radix);
 
 Oop st_large_integer_allocate(Oop class, mp_int *value);
 

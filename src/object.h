@@ -31,7 +31,7 @@ void st_object_initialize_header(Oop object, Oop class);
 
 bool st_object_equal(Oop object, Oop other);
 
-st_uint st_object_hash(Oop object);
+uint st_object_hash(Oop object);
 
 void st_object_set_format(Oop object, st_format format);
 
@@ -41,9 +41,9 @@ void st_object_set_hashed(Oop object, bool hashed);
 
 bool st_object_is_hashed(Oop object);
 
-st_uint st_object_instance_size(Oop object);
+uint st_object_instance_size(Oop object);
 
-st_uint st_object_set_instance_size(Oop object, st_uint size);
+uint st_object_set_instance_size(Oop object, uint size);
 
 int st_object_tag(Oop object);
 

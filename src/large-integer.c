@@ -12,7 +12,7 @@
 
 #define VALUE(oop)  (&(ST_LARGE_INTEGER(oop)->value))
 
-Oop st_large_integer_new_from_string(const char *string, st_uint radix) {
+Oop st_large_integer_new_from_string(const char *string, uint radix) {
 	mp_int value;
 	int result;
 	
@@ -34,28 +34,29 @@ Oop st_large_integer_new_from_string(const char *string, st_uint radix) {
 	return ST_NIL;
 }
 
-char *st_large_integer_to_string(Oop integer, st_uint radix) {
-	int result;
-	int size;
-	
-	result = mp_radix_size(VALUE (integer), radix, &size);
-	if (result != MP_OKAY)
+char *st_large_integer_to_string(Oop integer, uint radix) {
+	size_t size;
+	mp_err err;
+	err = mp_radix_size(VALUE (integer), radix, &size);
+	if (err != MP_OKAY)
 		goto out;
 	
 	char *str = st_malloc(size);
-	mp_toradix(VALUE (integer), str, radix);
-	return str;
+	err = mp_read_radix(VALUE (integer), str, radix);
+	if (err != MP_OKAY)
+		goto out;
 	
+	return str;
 	out:
-	fprintf(stderr, "%s", mp_error_to_string(result));
+	fprintf(stderr, "%s", mp_error_to_string(err));
 	return NULL;
 }
 
 Oop st_large_integer_allocate(Oop class, mp_int *value) {
 	Oop object;
-	st_uint size;
+	uint size;
 	
-	size = ST_SIZE_OOPS (struct LargeInt);
+	size = ST_SIZE_OOPS(struct LargeInt);
 	object = st_memory_allocate(size);
 	if (object == 0) {
 		st_memory_perform_gc();

@@ -20,21 +20,10 @@
 #define HAVE_COMPUTED_GOTO
 #endif
 
-// Check host data model. We only support LP64 at the moment.
-#ifndef __LP64__
-	#define ST_HOST32             1
-	#define ST_HOST64             0
-	#define ST_BITS_PER_WORD     32
-	#define ST_BITS_PER_INTEGER  32
-#else
-	#define ST_HOST32            0
-	#define ST_HOST64            1
-	#define ST_BITS_PER_WORD     64
-	#define ST_BITS_PER_INTEGER  32
-#endif
 
-#define ST_SMALL_INTEGER_MIN  (-ST_SMALL_INTEGER_MAX - 1)
-#define ST_SMALL_INTEGER_MAX  536870911
+
+//#define ST_SMALL_INTEGER_MIN  (-ST_SMALL_INTEGER_MAX - 1)
+//#define ST_SMALL_INTEGER_MAX  536870911
 
 // threshold is 8 Mb or 16 Mb depending on whether system is 32 or 64 bits
 #define ST_COLLECTION_THRESHOLD (sizeof (Oop) * 2 * 1024 * 1024)
@@ -84,8 +73,8 @@ typedef enum st_format {
 
 
 typedef struct StInteger {
-	uint64_t dummy:1;
-	uint64_t value:63;
+	uint64_t dummy: 1;
+	uint64_t value: 63;
 } StInteger;
 
 /* basic oop pointer:
@@ -95,14 +84,14 @@ typedef struct StInteger {
 
 typedef uintptr_t Oop;
 
-typedef unsigned char st_uchar;
-typedef unsigned short st_ushort;
-typedef unsigned long st_ulong;
-typedef unsigned int st_uint;
+typedef unsigned char uchar;
+typedef unsigned short ushort;
+typedef unsigned long ulong;
+typedef unsigned int uint;
 
-typedef st_uint st_unichar;
+typedef uint unichar;
 
-static inline Oop st_tag_pointer(void * p) {
+static inline Oop st_tag_pointer(void *p) {
 	return ((Oop) p) + ST_POINTER_TAG;
 }
 
@@ -111,12 +100,13 @@ static inline Oop *st_detag_pointer(Oop oop) {
 }
 
 typedef struct VmOptions {
-	const char *filepath;
+	char *src_dir;
+	char *script;
 	char *prog;
 	bool verbose;
-	bool repl;
-}VmOptions;
+	uint mode;
 
+} VmOptions;
 
 
 /*
@@ -148,7 +138,7 @@ typedef struct Array {
 
 typedef struct WordArray {
 	ArrayedObject parent;
-	st_uint elements[];
+	uint elements[];
 } WordArray;
 
 typedef struct FloatArray {
@@ -158,7 +148,7 @@ typedef struct FloatArray {
 
 typedef struct ByteArray {
 	ArrayedObject parent;
-	st_uchar bytes[];
+	uchar bytes[];
 } ByteArray;
 
 typedef struct Association {
@@ -168,7 +158,7 @@ typedef struct Association {
 } Association;
 
 typedef struct HashedCollection {
-	struct ObjHeader header;
+	ObjHeader header;
 	Oop size;
 	Oop deleted;
 	Oop array;
@@ -195,7 +185,7 @@ typedef struct MetaClass {
 
 typedef struct List List;
 typedef struct List {
-	void * data;
+	void *data;
 	List *next;
 } List;
 
@@ -207,10 +197,10 @@ typedef struct InputMarker {
 
 typedef struct LexInput {
 	char *text;
-	st_uint p;        /* current index into text */
-	st_uint n;        /* total number of chars in text */
-	st_uint line;     /* current line number, starting from 1 */
-	st_uint column;   /* current column number, starting from 1 */
+	uint p;        /* current index into text */
+	uint n;        /* total number of chars in text */
+	uint line;     /* current line number, starting from 1 */
+	uint column;   /* current column number, starting from 1 */
 	InputMarker InputMarker;
 } LexInput;
 
@@ -222,8 +212,8 @@ typedef struct FileIn {
 
 typedef struct CompilerError {
 	char message[255];
-	st_uint line;
-	st_uint column;
+	uint line;
+	uint column;
 } CompilerError;
 
 typedef enum {
@@ -252,8 +242,8 @@ typedef enum {
 
 typedef struct Token {
 	TokenType type;
-	int line;
-	int column;
+	uint line;
+	uint column;
 	union {
 		struct {
 			char *text;
@@ -285,9 +275,9 @@ typedef struct Lexer {
 	bool token_matched;
 	
 	// data for next token
-	st_uint line;
-	st_uint column;
-	st_uint start;
+	uint line;
+	uint column;
+	uint start;
 	Token *token;
 	
 	// error control
@@ -296,8 +286,8 @@ typedef struct Lexer {
 	
 	// last error information
 	ErrCode error_code;
-	st_uint error_line;
-	st_uint error_column;
+	uint error_line;
+	uint error_column;
 	char error_char;
 	
 	List *allocated_tokens; // delayed deallocation
@@ -331,7 +321,7 @@ typedef enum {
 typedef struct Node Node;
 typedef struct Node {
 	NodeType type;
-	int line;
+	uint line;
 	Node *next;
 	union {
 		struct {
@@ -400,29 +390,29 @@ typedef struct Generator {
 } Generator;
 
 typedef struct Bytecode {
-	st_uchar *buffer;
-	st_uint size;
-	st_uint alloc;
-	st_uint max_stack_depth;
+	uchar *buffer;
+	uint size;
+	uint alloc;
+	uint max_stack_depth;
 } Bytecode;
 
 typedef struct Cell {
 	Oop object;
-	st_uint hash;
+	uint hash;
 } Cell;
 
 typedef struct IdentityHashTable {
 	Cell *table;
-	st_uint alloc;
-	st_uint size;
-	st_uint deleted;
-	st_uint current_hash;
+	uint alloc;
+	uint size;
+	uint deleted;
+	uint current_hash;
 } IdentityHashTable;
 
 typedef struct MemHeap {
-	st_uchar *start;        // start of reserved address space
-	st_uchar *p;            // end of committed address space (`start' to `p' is thus writeable memory)
-	st_uchar *end;          // end of reserved address space
+	uchar *start;        // start of reserved address space
+	uchar *p;            // end of committed address space (`start' to `p' is thus writeable memory)
+	uchar *end;          // end of reserved address space
 } MemHeap;
 
 typedef struct ObjMemory {
@@ -430,18 +420,18 @@ typedef struct ObjMemory {
 	Oop *start, *end;
 	Oop *p;
 	Oop *mark_stack;
-	st_uint mark_stack_size;
-	st_uchar *mark_bits;
-	st_uchar *alloc_bits;
-	st_uint bits_size;                   // in bytes
+	uint mark_stack_size;
+	uchar *mark_bits;
+	uchar *alloc_bits;
+	uint bits_size;                   // in bytes
 	Oop **offsets;
-	st_uint offsets_size;                // in bytes
-	ptr_array roots;
-	st_uint counter;
+	uint offsets_size;                // in bytes
+	PtrArray roots;
+	uint counter;
 	Oop free_context;                 // free context pool
 	struct timespec total_pause_time;    // total accumulated pause time
-	st_ulong bytes_allocated;            // current number of allocated bytes
-	st_ulong bytes_collected;            // number of bytes collected in last compaction
+	ulong bytes_allocated;            // current number of allocated bytes
+	ulong bytes_collected;            // number of bytes collected in last compaction
 	
 	IdentityHashTable *ht;
 	

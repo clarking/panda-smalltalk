@@ -10,43 +10,42 @@
 #include "types.h"
 #include "object.h"
 
-struct st_context_part {
-	struct ObjHeader parent;
+typedef struct ContextPart {
+	ObjHeader parent;
 	Oop sender;
 	Oop ip;
 	Oop sp;
-	
-};
+} ContextPart;
 
-struct st_method_context {
-	struct st_context_part parent;
+typedef struct MethodContext {
+	ContextPart parent;
 	Oop method;
 	Oop receiver;
 	Oop stack[];
-};
+} MethodContext;
 
-struct st_block_context {
-	struct st_context_part parent;
+typedef struct BlockContext {
+	ContextPart parent;
 	Oop initial_ip;
 	Oop argcount;
 	Oop home;
 	Oop stack[];
-};
+} BlockContext;
 
-#define ST_CONTEXT_PART(oop)       ((struct st_context_part *)   st_detag_pointer (oop))
-#define ST_METHOD_CONTEXT(oop)     ((struct st_method_context *) st_detag_pointer (oop))
-#define ST_BLOCK_CONTEXT(oop)      ((struct st_block_context *)  st_detag_pointer (oop))
+#define ContextPart(oop)       (( ContextPart *)   st_detag_pointer (oop))
+#define MethodContext(oop)     (( MethodContext *) st_detag_pointer (oop))
+#define BlockContext(oop)      (( BlockContext *)  st_detag_pointer (oop))
 
-#define ST_CONTEXT_PART_SENDER(oop)  (ST_CONTEXT_PART (oop)->sender)
-#define ST_CONTEXT_PART_IP(oop)      (ST_CONTEXT_PART (oop)->ip)
-#define ST_CONTEXT_PART_SP(oop)      (ST_CONTEXT_PART (oop)->sp)
+#define ContextPart_SENDER(oop)  (ContextPart (oop)->sender)
+#define ContextPart_IP(oop)      (ContextPart (oop)->ip)
+#define ContextPart_SP(oop)      (ContextPart (oop)->sp)
 
-#define ST_METHOD_CONTEXT_METHOD(oop)   (ST_METHOD_CONTEXT (oop)->method)
-#define ST_METHOD_CONTEXT_RECEIVER(oop) (ST_METHOD_CONTEXT (oop)->receiver)
-#define ST_METHOD_CONTEXT_STACK(oop)    (ST_METHOD_CONTEXT (oop)->stack)
+#define MethodContext_METHOD(oop)   (MethodContext (oop)->method)
+#define MethodContext_RECEIVER(oop) (MethodContext (oop)->receiver)
+#define MethodContext_STACK(oop)    (MethodContext (oop)->stack)
 
-#define ST_BLOCK_CONTEXT_INITIALIP(oop) (ST_BLOCK_CONTEXT (oop)->initial_ip)
-#define ST_BLOCK_CONTEXT_ARGCOUNT(oop)  (ST_BLOCK_CONTEXT (oop)->argcount)
-#define ST_BLOCK_CONTEXT_HOME(oop)      (ST_BLOCK_CONTEXT (oop)->home)
-#define ST_BLOCK_CONTEXT_STACK(oop)     (ST_BLOCK_CONTEXT (oop)->stack)
+#define BlockContext_INITIALIP(oop) (BlockContext (oop)->initial_ip)
+#define BlockContext_ARGCOUNT(oop)  (BlockContext (oop)->argcount)
+#define BlockContext_HOME(oop)      (BlockContext (oop)->home)
+#define BlockContext_STACK(oop)     (BlockContext (oop)->stack)
 

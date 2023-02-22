@@ -13,7 +13,7 @@
 #include "types.h"
 
 
-st_uint st_identity_hashtable_hash(IdentityHashTable *ht, Oop object);
+uint st_identity_hashtable_hash(IdentityHashTable *ht, Oop object);
 
 IdentityHashTable *st_identity_hashtable_new(void);
 

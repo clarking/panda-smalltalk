@@ -16,10 +16,9 @@
 #include "character.h"
 #include "unicode.h"
 
-
 void print_variable(Node *node) {
 	st_assert (node->type == ST_VARIABLE_NODE);
-	printf(node->variable.name);
+	printf("%s", node->variable.name);
 }
 
 void print_object(Oop object) {
@@ -35,7 +34,8 @@ void print_object(Oop object) {
 		char outbuf[6] = {0};
 		st_unichar_to_utf8(st_character_value(object), outbuf);
 		printf("$%s", outbuf);
-	} else if (st_object_class(object) == ST_ARRAY_CLASS)
+	}
+	else if (st_object_class(object) == ST_ARRAY_CLASS)
 		print_tuple(object);
 }
 
@@ -92,11 +92,13 @@ void print_method_node(Node *node) {
 			arguments = arguments->next;
 		}
 		st_strfreev(keywords);
-	} else if (node->method.precedence == ST_BINARY_PRECEDENCE) {
+	}
+	else if (node->method.precedence == ST_BINARY_PRECEDENCE) {
 		printf("%s", (char *) st_byte_array_bytes(node->method.selector));
 		printf(" ");
 		print_variable(node->method.arguments);
-	} else
+	}
+	else
 		printf("%s", (char *) st_byte_array_bytes(node->method.selector));
 	
 	printf("\n");
@@ -172,7 +174,6 @@ void print_message(Node *node) {
 			printf("(");
 		
 		print_expression(node->msg.receiver);
-		
 		if (node->msg.receiver->type == ST_MESSAGE_NODE &&
 		    (node->msg.receiver->msg.precedence == ST_BINARY_PRECEDENCE ||
 		     node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE))
@@ -181,13 +182,13 @@ void print_message(Node *node) {
 		printf(" ");
 		printf("%s", (char *) st_byte_array_bytes(node->msg.selector));
 		
-	} else if (node->msg.precedence == ST_BINARY_PRECEDENCE) {
+	}
+	else if (node->msg.precedence == ST_BINARY_PRECEDENCE) {
 		
 		if (node->msg.receiver->type == ST_MESSAGE_NODE && node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE)
 			printf("(");
 		
 		print_expression(node->msg.receiver);
-		
 		if (node->msg.receiver->type == ST_MESSAGE_NODE && node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE)
 			printf(")");
 		
@@ -201,32 +202,29 @@ void print_message(Node *node) {
 			printf("(");
 		
 		print_expression(node->msg.arguments);
-		
 		if (node->msg.arguments->type == ST_MESSAGE_NODE &&
 		    (node->msg.arguments->msg.precedence == ST_BINARY_PRECEDENCE ||
 		     node->msg.arguments->msg.precedence == ST_KEYWORD_PRECEDENCE))
 			printf(")");
 		
-	} else if (node->msg.precedence == ST_KEYWORD_PRECEDENCE) {
+	}
+	else if (node->msg.precedence == ST_KEYWORD_PRECEDENCE) {
 		
 		char *selector = (char *) st_byte_array_bytes(node->msg.selector);
-		
 		char **keywords = extract_keywords(selector);
 		Node *arguments = node->msg.arguments;
 		
 		if (node->msg.receiver->type == ST_MESSAGE_NODE && node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE)
 			printf("(");
+		
 		print_expression(node->msg.receiver);
 		if (node->msg.receiver->type == ST_MESSAGE_NODE &&
 		    node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE)
 			printf(")");
 		
 		printf(" ");
-		
 		for (char **keyword = keywords; *keyword; keyword++) {
-			
 			printf("%s: ", *keyword);
-			
 			if (node->msg.arguments->type == ST_MESSAGE_NODE &&
 			    node->msg.arguments->msg.precedence == ST_KEYWORD_PRECEDENCE)
 				printf("(");
@@ -300,7 +298,7 @@ Node *st_node_list_append(Node *list, Node *node) {
 	return list;
 }
 
-st_uint st_node_list_length(Node *list) {
+uint st_node_list_length(Node *list) {
 	Node *l = list;
 	int len = 0;
 	for (; l; l = l->next)
@@ -308,8 +306,8 @@ st_uint st_node_list_length(Node *list) {
 	return len;
 }
 
-Node *st_node_list_at(Node *list, st_uint index) {
-	st_uint i = 0;
+Node *st_node_list_at(Node *list, uint index) {
+	uint i = 0;
 	Node *l;
 	for (l = list; i < index; i++)
 		l = l->next;
@@ -326,39 +324,30 @@ void st_node_destroy(Node *node) {
 			st_node_destroy(node->method.temporaries);
 			st_node_destroy(node->method.statements);
 			break;
-		
 		case ST_BLOCK_NODE:
 			st_node_destroy(node->block.arguments);
 			st_node_destroy(node->block.temporaries);
 			st_node_destroy(node->block.statements);
 			break;
-		
 		case ST_ASSIGN_NODE:
 			st_node_destroy(node->assign.assignee);
 			st_node_destroy(node->assign.expression);
 			break;
-		
 		case ST_RETURN_NODE:
 			st_node_destroy(node->retrn.expression);
 			break;
-		
 		case ST_MESSAGE_NODE:
 			st_node_destroy(node->msg.receiver);
 			st_node_destroy(node->msg.arguments);
 			break;
-		
 		case ST_CASCADE_NODE:
 			st_node_destroy(node->cascade.receiver);
-			
 			st_list_foreach(node->cascade.messages, (st_list_foreach_func) st_node_destroy);
 			st_list_destroy(node->cascade.messages);
 			break;
-		
 		case ST_VARIABLE_NODE:
-			
 			st_free(node->variable.name);
 			break;
-		
 		default:
 			break;
 	}

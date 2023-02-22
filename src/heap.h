@@ -11,10 +11,10 @@
 #include "types.h"
 
 
-MemHeap *st_heap_new(st_uint reserved_size);
+MemHeap *st_heap_new(uint reserved_size);
 
-bool st_heap_grow(MemHeap *heap, st_uint grow_size);
+bool st_heap_grow(MemHeap *heap, uint grow_size);
 
-bool st_heap_shrink(MemHeap *heap, st_uint shrink_size);
+bool st_heap_shrink(MemHeap *heap, uint shrink_size);
 
 void st_heap_destroy(MemHeap *heap);

@@ -25,9 +25,9 @@ void st_lexer_destroy(Lexer *lexer);
 
 char st_lexer_error_char(Lexer *lexer);
 
-st_uint st_lexer_error_line(Lexer *lexer);
+uint st_lexer_error_line(Lexer *lexer);
 
-st_uint st_lexer_error_column(Lexer *lexer);
+uint st_lexer_error_column(Lexer *lexer);
 
 char *st_lexer_error_message(Lexer *lexer);
 
@@ -37,15 +37,15 @@ TokenType st_token_get_type(Token *token);
 
 char *st_token_get_text(Token *token);
 
-st_uint st_token_get_line(Token *token);
+uint st_token_get_line(Token *token);
 
-st_uint st_token_get_column(Token *token);
+uint st_token_get_column(Token *token);
 
 bool st_number_token_negative(Token *token);
 
 char *st_number_token_number(Token *token);
 
-st_uint st_number_token_radix(Token *token);
+uint st_number_token_radix(Token *token);
 
 int st_number_token_exponent(Token *token);
 

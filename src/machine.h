@@ -20,19 +20,25 @@
 #define ST_NUM_GLOBALS   36
 #define ST_NUM_SELECTORS 24
 
-typedef struct st_method_cache {
+#define VM_MODE_EXPR 0
+#define VM_MODE_REPL 1
+#define VM_MODE_FILE 2
+
+#define INPUT_BUF_SIZE 2000
+
+typedef struct MethodCache {
 	Oop class;
 	Oop selector;
 	Oop method;
-} st_method_cache;
+} MethodCache;
 
-typedef struct st_machine st_machine;
+typedef struct VirtualMachine VirtualMachine;
 
-struct st_machine {
+struct VirtualMachine {
 	Oop context;
 	Oop receiver;
 	Oop method;
-	st_uchar *bytecode;
+	uchar *bytecode;
 	Oop *temps;
 	Oop *stack;
 	Oop lookup_class;
@@ -41,30 +47,30 @@ struct st_machine {
 	size_t message_argcount;
 	Oop new_method;
 	bool success;
-	st_uint ip;
-	st_uint sp;
+	uint ip;
+	uint sp;
 	jmp_buf main_loop;
-	st_method_cache method_cache[ST_METHOD_CACHE_SIZE];
+	MethodCache method_cache[ST_METHOD_CACHE_SIZE];
 	Oop globals[ST_NUM_GLOBALS];
 	Oop selectors[ST_NUM_SELECTORS];
 };
 
-extern st_machine __machine;
+extern VirtualMachine __machine;
 
 #define ST_STACK_POP(machine)          (machine->stack[--machine->sp])
 #define ST_STACK_PUSH(machine, oop)    (machine->stack[machine->sp++] = oop)
 #define ST_STACK_PEEK(machine)         (machine->stack[machine->sp-1])
 #define ST_STACK_UNPOP(machine, count) (machine->sp += count)
 
-void st_machine_main(st_machine *machine);
+void st_machine_main(VirtualMachine *machine);
 
-void st_machine_initialize(st_machine *machine);
+void st_machine_initialize(VirtualMachine *machine);
 
-void st_machine_set_active_context(st_machine *machine, Oop context);
+void st_machine_set_active_context(VirtualMachine *machine, Oop context);
 
-void st_machine_execute_method(st_machine *machine);
+void st_machine_execute_method(VirtualMachine *machine);
 
-Oop st_machine_lookup_method(st_machine *machine, Oop class);
+Oop st_machine_lookup_method(VirtualMachine *machine, Oop class);
 
-void st_machine_clear_caches(st_machine *machine);
+void st_machine_clear_caches(VirtualMachine *machine);
 

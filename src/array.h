@@ -21,9 +21,9 @@
 
 bool st_byte_array_equal(Oop object, Oop other);
 
-st_uint st_byte_array_hash(Oop object);
+uint st_byte_array_hash(Oop object);
 
-Oop st_array_allocate(Oop class, st_uint size);
+Oop st_array_allocate(Oop class, uint size);
 
 Oop st_float_array_allocate(Oop class, int size);
 
@@ -39,17 +39,17 @@ Oop st_array_at(Oop object, int i);
 
 void st_array_at_put(Oop object, int i, Oop value);
 
-st_uint *st_word_array_elements(Oop object);
+uint *st_word_array_elements(Oop object);
 
-st_uint st_word_array_at(Oop object, int i);
+uint st_word_array_at(Oop object, int i);
 
-void st_word_array_at_put(Oop object, int i, st_uint value);
+void st_word_array_at_put(Oop object, int i, uint value);
 
 char *st_byte_array_bytes(Oop object);
 
-st_uchar st_byte_array_at(Oop object, int i);
+uchar st_byte_array_at(Oop object, int i);
 
-void st_byte_array_at_put(Oop object, int i, st_uchar value);
+void st_byte_array_at_put(Oop object, int i, uchar value);
 
 double *st_float_array_elements(Oop array);
 

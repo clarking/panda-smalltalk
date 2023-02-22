@@ -17,23 +17,23 @@ LexInput *st_input_new(const char *string);
 
 char st_input_look_ahead(LexInput *input, int i);
 
-st_uint st_input_get_line(LexInput *input);
+uint st_input_get_line(LexInput *input);
 
-st_uint st_input_get_column(LexInput *input);
+uint st_input_get_column(LexInput *input);
 
 void st_input_mark(LexInput *input);
 
 void st_input_rewind(LexInput *input);
 
-void st_input_seek(LexInput *input, st_uint index);
+void st_input_seek(LexInput *input, uint index);
 
 void st_input_consume(LexInput *input);
 
-st_uint st_input_size(LexInput *input);
+uint st_input_size(LexInput *input);
 
-st_uint st_input_index(LexInput *input);
+uint st_input_index(LexInput *input);
 
-char *st_input_range(LexInput *input, st_uint start, st_uint end);
+char *st_input_range(LexInput *input, uint start, uint end);
 
 char *st_input_next_chunk(LexInput *input);
 

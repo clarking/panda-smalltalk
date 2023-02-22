@@ -116,7 +116,7 @@ bitShift: aNumber
 
 LargeInteger method!
 asFloat
-	<primitive: 'large_int_asFloat'>
+	<primitive: 'large_int_as_float'>
 	self primitiveFailed!
 
 LargeInteger method!

@@ -2,7 +2,14 @@ cmake_minimum_required(VERSION 3.19)
 project(panda)
 
 set(PANDA_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-g  -std=gnu11")
+
+if({CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    add_definitions(-DST_DEBUG)
+    set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-g")
+elseif({CMAKE_BUILD_TYPE} STREQUAL "Release")
+    set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-O2")
+endif()
+
 add_compile_definitions(ST_DEBUG)
 set(PANDA_SRC
         src/main.c
@@ -36,5 +43,4 @@ add_subdirectory(libs/libtommath)
 
 add_executable(panda ${PANDA_SRC})
 target_include_directories(panda PUBLIC src/ libs/libmpa libs/libtommath)
-
 target_link_libraries(panda -lm -lreadline -ldl -lpthread libmpa libtommath)

@@ -64,28 +64,28 @@ enum {
 };
 
 static inline void
-st_oops_copy(Oop *to, Oop *from, st_uint count) {
+st_oops_copy(Oop *to, Oop *from, uint count) {
 	memcpy(to, from, sizeof(Oop) * count);
 }
 
 static inline void
-st_oops_move(Oop *to, Oop *from, st_uint count) {
+st_oops_move(Oop *to, Oop *from, uint count) {
 	memmove(to, from, sizeof(Oop) * count);
 }
 
-void * st_malloc(size_t size) ST_GNUC_MALLOC;
+void *st_malloc(size_t size) ST_GNUC_MALLOC;
 
-void * st_malloc0(size_t size) ST_GNUC_MALLOC;
+void *st_malloc0(size_t size) ST_GNUC_MALLOC;
 
-void * st_realloc(void * mem, size_t size);
+void *st_realloc(void *mem, size_t size);
 
-void st_free(void * mem);
+void st_free(void *mem);
 
 #define st_new(struct_type)  ((struct_type *) st_malloc  (sizeof (struct_type)))
 #define st_new0(struct_type) ((struct_type *) st_malloc0 (sizeof (struct_type)))
 
 bool st_file_get_contents(const char *filename,
-		char **buffer);
+                          char **buffer);
 
 char *st_strdup(const char *string);
 
@@ -108,11 +108,11 @@ void st_timespec_difference(struct timespec *start, struct timespec *end, struct
 void st_timespec_add(struct timespec *t1, struct timespec *t2, struct timespec *result);
 
 
-typedef void (*st_list_foreach_func)(void * data);
+typedef void (*st_list_foreach_func)(void *data);
 
-List *st_list_append(List *list, void * data);
+List *st_list_append(List *list, void *data);
 
-List *st_list_prepend(List *list, void * data);
+List *st_list_prepend(List *list, void *data);
 
 List *st_list_concat(List *list1, List *list2);
 
@@ -120,11 +120,11 @@ void st_list_foreach(List *list, st_list_foreach_func func);
 
 List *st_list_reverse(List *list);
 
-st_uint st_list_length(List *list);
+uint st_list_length(List *list);
 
 void st_list_destroy(List *list);
 
-st_uint st_string_hash(const char *string);
+uint st_string_hash(const char *string);
 
 #if  defined(__GNUC__) && defined(__OPTIMIZE__)
 #define ST_LIKELY(condition)     __builtin_expect (!!(condition), 1)

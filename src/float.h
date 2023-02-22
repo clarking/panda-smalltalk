@@ -12,23 +12,23 @@
 #include "types.h"
 #include "object.h"
 
-#define ST_FLOAT(oop) ((struct st_float *) st_detag_pointer (oop))
+#define ST_FLOAT(oop) ((Float *) st_detag_pointer (oop))
 
-struct st_float {
-	struct ObjHeader parent;
+typedef struct Float {
+	ObjHeader parent;
 	double value;
-};
+} Float;
 
 Oop st_float_new(double value);
 
 Oop st_float_allocate(Oop class);
 
 static inline double st_float_value(Oop object) {
-	return ST_FLOAT (object)->value;
+	return ST_FLOAT(object)->value;
 }
 
 static inline void st_float_set_value(Oop object, double value) {
-	ST_FLOAT (object)->value = value;
+	ST_FLOAT(object)->value = value;
 }
 
 static inline bool st_float_equal(Oop object, Oop other) {
@@ -37,7 +37,7 @@ static inline bool st_float_equal(Oop object, Oop other) {
 	return st_float_value(object) == st_float_value(other);
 }
 
-static inline st_uint st_float_hash(Oop object) {
-	return (st_uint) st_float_value(object);
+static inline uint st_float_hash(Oop object) {
+	return (uint) st_float_value(object);
 }
 

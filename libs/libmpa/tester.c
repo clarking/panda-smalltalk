@@ -31,216 +31,216 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "ptr_array.h"
+#include "PtrArray.h"
 
 int main(int argc, char **argv);
 
 void test_new() {
-	ptr_array p1 = ptr_array_new(10);
+	PtrArray p1 = PtrArray_new(10);
 	assert(p1 != NULL);
 	assert(p1->size >= 10);
 	assert(p1->array != NULL);
 	assert(p1->length == 0);
-	ptr_array_free(p1);
+	PtrArray_free(p1);
 }
 
 void test_new_oom() {
 	fprintf(stderr, "Your malloc implementation may report an (ignorable) "
 	                "error for this test\n");
-	ptr_array p1 = ptr_array_new(1000000000);
+	PtrArray p1 = PtrArray_new(1000000000);
 	assert (p1 == NULL);
 }
 
 void test_free() {
-	ptr_array p1 = ptr_array_new(1);
-	ptr_array_free(p1);
-	ptr_array p2 = NULL;
-	ptr_array_free(p2);
+	PtrArray p1 = PtrArray_new(1);
+	PtrArray_free(p1);
+	PtrArray p2 = NULL;
+	PtrArray_free(p2);
 }
 
 void test_new_zero() {
-	ptr_array p1 = ptr_array_new(0);
+	PtrArray p1 = PtrArray_new(0);
 	assert(p1 != NULL);
 	assert(p1->size == 0);
 	assert(p1->array == NULL);
 	assert(p1->length == 0);
-	ptr_array_free(p1);
+	PtrArray_free(p1);
 }
 
-static ptr_array setup_data() {
-	ptr_array p1 = ptr_array_new(4);
-	ptr_array_append(p1, &malloc);
-	ptr_array_append(p1, &realloc);
-	ptr_array_append(p1, &free);
-	ptr_array_append(p1, &main);
+static PtrArray setup_data() {
+	PtrArray p1 = PtrArray_new(4);
+	PtrArray_append(p1, &malloc);
+	PtrArray_append(p1, &realloc);
+	PtrArray_append(p1, &free);
+	PtrArray_append(p1, &main);
 	return p1;
 }
 
 void test_remove_ordered() {
-	ptr_array p1 = setup_data();
+	PtrArray p1 = setup_data();
 	void *value =
-			ptr_array_remove_ordered(p1, &realloc);
+			PtrArray_remove_ordered(p1, &realloc);
 	assert(value == &realloc);
-	assert(ptr_array_get_index(p1, 0) == &malloc);
-	assert(ptr_array_get_index(p1, 1) == &free);
-	assert(ptr_array_get_index(p1, 2) == &main);
-	assert(ptr_array_length(p1) == 3);
+	assert(PtrArray_get_index(p1, 0) == &malloc);
+	assert(PtrArray_get_index(p1, 1) == &free);
+	assert(PtrArray_get_index(p1, 2) == &main);
+	assert(PtrArray_length(p1) == 3);
 	
 	value =
-			ptr_array_remove_ordered(p1, &malloc);
+			PtrArray_remove_ordered(p1, &malloc);
 	assert(value == &malloc);
-	assert(ptr_array_get_index(p1, 0) == &free);
-	assert(ptr_array_get_index(p1, 1) == &main);
-	assert(ptr_array_length(p1) == 2);
+	assert(PtrArray_get_index(p1, 0) == &free);
+	assert(PtrArray_get_index(p1, 1) == &main);
+	assert(PtrArray_length(p1) == 2);
 	
 	value =
-			ptr_array_remove_ordered(p1, &main);
+			PtrArray_remove_ordered(p1, &main);
 	assert(value == &main);
-	assert(ptr_array_get_index(p1, 0) == &free);
-	assert(ptr_array_length(p1) == 1);
+	assert(PtrArray_get_index(p1, 0) == &free);
+	assert(PtrArray_length(p1) == 1);
 	
 	value =
-			ptr_array_remove_ordered(p1, &free);
+			PtrArray_remove_ordered(p1, &free);
 	assert (value == &free);
-	assert(ptr_array_length(p1) == 0);
+	assert(PtrArray_length(p1) == 0);
 }
 
 void test_remove_ordered_nonexistant() {
-	ptr_array p1 = setup_data();
-	void *value = ptr_array_remove_ordered(p1, "some random data");
+	PtrArray p1 = setup_data();
+	void *value = PtrArray_remove_ordered(p1, "some random data");
 	assert(value == NULL);
 }
 
 void test_remove_index_ordered() {
-	ptr_array p1 = setup_data();
+	PtrArray p1 = setup_data();
 	void *value =
-			ptr_array_remove_index_ordered(p1, 1);
+			PtrArray_remove_index_ordered(p1, 1);
 	assert(value == &realloc);
-	assert(ptr_array_get_index(p1, 0) == &malloc);
-	assert(ptr_array_get_index(p1, 1) == &free);
-	assert(ptr_array_get_index(p1, 2) == &main);
-	assert(ptr_array_length(p1) == 3);
+	assert(PtrArray_get_index(p1, 0) == &malloc);
+	assert(PtrArray_get_index(p1, 1) == &free);
+	assert(PtrArray_get_index(p1, 2) == &main);
+	assert(PtrArray_length(p1) == 3);
 	
 	value =
-			ptr_array_remove_index_ordered(p1, 0);
+			PtrArray_remove_index_ordered(p1, 0);
 	assert(value == &malloc);
-	assert(ptr_array_get_index(p1, 0) == &free);
-	assert(ptr_array_get_index(p1, 1) == &main);
-	assert(ptr_array_length(p1) == 2);
+	assert(PtrArray_get_index(p1, 0) == &free);
+	assert(PtrArray_get_index(p1, 1) == &main);
+	assert(PtrArray_length(p1) == 2);
 	
 	value =
-			ptr_array_remove_index_ordered(p1, 1);
+			PtrArray_remove_index_ordered(p1, 1);
 	assert(value == &main);
-	assert(ptr_array_get_index(p1, 0) == &free);
-	assert(ptr_array_length(p1) == 1);
+	assert(PtrArray_get_index(p1, 0) == &free);
+	assert(PtrArray_length(p1) == 1);
 	
 	value =
-			ptr_array_remove_index_ordered(p1, 0);
+			PtrArray_remove_index_ordered(p1, 0);
 	assert (value == &free);
-	assert(ptr_array_length(p1) == 0);
+	assert(PtrArray_length(p1) == 0);
 }
 
 void test_remove_fast() {
-	ptr_array p1 = setup_data();
+	PtrArray p1 = setup_data();
 	void *value =
-			ptr_array_remove_fast(p1, &realloc);
+			PtrArray_remove_fast(p1, &realloc);
 	assert(value == &realloc);
-	assert(ptr_array_contains(p1, &malloc));
-	assert(ptr_array_contains(p1, &free));
-	assert(ptr_array_contains(p1, &main));
-	assert(ptr_array_length(p1) == 3);
+	assert(PtrArray_contains(p1, &malloc));
+	assert(PtrArray_contains(p1, &free));
+	assert(PtrArray_contains(p1, &main));
+	assert(PtrArray_length(p1) == 3);
 	
 	value =
-			ptr_array_remove_fast(p1, &malloc);
+			PtrArray_remove_fast(p1, &malloc);
 	assert(value == &malloc);
-	assert(ptr_array_contains(p1, &free));
-	assert(ptr_array_contains(p1, &main));
-	assert(ptr_array_length(p1) == 2);
+	assert(PtrArray_contains(p1, &free));
+	assert(PtrArray_contains(p1, &main));
+	assert(PtrArray_length(p1) == 2);
 	
 	value =
-			ptr_array_remove_fast(p1, &main);
+			PtrArray_remove_fast(p1, &main);
 	assert(value == &main);
-	assert(ptr_array_contains(p1, &free));
-	assert(ptr_array_length(p1) == 1);
+	assert(PtrArray_contains(p1, &free));
+	assert(PtrArray_length(p1) == 1);
 	
 	value =
-			ptr_array_remove_fast(p1, &free);
+			PtrArray_remove_fast(p1, &free);
 	assert (value == &free);
-	assert(ptr_array_length(p1) == 0);
+	assert(PtrArray_length(p1) == 0);
 }
 
 void test_remove_fast_nonexistant() {
-	ptr_array p1 = setup_data();
-	void *value = ptr_array_remove_fast(p1, "some random data");
+	PtrArray p1 = setup_data();
+	void *value = PtrArray_remove_fast(p1, "some random data");
 	assert(value == NULL);
 }
 
 void test_remove_index_fast() {
-	ptr_array p1 = setup_data();
+	PtrArray p1 = setup_data();
 	void *value =
-			ptr_array_remove_index_fast(p1, 1);
+			PtrArray_remove_index_fast(p1, 1);
 	assert(value == &realloc);
-	assert(ptr_array_contains(p1, &malloc));
-	assert(ptr_array_contains(p1, &free));
-	assert(ptr_array_contains(p1, &main));
-	assert(ptr_array_length(p1) == 3);
+	assert(PtrArray_contains(p1, &malloc));
+	assert(PtrArray_contains(p1, &free));
+	assert(PtrArray_contains(p1, &main));
+	assert(PtrArray_length(p1) == 3);
 	
 	value =
-			ptr_array_remove_index_fast(p1, 0);
+			PtrArray_remove_index_fast(p1, 0);
 	assert(value == &malloc);
-	assert(ptr_array_contains(p1, &free));
-	assert(ptr_array_contains(p1, &main));
-	assert(ptr_array_length(p1) == 2);
+	assert(PtrArray_contains(p1, &free));
+	assert(PtrArray_contains(p1, &main));
+	assert(PtrArray_length(p1) == 2);
 	
 	value =
-			ptr_array_remove_index_fast(p1, 1);
+			PtrArray_remove_index_fast(p1, 1);
 	assert(value == &main);
-	assert(ptr_array_contains(p1, &free));
-	assert(ptr_array_length(p1) == 1);
+	assert(PtrArray_contains(p1, &free));
+	assert(PtrArray_length(p1) == 1);
 	
 	value =
-			ptr_array_remove_index_fast(p1, 0);
+			PtrArray_remove_index_fast(p1, 0);
 	assert (value == &free);
-	assert(ptr_array_length(p1) == 0);
+	assert(PtrArray_length(p1) == 0);
 }
 
 void test_get_set_index() {
-	ptr_array p1 = setup_data();
-	assert(ptr_array_get_index(p1, 0) == &malloc);
-	ptr_array_set_index(p1, 0, &realloc);
-	assert(ptr_array_get_index(p1, 0) == &realloc);
+	PtrArray p1 = setup_data();
+	assert(PtrArray_get_index(p1, 0) == &malloc);
+	PtrArray_set_index(p1, 0, &realloc);
+	assert(PtrArray_get_index(p1, 0) == &realloc);
 }
 
 void test_array_contains() {
-	ptr_array p1 = setup_data();
-	assert(ptr_array_contains(p1, &malloc));
-	assert(!ptr_array_contains(p1, &test_array_contains));
+	PtrArray p1 = setup_data();
+	assert(PtrArray_contains(p1, &malloc));
+	assert(!PtrArray_contains(p1, &test_array_contains));
 }
 
 void test_array_length() {
-	ptr_array p1 = setup_data();
-	assert(ptr_array_length(p1) == 4);
-	ptr_array_remove_index_fast(p1, 0);
-	assert(ptr_array_length(p1) == 3);
+	PtrArray p1 = setup_data();
+	assert(PtrArray_length(p1) == 4);
+	PtrArray_remove_index_fast(p1, 0);
+	assert(PtrArray_length(p1) == 3);
 }
 
 void test_array_append() {
 	int i;
-	ptr_array p1 = ptr_array_new(0);
+	PtrArray p1 = PtrArray_new(0);
 	for (i = 0; i < 1000; i++)
-		ptr_array_append(p1, &test_array_append);
-	assert(ptr_array_length(p1) == 1000);
+		PtrArray_append(p1, &test_array_append);
+	assert(PtrArray_length(p1) == 1000);
 	
 	for (i = 0; i < 1000; i++)
 		assert(p1->array[i] == &test_array_append);
 }
 
 void test_array_clear() {
-	ptr_array p1 = setup_data();
-	ptr_array_clear(p1);
-	assert(ptr_array_length(p1) == 0);
-	ptr_array_append(p1, 0);
-	assert(ptr_array_length(p1) == 1);
+	PtrArray p1 = setup_data();
+	PtrArray_clear(p1);
+	assert(PtrArray_length(p1) == 0);
+	PtrArray_append(p1, 0);
+	assert(PtrArray_length(p1) == 1);
 }
 
 int main(int argc, char **argv) {

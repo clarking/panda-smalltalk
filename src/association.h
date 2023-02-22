@@ -19,7 +19,7 @@
 
 Oop st_association_new(Oop key, Oop value);
 
-st_uint st_association_hash(Oop object);
+uint st_association_hash(Oop object);
 
 bool st_association_equal(Oop object, Oop other);
 

@@ -5,12 +5,11 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include "types.h"
 #include <tommath.h>
 #include <errno.h>
 #include <stdlib.h>
-
-
-#include "types.h"
+#include <limits.h>
 #include "parser.h"
 #include "compiler.h"
 #include "lexer.h"
@@ -172,17 +171,18 @@ Node *parse_number(Parser *parser) {
 		
 		st_free(format);
 		
-	} else {
+	}
+	else {
 		
 		errno = 0;
 		long int integer = sign * strtol(number, NULL, radix);
 		
 		/* check for overflow */
 		if (errno == ERANGE
-		    || integer < ST_SMALL_INTEGER_MIN || integer > ST_SMALL_INTEGER_MAX) {
+		    || integer < INT_MIN || integer > INT_MAX) {
 			
 			mp_int value;
-			int result;
+			mp_err result;
 			
 			result = mp_init(&value);
 			if (result != MP_OKAY)
@@ -193,11 +193,14 @@ Node *parse_number(Parser *parser) {
 				parse_error(parser, "memory exhausted while trying parse LargeInteger", token);
 			
 			if (sign == -1)
-				mp_neg(&value, &value);
-			
+				result = mp_neg(&value, &value);
+				if (result != MP_OKAY)
+					parse_error(parser, "memory exhausted while trying parse negative LargeInteger", token);
+
 			node->literal.value = st_large_integer_new(&value);
 			
-		} else {
+		}
+		else {
 			node->literal.value = st_smi_new(integer);
 		}
 	}
@@ -236,7 +239,8 @@ Node *parse_tuple(Parser *parser) {
 			default:
 				if (st_token_get_type(token) == TOKEN_RPAREN) {
 					goto out;
-				} else
+				}
+				else
 					parse_error(parser, "expected ')'", token);
 		}
 		
@@ -398,13 +402,16 @@ Node *parse_keyword_argument(Parser *parser, Node *receiver) {
 		else
 			receiver = parse_primary(parser);
 		
-	} else if (st_token_get_type(token) == TOKEN_IDENTIFIER) {
+	}
+	else if (st_token_get_type(token) == TOKEN_IDENTIFIER) {
 		receiver = parse_unary_message(parser, receiver);
 		
-	} else if (st_token_get_type(token) == TOKEN_BINARY_SELECTOR && !streq (st_token_get_text(token), "!")) {
+	}
+	else if (st_token_get_type(token) == TOKEN_BINARY_SELECTOR && !streq (st_token_get_text(token), "!")) {
 		receiver = parse_binary_message(parser, receiver);
 		
-	} else {
+	}
+	else {
 		return receiver;
 	}
 	
@@ -675,7 +682,8 @@ int parse_primitive(Parser *parser) {
 		
 		next(parser);
 		
-	} else {
+	}
+	else {
 		parse_error(parser, "expected primitive declaration", token);
 	}
 	
@@ -728,7 +736,8 @@ void parse_message_pattern(Parser *parser, Node *method) {
 		
 		next(parser);
 		
-	} else if (type == TOKEN_BINARY_SELECTOR) {
+	}
+	else if (type == TOKEN_BINARY_SELECTOR) {
 		
 		method->method.selector = st_symbol_new(st_token_get_text(token));
 		
@@ -744,7 +753,8 @@ void parse_message_pattern(Parser *parser, Node *method) {
 		
 		next(parser);
 		
-	} else if (type == TOKEN_KEYWORD_SELECTOR) {
+	}
+	else if (type == TOKEN_KEYWORD_SELECTOR) {
 		
 		char *temp, *string = st_strdup("");
 		Node *arg;
@@ -771,7 +781,8 @@ void parse_message_pattern(Parser *parser, Node *method) {
 		method->method.precedence = ST_KEYWORD_PRECEDENCE;
 		st_free(string);
 		
-	} else {
+	}
+	else {
 		parse_error(parser, "invalid message pattern", token);
 	}
 	
@@ -915,7 +926,8 @@ Node *st_parser_parse(Lexer *lexer, CompilerError *error) {
 	
 	if (!setjmp (parser->jmploc)) {
 		method = st_parse_method(parser);
-	} else {
+	}
+	else {
 		method = NULL;
 	}
 	

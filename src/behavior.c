@@ -28,7 +28,7 @@ List *st_behavior_all_instance_variables(Oop class) {
 	}
 	
 	return st_list_concat(st_behavior_all_instance_variables(ST_BEHAVIOR_SUPERCLASS(class)),
-			st_list_reverse(list));
+	                      st_list_reverse(list));
 }
 
 Oop st_object_new(Oop class) {

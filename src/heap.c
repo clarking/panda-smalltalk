@@ -12,21 +12,22 @@
 
 #define PAGE_SIZE (st_system_pagesize ())
 
-static inline st_uint round_pagesize(st_uint size) {
+static inline uint round_pagesize(uint size) {
 	return ((size + PAGE_SIZE - 1) / PAGE_SIZE) * PAGE_SIZE;
 }
 
-MemHeap *st_heap_new(st_uint reserved_size) {
+MemHeap *st_heap_new(uint reserved_size) {
 	
 	// Create a new heap with a reserved address space.
-	void * result;
+	void *result;
 	MemHeap *heap;
-	st_uint size;
+	uint size;
 	
 	st_assert (reserved_size > 0);
 	size = round_pagesize(reserved_size);
 	result = st_system_reserve_memory(NULL, size);
-	if (result == NULL) return NULL;
+	if (result == NULL)
+		return NULL;
 	heap = st_new0 (MemHeap);
 	heap->start = result;
 	heap->end = result + size;
@@ -34,12 +35,12 @@ MemHeap *st_heap_new(st_uint reserved_size) {
 	return heap;
 }
 
-bool st_heap_grow(MemHeap *heap, st_uint grow_size) {
+bool st_heap_grow(MemHeap *heap, uint grow_size) {
 	
 	// Grows the heap by the specified amount (in bytes).
 	// The primitive will not succeed if the heap runs out of reserved address space.
-	void * result;
-	st_uint size;
+	void *result;
+	uint size;
 	st_assert (grow_size > 0);
 	size = round_pagesize(grow_size);
 	
@@ -54,10 +55,10 @@ bool st_heap_grow(MemHeap *heap, st_uint grow_size) {
 	return true;
 }
 
-bool st_heap_shrink(MemHeap *heap, st_uint shrink_size) {
+bool st_heap_shrink(MemHeap *heap, uint shrink_size) {
 	// Shrinks the heap by the specified amount (in bytes).
-	void * result;
-	st_uint size;
+	void *result;
+	uint size;
 	
 	st_assert (shrink_size > 0);
 	size = round_pagesize(shrink_size);
