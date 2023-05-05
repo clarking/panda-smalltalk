@@ -1,9 +1,10 @@
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
+
 #include "dictionary.h"
 #include "types.h"
 #include "array.h"
@@ -39,7 +40,6 @@ uint size_for_capacity(uint capacity) {
 void initialize(Oop collection, int capacity) {
 	st_assert (capacity > 0);
 	capacity = size_for_capacity(capacity);
-	
 	SIZE (collection) = st_smi_new(0);
 	DELETED (collection) = st_smi_new(0);
 	ARRAY (collection) = st_object_new_arrayed(ST_ARRAY_CLASS, capacity);
@@ -49,15 +49,15 @@ void dict_check_grow(Oop dict) {
 	Oop old, object;
 	uint size, n;
 	size = n = ARRAY_SIZE (ARRAY(dict));
-	
+
 	if (occupied(dict) * 2 <= size)
 		return;
-	
+
 	size *= 2;
 	old = ARRAY (dict);
 	ARRAY (dict) = st_object_new_arrayed(ST_ARRAY_CLASS, size);
 	DELETED (dict) = st_smi_new(0);
-	
+
 	for (uint i = 1; i <= n; i++) {
 		object = st_array_at(old, i);
 		if (object != ST_NIL) {
@@ -69,11 +69,11 @@ void dict_check_grow(Oop dict) {
 uint dict_find(Oop dict, Oop key) {
 	Oop el;
 	uint mask;
-	uint i;
-	
+	uint i = 0;
+
 	mask = ARRAY_SIZE (ARRAY(dict)) - 1;
 	i = (st_object_hash(key) & mask) + 1;
-	
+
 	while (true) {
 		el = st_array_at(ARRAY (dict), i);
 		if (el == ST_NIL || key == ST_ASSOCIATION_KEY (el))
@@ -85,32 +85,32 @@ uint dict_find(Oop dict, Oop key) {
 void st_dictionary_at_put(Oop dict, Oop key, Oop value) {
 	uint index;
 	Oop assoc;
-	
+
 	index = dict_find(dict, key);
 	assoc = st_array_at(ARRAY (dict), index);
-	
+
 	if (assoc == ST_NIL) {
-		st_array_at_put(ARRAY (dict), index, st_association_new(key, value));
-		SIZE (dict) = st_smi_increment(SIZE (dict));
+		st_array_at_put(ARRAY(dict), index, st_association_new(key, value));
+		SIZE(dict) = st_smi_increment(SIZE (dict));
 		dict_check_grow(dict);
 	}
 	else {
-		ST_ASSOCIATION_VALUE (assoc) = value;
+		ST_ASSOCIATION_VALUE(assoc) = value;
 	}
 }
 
 Oop st_dictionary_at(Oop dict, Oop key) {
 	int index;
 	Oop assoc;
-	assoc = st_array_at(ARRAY (dict), dict_find(dict, key));
+	assoc = st_array_at(ARRAY(dict), dict_find(dict, key));
 	if (assoc != ST_NIL)
-		return ST_ASSOCIATION_VALUE (assoc);
-	
+		return ST_ASSOCIATION_VALUE(assoc);
+
 	return ST_NIL;
 }
 
 Oop st_dictionary_association_at(Oop dict, Oop key) {
-	return st_array_at(ARRAY (dict), dict_find(dict, key));
+	return st_array_at(ARRAY(dict), dict_find(dict, key));
 }
 
 Oop st_dictionary_new(void) {
@@ -129,10 +129,10 @@ Oop st_dictionary_new_with_capacity(int capacity) {
 uint set_find_cstring(Oop set, const char *string) {
 	Oop el;
 	uint mask, i;
-	
+
 	mask = ARRAY_SIZE (ARRAY(set)) - 1;
 	i = (st_string_hash(string) & mask) + 1;
-	
+
 	while (true) {
 		el = st_array_at(ARRAY (set), i);
 		if (el == ST_NIL || (strcmp(st_byte_array_bytes(el), string) == 0))
@@ -144,10 +144,10 @@ uint set_find_cstring(Oop set, const char *string) {
 uint set_find(Oop set, Oop object) {
 	Oop el;
 	uint mask, i;
-	
+
 	mask = ARRAY_SIZE (ARRAY(set)) - 1;
 	i = (st_object_hash(object) & mask) + 1;
-	
+
 	while (true) {
 		el = st_array_at(ARRAY (set), i);
 		if (el == ST_NIL || el == object)
@@ -159,34 +159,33 @@ uint set_find(Oop set, Oop object) {
 void set_check_grow(Oop set) {
 	Oop old, object;
 	uint size, n;
-	
+
 	size = n = ARRAY_SIZE (ARRAY(set));
 	if (occupied(set) * 2 <= size)
 		return;
-	
+
 	size *= 2;
-	old = ARRAY (set);
-	ARRAY (set) = st_object_new_arrayed(ST_ARRAY_CLASS, size);
-	DELETED (set) = st_smi_new(0);
-	
+	old = ARRAY(set);
+	ARRAY(set) = st_object_new_arrayed(ST_ARRAY_CLASS, size);
+	DELETED(set) = st_smi_new(0);
+
 	for (uint i = 1; i <= n; i++) {
 		object = st_array_at(old, i);
 		if (object != ST_NIL)
-			st_array_at_put(ARRAY (set), set_find(set, object), object);
+			st_array_at_put(ARRAY(set), set_find(set, object), object);
 	}
 }
 
 Oop st_set_intern_cstring(Oop set, const char *string) {
 	Oop intern;
 	uint i, len;
-	
+
 	st_assert (string != NULL);
-	
 	i = set_find_cstring(set, string);
-	intern = st_array_at(ARRAY (set), i);
+	intern = st_array_at(ARRAY(set), i);
 	if (intern != ST_NIL)
 		return intern;
-	
+
 	len = strlen(string);
 	intern = st_object_new_arrayed(ST_SYMBOL_CLASS, len);
 	memcpy(st_byte_array_bytes(intern), string, len);

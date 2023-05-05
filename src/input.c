@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -15,20 +15,20 @@ static char *filter_double_bangs(const char *chunk) {
 	uint size, i = 0, count = 0;
 	const char *p = chunk;
 	char *buf;
-	
+
 	size = strlen(chunk);
 	if (size < 2)
 		return st_strdup(chunk);
-	
+
 	// count number of redundant bangs
 	while (p[0] && p[1]) {
 		if (ST_UNLIKELY(p[0] == '!' && p[1] == '!'))
 			count++;
 		p++;
 	}
-	
+
 	buf = st_malloc(size - count + 1);
-	
+
 	// copy over text skipping over redundant bangs
 	p = chunk;
 	while (*p) {
@@ -37,7 +37,7 @@ static char *filter_double_bangs(const char *chunk) {
 		buf[i++] = *p;
 		p++;
 	}
-	
+
 	buf[i] = 0;
 	return buf;
 }
@@ -45,23 +45,23 @@ static char *filter_double_bangs(const char *chunk) {
 char *st_input_next_chunk(LexInput *input) {
 	char *chunk_filtered, *chunk = NULL;
 	uint start;
-	
+
 	start = st_input_index(input);
 	while (st_input_look_ahead(input, 1) != ST_INPUT_EOF) {
-		
+
 		if (st_input_look_ahead(input, 1) != '!') {
 			st_input_consume(input);
 			continue;
 		}
-		
+
 		// skip past doubled bangs
 		if (st_input_look_ahead(input, 1) == '!'
-		    && st_input_look_ahead(input, 2) == '!') {
+			&& st_input_look_ahead(input, 2) == '!') {
 			st_input_consume(input);
 			st_input_consume(input);
 			continue;
 		}
-		
+
 		chunk = st_input_range(input, start, st_input_index(input));
 		chunk_filtered = filter_double_bangs(chunk);
 		st_input_consume(input);
@@ -91,16 +91,16 @@ char st_input_look_ahead(LexInput *input, int i) {
 	st_assert (input != NULL);
 	if (ST_UNLIKELY(i == 0))
 		return 0x0000;
-	
+
 	if (ST_UNLIKELY(i < 0)) {
 		i++;
 		if ((input->p + i - 1) < 0)
 			return ST_INPUT_EOF;
 	}
-	
+
 	if ((input->p + i - 1) >= input->n)
 		return ST_INPUT_EOF;
-	
+
 	return input->text[input->p + i - 1];
 }
 
@@ -122,7 +122,7 @@ void st_input_seek(LexInput *input, uint index) {
 	st_assert (input != NULL);
 	if (index <= input->p)
 		input->p = index;
-	
+
 	while (input->p < index)
 		st_input_consume(input);
 }
@@ -131,7 +131,7 @@ void st_input_consume(LexInput *input) {
 	st_assert (input != NULL);
 	if (input->p < input->n) {
 		input->column++;
-		
+
 		/* 0x000A is newline */
 		if (input->text[input->p] == 0x000A) {
 			input->line++;
@@ -149,7 +149,7 @@ uint st_input_size(LexInput *input) {
 char *st_input_range(LexInput *input, uint start, uint end) {
 	char *buf;
 	uint len;
-	
+
 	st_assert ((end - start) >= 0);
 	len = end - start;
 	buf = st_malloc(len + 1);

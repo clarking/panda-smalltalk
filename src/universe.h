@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -39,16 +39,17 @@
 #define ST_SYMBOL_CLASS               __machine.globals[23]
 #define ST_WIDE_STRING_CLASS          __machine.globals[24]
 #define ST_COMPILED_METHOD_CLASS      __machine.globals[25]
-#define MethodContext_CLASS       __machine.globals[26]
-#define BlockContext_CLASS        __machine.globals[27]
+#define ST_METHOD_CONTEXT_CLASS       __machine.globals[26]
+#define ST_BLOCK_CONTEXT_CLASS        __machine.globals[27]
 #define ST_SYSTEM_CLASS               __machine.globals[28]
 #define ST_HANDLE_CLASS               __machine.globals[29]
 #define ST_MESSAGE_CLASS              __machine.globals[30]
 #define ST_SELECTOR_DOESNOTUNDERSTAND __machine.globals[31]
 #define ST_SELECTOR_MUSTBEBOOLEAN     __machine.globals[32]
-#define ST_SELECTOR_STARTUPSYSTEM     __machine.globals[33]
-#define ST_SELECTOR_CANNOTRETURN      __machine.globals[34]
-#define ST_SELECTOR_OUTOFMEMORY       __machine.globals[35]
+#define ST_SELECTOR_BOOTSTRAPSYSTEM   __machine.globals[33]
+#define ST_SELECTOR_STARTUPSYSTEM     __machine.globals[34]
+#define ST_SELECTOR_CANNOTRETURN      __machine.globals[35]
+#define ST_SELECTOR_OUTOFMEMORY       __machine.globals[36]
 
 #define ST_SELECTOR_PLUS       __machine.selectors[0]
 #define ST_SELECTOR_MINUS      __machine.selectors[1]
@@ -77,7 +78,7 @@
 
 extern ObjMemory *memory;
 
-Oop class_new(st_format format, uint instance_size);
+Oop class_new(uint8_t format, uint instance_size);
 
 void add_global(const char *name, Oop object);
 

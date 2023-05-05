@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -10,12 +10,12 @@
 #include "unicode.h"
 #include "utils.h"
 
-unichar st_utf8_get_unichar(const char *p) {
-	unichar ch;
-	
+uint st_utf8_get_unichar(const char *p) {
+	uint ch;
+
 	if (p == NULL)
 		return 0x00;
-	
+
 	if ((p[0] & 0x80) == 0x00) {
 		ch = p[0];
 	}
@@ -36,10 +36,10 @@ unichar st_utf8_get_unichar(const char *p) {
 /* Derived from FontConfig
  * Copyright (C) 2006 Keith Packard
  */
-int st_unichar_to_utf8(unichar ch, char *outbuf) {
+int st_unichar_to_utf8(uint ch, char *outbuf) {
 	int bits;
 	char *d = outbuf;
-	
+
 	if (ch < 0x80) {
 		*d++ = ch;
 		bits = -6;
@@ -66,7 +66,7 @@ int st_unichar_to_utf8(unichar ch, char *outbuf) {
 	}
 	else
 		return 0;
-	
+
 	for (; bits >= 0; bits -= 6) {
 		*d++ = ((ch >> bits) & 0x3F) | 0x80;
 	}
@@ -92,10 +92,10 @@ int st_unichar_to_utf8(unichar ch, char *outbuf) {
  */
 bool st_utf8_validate(const char *string, ssize_t max_len) {
 	int ix;
-	
+
 	if (max_len == -1)
 		max_len = strlen(string);
-	
+
 	/*
 	 * input is a string of 1, 2, 3 or 4 bytes.  The valid strings
 	 * are as follows (in "bit format"):
@@ -106,7 +106,7 @@ bool st_utf8_validate(const char *string, ssize_t max_len) {
 	 */
 	for (ix = 0; ix < max_len;) {      /* string is 0-terminated */
 		uchar c;
-		
+
 		c = string[ix];
 		if ((c & 0x80) == 0x00) {    /* 1-byte code, starts with 10 */
 			ix++;
@@ -118,16 +118,16 @@ bool st_utf8_validate(const char *string, ssize_t max_len) {
 		}
 		else if ((c & 0xf0) == 0xe0) {/* 3-byte code, starts with 1110 */
 			if (((ix + 2) >= max_len) ||
-			    ((string[ix + 1] & 0xc0) != 0x80) ||
-			    ((string[ix + 2] & 0xc0) != 0x80))
+				((string[ix + 1] & 0xc0) != 0x80) ||
+				((string[ix + 2] & 0xc0) != 0x80))
 				return false;
 			ix += 3;
 		}
 		else if ((c & 0xf8) == 0xf0) {/* 4-byte code, starts with 11110 */
 			if (((ix + 3) >= max_len) ||
-			    ((string[ix + 1] & 0xc0) != 0x80) ||
-			    ((string[ix + 2] & 0xc0) != 0x80) ||
-			    ((string[ix + 3] & 0xc0) != 0x80))
+				((string[ix + 1] & 0xc0) != 0x80) ||
+				((string[ix + 2] & 0xc0) != 0x80) ||
+				((string[ix + 3] & 0xc0) != 0x80))
 				return false;
 			ix += 4;
 		}
@@ -135,7 +135,7 @@ bool st_utf8_validate(const char *string, ssize_t max_len) {
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -153,10 +153,10 @@ bool st_utf8_validate(const char *string, ssize_t max_len) {
 // Copyright (C) 1998-2003 Daniel Veillard
 int st_utf8_strlen(const char *string) {
 	int ret = 0;
-	
+
 	if (string == NULL)
 		return (-1);
-	
+
 	while (*string != 0) {
 		if (string[0] & 0x80) {
 			if ((string[1] & 0xc0) != 0x80)
@@ -192,16 +192,16 @@ const char *st_utf8_offset_to_pointer(const char *string, uint offset) {
 	return p;
 }
 
-unichar *st_utf8_to_ucs4(const char *string) {
+uint *st_utf8_to_ucs4(const char *string) {
 	const uchar *p = (const uchar *) string;
-	unichar *buffer, c;
+	uint *buffer, c;
 	uint index = 0;
-	
+
 	if (string == NULL)
 		return NULL;
-	
-	buffer = st_malloc(sizeof(unichar) * (st_utf8_strlen(string) + 1));
-	
+
+	buffer = st_malloc(sizeof(uint) * (st_utf8_strlen(string) + 1));
+
 	while (p[0]) {
 		if ((p[0] & 0x80) == 0x00) {
 			c = p[0];
@@ -221,10 +221,10 @@ unichar *st_utf8_to_ucs4(const char *string) {
 		}
 		else
 			break;
-		
+
 		buffer[index++] = c;
 	}
-	
+
 	buffer[index] = 0;
 	return buffer;
 }

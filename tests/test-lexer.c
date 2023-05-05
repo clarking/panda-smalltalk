@@ -1,37 +1,42 @@
 
+/*
+ * Copyright (C) 2008 Vincent Geddes
+ * Copyright (c) 2023, Aaron Clark Diaz.
+ *
+ * SPDX-License-Identifier: MIT
+ */
 
-#include <st-lexer.h>
+#include <lexer.h>
 #include <stdio.h>
-#include <stdbool.h>
 
 static const char *const token_names[] = {
-		"TOKEN_INVALID",
-		"TOKEN_LPAREN",
-		"TOKEN_RPAREN",
-		"TOKEN_BLOCK_BEGIN",
-		"TOKEN_BLOCK_END",
-		"TOKEN_COMMA",
-		"TOKEN_SEMICOLON",
-		"TOKEN_PERIOD",
-		"TOKEN_RETURN",
-		"TOKEN_COLON",
-		"TOKEN_ASSIGN",
-		"TOKEN_TUPLE_BEGIN",
-		"TOKEN_IDENTIFIER",
-		"TOKEN_CHARACTER_CONST",
-		"TOKEN_STRING_CONST",
-		"TOKEN_NUMBER_CONST",
-		"TOKEN_SYMBOL_CONST",
-		"TOKEN_COMMENT",
-		"TOKEN_BINARY_SELECTOR",
-		"TOKEN_KEYWORD_SELECTOR",
-		"TOKEN_EOF",
+	"TOKEN_INVALID",
+	"TOKEN_LPAREN",
+	"TOKEN_RPAREN",
+	"TOKEN_BLOCK_BEGIN",
+	"TOKEN_BLOCK_END",
+	"TOKEN_COMMA",
+	"TOKEN_SEMICOLON",
+	"TOKEN_PERIOD",
+	"TOKEN_RETURN",
+	"TOKEN_COLON",
+	"TOKEN_ASSIGN",
+	"TOKEN_TUPLE_BEGIN",
+	"TOKEN_IDENTIFIER",
+	"TOKEN_CHARACTER_CONST",
+	"TOKEN_STRING_CONST",
+	"TOKEN_NUMBER_CONST",
+	"TOKEN_SYMBOL_CONST",
+	"TOKEN_COMMENT",
+	"TOKEN_BINARY_SELECTOR",
+	"TOKEN_KEYWORD_SELECTOR",
+	"TOKEN_EOF",
 };
 
 static void print_token(Lexer *lexer, Token *token) {
 	TokenType type;
 	char *string;
-	type = st_token_get_type(token);
+	type = token->type;
 	switch (type) {
 		// tokens string values
 		case TOKEN_COMMENT:
@@ -42,21 +47,21 @@ static void print_token(Lexer *lexer, Token *token) {
 		case TOKEN_KEYWORD_SELECTOR:
 		case TOKEN_BINARY_SELECTOR:
 		case TOKEN_CHARACTER_CONST:
-			
-			string = st_token_get_text(token);
-			
+
+			string = token->text;
+
 			printf("%s (%i:%i: \"%s\")\n", token_names[type],
-					st_token_get_line(token), st_token_get_column(token), string);
+				   token->line, token->column, string);
 			break;
-			
+
 			// Invalid Token;
 		case TOKEN_INVALID:
 			printf("%s\n", st_lexer_error_message(lexer));
 			break;
-		
+
 		default:
 			printf("%s (%i:%i)\n", token_names[type],
-					st_token_get_line(token), st_token_get_column(token));
+				   token->line, token->column);
 			break;
 	}
 }
@@ -67,9 +72,9 @@ int main(int argc, char *argv[]) {
 	Lexer *lexer;
 	Token *token;
 	TokenType type;
-	
+
 	printf("Enter or pipe some Smalltalk code on stdin:\n\n");
-	
+
 	/* read input from stdin */
 	char buffer[BUF_SIZE];
 	char c;
@@ -77,14 +82,14 @@ int main(int argc, char *argv[]) {
 	while ((c = getchar()) != EOF && i < (BUF_SIZE - 1))
 		buffer[i++] = c;
 	buffer[i] = '\0';
-	
+
 	lexer = st_lexer_new(buffer);
-	
+
 	while (type != TOKEN_EOF) {
 		token = st_lexer_next_token(lexer);
-		type = st_token_get_type(token);
+		type = token->type;
 		print_token(lexer, token);
 	};
-	
+
 	return 0;
 }

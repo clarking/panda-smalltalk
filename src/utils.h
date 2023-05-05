@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -85,7 +85,7 @@ void st_free(void *mem);
 #define st_new0(struct_type) ((struct_type *) st_malloc0 (sizeof (struct_type)))
 
 bool st_file_get_contents(const char *filename,
-                          char **buffer);
+						  char **buffer);
 
 char *st_strdup(const char *string);
 

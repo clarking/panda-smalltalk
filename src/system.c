@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -43,7 +43,7 @@ void *st_system_commit_memory(void *addr, uint size) {
 		fprintf(stderr, "system memory commit error: %s\n", strerror(errno));
 		return false;
 	}
-	
+
 	if (addr)
 		flags |= MAP_FIXED;
 	return st_mmap_anon(addr, size, PROT_READ | PROT_WRITE, flags);
@@ -57,10 +57,9 @@ void *st_system_decommit_memory(void *addr, uint size) {
 		fprintf(stderr, "system memory decommit error: %s\n", strerror(errno));
 		return false;
 	}
-	
-	flags = MAP_NORESERVE;
-	if (addr)
-		flags |= MAP_FIXED;
+
+	flags = MAP_NORESERVE | MAP_FIXED;
+	//flags |= ;
 	return st_mmap_anon(addr, size, PROT_NONE, flags);
 }
 

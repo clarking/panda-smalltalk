@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -11,7 +11,6 @@
 
 #include <stdio.h>
 #include "types.h"
-
 
 uint st_identity_hashtable_hash(IdentityHashTable *ht, Oop object);
 

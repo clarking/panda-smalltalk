@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -18,12 +18,12 @@
     mp_int value;               \
     mp_err err;                 \
     err = mp_init (&value);     \
-	if(err!=MP_OKAY) {           \
-		fprintf(stderr, "%s", mp_error_to_string(err)); \
-	abort();                       \
-	}
-	
-	
+    if(err!=MP_OKAY) {           \
+        fprintf(stderr, "%s", mp_error_to_string(err)); \
+    abort();                       \
+    }
+
+
 #define BINARY_OP(op, a, b)    \
 OP_PROLOGUE                    \
     result = op (VALUE (a), VALUE (b), &value);

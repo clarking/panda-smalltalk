@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -40,7 +40,6 @@ Node *parse_primary(Parser *parser);
 Node *parse_tuple(Parser *parser);
 
 /* identifiers, literals, blocks */
-Node *parse_primary(Parser *parser);
 
 Node *parse_unary_message(Parser *parser, Node *receiver);
 
@@ -59,19 +58,9 @@ Node *parse_assign(Parser *parser, Node *assignee);
 
 Node *parse_cascade(Parser *parser, Node *first_message);
 
-Node *parse_expression(Parser *parser);
-
-Node *parse_subexpression(Parser *parser);
-
 Node *parse_return(Parser *parser);
 
 Node *parse_statement(Parser *parser);
-
-Node *parse_statements(Parser *parser);
-
-int parse_primitive(Parser *parser);
-
-Node *parse_temporaries(Parser *parser);
 
 void parse_message_pattern(Parser *parser, Node *method);
 

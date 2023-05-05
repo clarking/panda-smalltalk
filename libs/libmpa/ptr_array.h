@@ -68,14 +68,14 @@ struct PtrArray {
  * Result: the pointer array, or NULL if allocation failed for some
  *            reason.
  */
-PtrArray PtrArray_new(size_t initial_size);
+PtrArray ptr_array_new(size_t max_size);
 
 /* Free an existing pointer array.
  * 
  * Arguments: self, the pointer array to free. Can be NULL. Multiple
  *            calls to free has undefined platform results.
  */
-void PtrArray_free(PtrArray self);
+void _ptr_array_free(PtrArray self);
 
 /* Remove an entry by value from the array, preserving the order of
  * items following the removal point.
@@ -85,7 +85,7 @@ void PtrArray_free(PtrArray self);
  * Result: obj if the value was found, otherwise NULL. Note that if
  *            obj is NULL, success is not possible to determine.
  */
-void *PtrArray_remove_ordered(PtrArray self, const void *obj);
+void *ptr_array_remove_ordered(PtrArray self, const void *obj);
 
 /* Remove an entry by value from the array, preferring speed over
  * preserving order.
@@ -95,7 +95,7 @@ void *PtrArray_remove_ordered(PtrArray self, const void *obj);
  * Result: obj if the value was found, otherwise NULL. Note that if
  *            obj is NULL, success is not possible to determine.
  */
-void *PtrArray_remove_fast(PtrArray self, const void *obj);
+void *ptr_array_remove_fast(PtrArray self, const void *obj);
 
 /* Remove an entry at a certain index from the array, preserving the
  * order of items following the removal point.
@@ -106,7 +106,7 @@ void *PtrArray_remove_fast(PtrArray self, const void *obj);
  *            value removed is NULL, success is not possible to
  *            determine. 
  */
-void *PtrArray_remove_index_ordered(PtrArray self, size_t index);
+void *ptr_array_remove_index_ordered(PtrArray self, size_t index);
 
 /* Remove an entry at a certain index from the array, preferring speed over
  * preserving order.
@@ -117,7 +117,7 @@ void *PtrArray_remove_index_ordered(PtrArray self, size_t index);
  *            value removed is NULL, success is not possible to
  *            determine. 
  */
-void *PtrArray_remove_index_fast(PtrArray self, size_t index);
+void *ptr_array_remove_index_fast(PtrArray self, size_t index);
 
 /* Retrieve the pointer at a certain index.
  *
@@ -125,7 +125,7 @@ void *PtrArray_remove_index_fast(PtrArray self, size_t index);
  *            index, the position of the object to retrieve.
  * Result: the value which exists at the given index.
  */
-void *PtrArray_get_index(const PtrArray self, size_t index);
+void *ptr_array_get_index(const PtrArray self, size_t index);
 
 /* Modify the pointer at a certain index.
  * 
@@ -134,7 +134,7 @@ void *PtrArray_get_index(const PtrArray self, size_t index);
  *            value, the value to overwrite at the specified index
  * Result: the value which was at the index before.
  */
-const void *PtrArray_set_index(PtrArray self, size_t index, const void *value);
+const void *ptr_array_set_index(PtrArray self, size_t index, const void *value);
 
 /* Determine if the pointer array contains a particular value
  * 
@@ -143,7 +143,7 @@ const void *PtrArray_set_index(PtrArray self, size_t index, const void *value);
  *            array.
  * Result: Non-zero if found, zero if not found.
  */
-int PtrArray_contains(const PtrArray self, const void *value);
+int _ptr_array_contains(const PtrArray self, const void *value);
 
 /* Determine length (number of pointers) of the array.
  *
@@ -155,7 +155,7 @@ static inline size_t PtrArray_length(const PtrArray self) {
 }
 
 /* Internal method for appending a value which causes array growth */
-int _PtrArray_growing_append(PtrArray self, const void *value);
+int _ptr_array_growing_append(PtrArray self, const void *value);
 
 /* Append a new value to the end of the array.
  * 
@@ -165,7 +165,7 @@ int _PtrArray_growing_append(PtrArray self, const void *value);
  */
 static inline int PtrArray_append(PtrArray self, const void *value) {
 	if (self->length == self->size)
-		return _PtrArray_growing_append(self, value);
+		return _ptr_array_growing_append(self, value);
 	
 	self->array[self->length] = value;
 	self->length++;
@@ -177,5 +177,5 @@ static inline int PtrArray_append(PtrArray self, const void *value) {
  *
  * Arguments: self, the pointer array
  */
-void PtrArray_clear(PtrArray self);
+void _ptr_array_clear(PtrArray self);
 

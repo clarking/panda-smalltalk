@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -18,7 +18,6 @@
 #define ST_WORD_ARRAY(oop)     ((WordArray *)     st_detag_pointer (oop))
 #define ST_BYTE_ARRAY(oop)     ((ByteArray *)     st_detag_pointer (oop))
 
-
 bool st_byte_array_equal(Oop object, Oop other);
 
 uint st_byte_array_hash(Oop object);
@@ -27,17 +26,17 @@ Oop st_array_allocate(Oop class, uint size);
 
 Oop st_float_array_allocate(Oop class, int size);
 
-Oop st_word_array_allocate(Oop class, int size);
+Oop st_word_array_allocate(Oop class, uint size);
 
-Oop st_byte_array_allocate(Oop class, int size);
+Oop st_byte_array_allocate(Oop class, uint size);
 
 Oop st_arrayed_object_size(Oop object);
 
 Oop *st_array_elements(Oop object);
 
-Oop st_array_at(Oop object, int i);
+Oop st_array_at(Oop object, uint i);
 
-void st_array_at_put(Oop object, int i, Oop value);
+void st_array_at_put(Oop object, uint i, Oop value);
 
 uint *st_word_array_elements(Oop object);
 
@@ -56,4 +55,3 @@ double *st_float_array_elements(Oop array);
 double st_float_array_at(Oop array, int i);
 
 void st_float_array_at_put(Oop array, int i, double value);
-

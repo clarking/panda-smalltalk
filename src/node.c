@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -40,7 +40,7 @@ void print_object(Oop object) {
 }
 
 void print_tuple(Oop tuple) {
-	
+
 	int size;
 	size = st_smi_value(st_arrayed_object_size(tuple));
 	printf("#(");
@@ -100,9 +100,9 @@ void print_method_node(Node *node) {
 	}
 	else
 		printf("%s", (char *) st_byte_array_bytes(node->method.selector));
-	
+
 	printf("\n");
-	
+
 	if (node->method.temporaries != NULL) {
 		printf("| ");
 		Node *temp = node->method.temporaries;
@@ -112,10 +112,10 @@ void print_method_node(Node *node) {
 		}
 		printf("|\n");
 	}
-	
+
 	if (node->method.primitive >= 0)
 		printf("<primitive: %i>\n", node->method.primitive);
-	
+
 	Node *stm = node->method.statements;
 	for (; stm; stm = stm->next) {
 		if (stm->type == ST_RETURN_NODE)
@@ -139,7 +139,7 @@ void print_block(Node *node) {
 		printf("|");
 		printf(" ");
 	}
-	
+
 	if (node->block.temporaries != NULL) {
 		printf("| ");
 		Node *temp = node->block.temporaries;
@@ -150,94 +150,94 @@ void print_block(Node *node) {
 		printf("|");
 		printf(" ");
 	}
-	
+
 	Node *stm = node->block.statements;
 	for (; stm; stm = stm->next) {
 		if (stm->type == ST_RETURN_NODE)
 			print_return(stm);
 		else
 			print_expression(stm);
-		
+
 		if (stm->next != NULL)
 			printf(". ");
 	}
-	
+
 	printf(" ]");
 }
 
 void print_message(Node *node) {
-	
+
 	if (node->msg.precedence == ST_UNARY_PRECEDENCE) {
 		if (node->msg.receiver->type == ST_MESSAGE_NODE &&
-		    (node->msg.receiver->msg.precedence == ST_BINARY_PRECEDENCE ||
-		     node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE))
+			(node->msg.receiver->msg.precedence == ST_BINARY_PRECEDENCE ||
+			 node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE))
 			printf("(");
-		
+
 		print_expression(node->msg.receiver);
 		if (node->msg.receiver->type == ST_MESSAGE_NODE &&
-		    (node->msg.receiver->msg.precedence == ST_BINARY_PRECEDENCE ||
-		     node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE))
+			(node->msg.receiver->msg.precedence == ST_BINARY_PRECEDENCE ||
+			 node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE))
 			printf("(");
-		
+
 		printf(" ");
 		printf("%s", (char *) st_byte_array_bytes(node->msg.selector));
-		
+
 	}
 	else if (node->msg.precedence == ST_BINARY_PRECEDENCE) {
-		
+
 		if (node->msg.receiver->type == ST_MESSAGE_NODE && node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE)
 			printf("(");
-		
+
 		print_expression(node->msg.receiver);
 		if (node->msg.receiver->type == ST_MESSAGE_NODE && node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE)
 			printf(")");
-		
+
 		printf(" ");
 		printf("%s", (char *) st_byte_array_bytes(node->msg.selector));
 		printf(" ");
-		
+
 		if (node->msg.arguments->type == ST_MESSAGE_NODE &&
-		    (node->msg.arguments->msg.precedence == ST_BINARY_PRECEDENCE ||
-		     node->msg.arguments->msg.precedence == ST_KEYWORD_PRECEDENCE))
+			(node->msg.arguments->msg.precedence == ST_BINARY_PRECEDENCE ||
+			 node->msg.arguments->msg.precedence == ST_KEYWORD_PRECEDENCE))
 			printf("(");
-		
+
 		print_expression(node->msg.arguments);
 		if (node->msg.arguments->type == ST_MESSAGE_NODE &&
-		    (node->msg.arguments->msg.precedence == ST_BINARY_PRECEDENCE ||
-		     node->msg.arguments->msg.precedence == ST_KEYWORD_PRECEDENCE))
+			(node->msg.arguments->msg.precedence == ST_BINARY_PRECEDENCE ||
+			 node->msg.arguments->msg.precedence == ST_KEYWORD_PRECEDENCE))
 			printf(")");
-		
+
 	}
 	else if (node->msg.precedence == ST_KEYWORD_PRECEDENCE) {
-		
+
 		char *selector = (char *) st_byte_array_bytes(node->msg.selector);
 		char **keywords = extract_keywords(selector);
 		Node *arguments = node->msg.arguments;
-		
+
 		if (node->msg.receiver->type == ST_MESSAGE_NODE && node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE)
 			printf("(");
-		
+
 		print_expression(node->msg.receiver);
 		if (node->msg.receiver->type == ST_MESSAGE_NODE &&
-		    node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE)
+			node->msg.receiver->msg.precedence == ST_KEYWORD_PRECEDENCE)
 			printf(")");
-		
+
 		printf(" ");
 		for (char **keyword = keywords; *keyword; keyword++) {
 			printf("%s: ", *keyword);
 			if (node->msg.arguments->type == ST_MESSAGE_NODE &&
-			    node->msg.arguments->msg.precedence == ST_KEYWORD_PRECEDENCE)
+				node->msg.arguments->msg.precedence == ST_KEYWORD_PRECEDENCE)
 				printf("(");
 			print_expression(arguments);
 			if (node->msg.arguments->type == ST_MESSAGE_NODE &&
-			    node->msg.arguments->msg.precedence == ST_KEYWORD_PRECEDENCE)
+				node->msg.arguments->msg.precedence == ST_KEYWORD_PRECEDENCE)
 				printf(")");
 			printf(" ");
 			arguments = arguments->next;
 		}
 		st_strfreev(keywords);
 	}
-	
+
 	if (node->next) {
 		printf(". ");
 		print_message(node->next);
@@ -278,13 +278,13 @@ void st_print_method_node(Node *node) {
 Node *st_node_new(NodeType type) {
 	Node *node = st_new0 (Node);
 	node->type = type;
-	
+
 	if (node->type == ST_MESSAGE_NODE)
 		node->msg.is_statement = false;
-	
+
 	if (node->type == ST_CASCADE_NODE)
 		node->cascade.is_statement = false;
-	
+
 	return node;
 }
 
@@ -317,7 +317,7 @@ Node *st_node_list_at(Node *list, uint index) {
 void st_node_destroy(Node *node) {
 	if (node == NULL)
 		return;
-	
+
 	switch (node->type) {
 		case ST_METHOD_NODE:
 			st_node_destroy(node->method.arguments);
@@ -351,7 +351,7 @@ void st_node_destroy(Node *node) {
 		default:
 			break;
 	}
-	
+
 	st_node_destroy(node->next);
 	st_free(node);
 }

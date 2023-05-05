@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -12,17 +12,10 @@
 #include "utils.h"
 #include "universe.h"
 
-#define ST_HEADER(oop)        ((ObjHeader *) st_detag_pointer (oop))
+#define ST_HEADER(oop)        ((ObjHeader *) st_detag_pointer(oop))
 #define ST_OBJECT_MARK(oop)   (ST_HEADER (oop)->mark)
 #define ST_OBJECT_CLASS(oop)  (ST_HEADER (oop)->class)
 #define ST_OBJECT_FIELDS(oop) (ST_HEADER (oop)->fields)
-
-#define _ST_OBJECT_SET_BITFIELD(bitfield, field, value)            \
-    ((bitfield) = (((bitfield) & ~(_ST_OBJECT_##field##_MASK << _ST_OBJECT_##field##_SHIFT)) \
-         | (((value) & _ST_OBJECT_##field##_MASK) << _ST_OBJECT_##field##_SHIFT)))
-
-#define _ST_OBJECT_GET_BITFIELD(bitfield, field)            \
-    (((bitfield) >> _ST_OBJECT_##field##_SHIFT) & _ST_OBJECT_##field##_MASK)
 
 
 Oop st_object_allocate(Oop class);

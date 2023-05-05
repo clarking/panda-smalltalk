@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -15,15 +15,6 @@
 #include <ptr_array.h>
 #include <tommath.h>
 #include <time.h>
-
-#ifdef __GNUC__
-#define HAVE_COMPUTED_GOTO
-#endif
-
-
-
-//#define ST_SMALL_INTEGER_MIN  (-ST_SMALL_INTEGER_MAX - 1)
-//#define ST_SMALL_INTEGER_MAX  536870911
 
 // threshold is 8 Mb or 16 Mb depending on whether system is 32 or 64 bits
 #define ST_COLLECTION_THRESHOLD (sizeof (Oop) * 2 * 1024 * 1024)
@@ -42,40 +33,32 @@ enum {
 	ST_MARK_TAG,
 };
 
-enum {
-	_ST_OBJECT_UNUSED_BITS = 15,
-	_ST_OBJECT_HASH_BITS = 1,
-	_ST_OBJECT_SIZE_BITS = 8,
-	_ST_OBJECT_FORMAT_BITS = 6,
-	_ST_OBJECT_FORMAT_SHIFT = ST_TAG_SIZE,
-	_ST_OBJECT_SIZE_SHIFT = _ST_OBJECT_FORMAT_BITS + _ST_OBJECT_FORMAT_SHIFT,
-	_ST_OBJECT_HASH_SHIFT = _ST_OBJECT_SIZE_BITS + _ST_OBJECT_SIZE_SHIFT,
-	_ST_OBJECT_UNUSED_SHIFT = _ST_OBJECT_HASH_BITS + _ST_OBJECT_HASH_SHIFT,
-	_ST_OBJECT_FORMAT_MASK = ST_NTH_MASK (_ST_OBJECT_FORMAT_BITS),
-	_ST_OBJECT_SIZE_MASK = ST_NTH_MASK (_ST_OBJECT_SIZE_BITS),
-	_ST_OBJECT_HASH_MASK = ST_NTH_MASK (_ST_OBJECT_HASH_BITS),
-	_ST_OBJECT_UNUSED_MASK = ST_NTH_MASK (_ST_OBJECT_UNUSED_BITS),
-};
+#define ST_OBJECT_UNUSED_BITS   15
+#define ST_OBJECT_HASH_BITS     1
+#define ST_OBJECT_SIZE_BITS     8
+#define ST_OBJECT_FORMAT_BITS   6
+#define ST_OBJECT_FORMAT_SHIFT  ST_TAG_SIZE
+#define ST_OBJECT_SIZE_SHIFT    (ST_OBJECT_FORMAT_BITS + ST_OBJECT_FORMAT_SHIFT)
+#define ST_OBJECT_HASH_SHIFT    (ST_OBJECT_SIZE_BITS + ST_OBJECT_SIZE_SHIFT)
+#define ST_OBJECT_UNUSED_SHIFT  (ST_OBJECT_HASH_BITS + ST_OBJECT_HASH_SHIFT)
+#define ST_OBJECT_FORMAT_MASK   (ST_NTH_MASK(ST_OBJECT_FORMAT_BITS))
+#define ST_OBJECT_SIZE_MASK     (ST_NTH_MASK(ST_OBJECT_SIZE_BITS))
+#define ST_OBJECT_HASH_MASK     (ST_NTH_MASK(ST_OBJECT_HASH_BITS))
+#define ST_OBJECT_UNUSED_MASK   (ST_NTH_MASK(ST_OBJECT_UNUSED_BITS))
 
-typedef enum st_format {
-	ST_FORMAT_OBJECT,
-	ST_FORMAT_FLOAT,
-	ST_FORMAT_LARGE_INTEGER,
-	ST_FORMAT_HANDLE,
-	ST_FORMAT_ARRAY,
-	ST_FORMAT_BYTE_ARRAY,
-	ST_FORMAT_FLOAT_ARRAY,
-	ST_FORMAT_INTEGER_ARRAY,
-	ST_FORMAT_WORD_ARRAY,
-	ST_FORMAT_CONTEXT,
-	ST_NUM_FORMATS
-} st_format;
+#define ST_FORMAT_OBJECT        0
+#define ST_FORMAT_FLOAT         1
+#define ST_FORMAT_LARGE_INTEGER 2
+#define ST_FORMAT_HANDLE        3
+#define ST_FORMAT_ARRAY         4
+#define ST_FORMAT_BYTE_ARRAY    5
+#define ST_FORMAT_FLOAT_ARRAY   6
+#define ST_FORMAT_INTEGER_ARRAY 7
+#define ST_FORMAT_WORD_ARRAY    8
+#define ST_FORMAT_CONTEXT       9
+#define ST_NUM_FORMATS          10
 
-
-typedef struct StInteger {
-	uint64_t dummy: 1;
-	uint64_t value: 63;
-} StInteger;
+typedef uint8_t st_format;
 
 /* basic oop pointer:
  * integral type wide enough to hold a C pointer.
@@ -83,31 +66,18 @@ typedef struct StInteger {
  */
 
 typedef uintptr_t Oop;
+typedef uint8_t uchar;
 
-typedef unsigned char uchar;
-typedef unsigned short ushort;
-typedef unsigned long ulong;
-typedef unsigned int uint;
-
-typedef uint unichar;
-
-static inline Oop st_tag_pointer(void *p) {
-	return ((Oop) p) + ST_POINTER_TAG;
-}
-
-static inline Oop *st_detag_pointer(Oop oop) {
-	return (Oop *) (oop - ST_POINTER_TAG);
-}
+#define st_tag_pointer(p) (((Oop)(p)) + ST_POINTER_TAG)
+#define st_detag_pointer(oop) ((Oop *) ((oop) - ST_POINTER_TAG))
 
 typedef struct VmOptions {
 	char *src_dir;
 	char *script;
-	char *prog;
 	bool verbose;
 	uint mode;
 
 } VmOptions;
-
 
 /*
  * Every heap-allocated object starts with this header word
@@ -216,29 +186,30 @@ typedef struct CompilerError {
 	uint column;
 } CompilerError;
 
-typedef enum {
-	TOKEN_INVALID,
-	TOKEN_LPAREN,
-	TOKEN_RPAREN,
-	TOKEN_BLOCK_BEGIN,
-	TOKEN_BLOCK_END,
-	TOKEN_COMMA,
-	TOKEN_SEMICOLON,
-	TOKEN_PERIOD,
-	TOKEN_RETURN,
-	TOKEN_COLON,
-	TOKEN_ASSIGN,
-	TOKEN_TUPLE_BEGIN,
-	TOKEN_IDENTIFIER,
-	TOKEN_CHARACTER_CONST,
-	TOKEN_STRING_CONST,
-	TOKEN_NUMBER_CONST,
-	TOKEN_SYMBOL_CONST,
-	TOKEN_COMMENT,
-	TOKEN_BINARY_SELECTOR,
-	TOKEN_KEYWORD_SELECTOR,
-	TOKEN_EOF
-} TokenType;
+
+#define TOKEN_INVALID           0
+#define TOKEN_LPAREN            1
+#define TOKEN_RPAREN            2
+#define TOKEN_BLOCK_BEGIN       3
+#define TOKEN_BLOCK_END         4
+#define TOKEN_COMMA             5
+#define TOKEN_SEMICOLON         6
+#define TOKEN_PERIOD            7
+#define TOKEN_RETURN            8
+#define TOKEN_COLON             9
+#define TOKEN_ASSIGN            10
+#define TOKEN_TUPLE_BEGIN       11
+#define TOKEN_IDENTIFIER        12
+#define TOKEN_CHARACTER_CONST   13
+#define TOKEN_STRING_CONST      14
+#define TOKEN_NUMBER_CONST      15
+#define TOKEN_SYMBOL_CONST      16
+#define TOKEN_COMMENT           17
+#define TOKEN_BINARY_SELECTOR   18
+#define TOKEN_KEYWORD_SELECTOR  19
+#define TOKEN_EOF               20
+
+typedef uint8_t TokenType;
 
 typedef struct Token {
 	TokenType type;
@@ -257,39 +228,39 @@ typedef struct Token {
 	};
 } Token;
 
-typedef enum {
-	ERROR_MISMATCHED_CHAR,
-	ERROR_NO_VIABLE_ALT_FOR_CHAR,
-	ERROR_ILLEGAL_CHAR,
-	ERROR_UNTERMINATED_COMMENT,
-	ERROR_UNTERMINATED_STRING_LITERAL,
-	ERROR_INVALID_RADIX,
-	ERROR_INVALID_CHAR_CONST,
-	ERROR_NO_ALT_FOR_POUND,
-	
-} ErrCode;
+
+#define ERROR_MISMATCHED_CHAR 0
+#define ERROR_NO_VIABLE_ALT_FOR_CHAR      1
+#define ERROR_ILLEGAL_CHAR                2
+#define ERROR_UNTERMINATED_COMMENT        3
+#define ERROR_UNTERMINATED_STRING_LITERAL 4
+#define ERROR_INVALID_RADIX        5
+#define ERROR_INVALID_CHAR_CONST   6
+#define ERROR_NO_ALT_FOR_POUND     7
+
+typedef uint8_t ErrCode;
 
 typedef struct Lexer {
 	LexInput *input;
 	bool filter_comments;
 	bool token_matched;
-	
+
 	// data for next token
 	uint line;
 	uint column;
 	uint start;
 	Token *token;
-	
+
 	// error control
 	bool failed;
 	jmp_buf main_loop;
-	
+
 	// last error information
 	ErrCode error_code;
 	uint error_line;
 	uint error_column;
 	char error_char;
-	
+
 	List *allocated_tokens; // delayed deallocation
 } Lexer;
 
@@ -331,9 +302,9 @@ typedef struct Node {
 			Node *statements;
 			Node *temporaries;
 			Node *arguments;
-			
+
 		} method;
-		
+
 		struct {
 			MsgPrecedence precedence;
 			bool is_statement;
@@ -342,37 +313,37 @@ typedef struct Node {
 			Node *arguments;
 			bool super_send;
 		} msg;
-		
+
 		struct {
 			char *name;
 		} variable;
-		
+
 		struct {
 			Oop value;
 		} literal;
-		
+
 		struct {
 			Node *assignee;
 			Node *expression;
 		} assign;
-		
+
 		struct {
 			Node *expression;
 		} retrn;
-		
+
 		struct {
 			Node *statements;
 			Node *temporaries;
 			Node *arguments;
 		} block;
-		
+
 		struct {
 			Node *receiver;
 			List *messages;
 			bool is_statement;
 		} cascade;
 	};
-	
+
 } Node;
 
 typedef struct Handle {
@@ -432,9 +403,9 @@ typedef struct ObjMemory {
 	struct timespec total_pause_time;    // total accumulated pause time
 	ulong bytes_allocated;            // current number of allocated bytes
 	ulong bytes_collected;            // number of bytes collected in last compaction
-	
+
 	IdentityHashTable *ht;
-	
+
 } ObjMemory;
 
 

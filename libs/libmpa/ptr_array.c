@@ -35,7 +35,7 @@
 
 #define array_good_size(max_size) ((max_size + 7L) & ~7L)
 
-PtrArray PtrArray_new(size_t max_size) {
+PtrArray ptr_array_new(size_t max_size) {
 	size_t good_size = array_good_size(max_size);
 	assert(good_size >= max_size);
 	
@@ -57,35 +57,35 @@ PtrArray PtrArray_new(size_t max_size) {
 	return retval;
 }
 
-void *PtrArray_remove_ordered(PtrArray self, const void *obj) {
+void *ptr_array_remove_ordered(PtrArray self, const void *obj) {
 	size_t i;
 	assert (self != NULL);
 	
 	for (i = 0; i < self->length; ++i)
 		if (self->array[i] == obj)
-			return PtrArray_remove_index_ordered(self, i);
+			return ptr_array_remove_index_ordered(self, i);
 	
 	return NULL;
 }
 
-void *PtrArray_remove_fast(PtrArray self, const void *obj) {
+void *ptr_array_remove_fast(PtrArray self, const void *obj) {
 	size_t i;
 	assert (self != NULL);
 	
 	for (i = 0; i < self->length; ++i)
 		if (self->array[i] == obj)
-			return PtrArray_remove_index_fast(self, i);
+			return ptr_array_remove_index_fast(self, i);
 	
 	return NULL;
 }
 
-void *PtrArray_get_index(const PtrArray self, size_t index) {
+void *ptr_array_get_index(const PtrArray self, size_t index) {
 	assert (self != NULL);
 	assert (index < self->length);
 	return (void *) self->array[index];
 }
 
-const void *PtrArray_set_index(PtrArray self, size_t index, const void *value) {
+const void *ptr_array_set_index(PtrArray self, size_t index, const void *value) {
 	const void *oldval;
 	assert(self != NULL);
 	assert(index < self->length);
@@ -95,7 +95,7 @@ const void *PtrArray_set_index(PtrArray self, size_t index, const void *value) {
 	return (const void *) oldval;
 }
 
-void *PtrArray_remove_index_ordered(PtrArray self, size_t index) {
+void *ptr_array_remove_index_ordered(PtrArray self, size_t index) {
 	const void *retval;
 	size_t i;
 	assert (self != NULL);
@@ -112,7 +112,7 @@ void *PtrArray_remove_index_ordered(PtrArray self, size_t index) {
 	return (void *) retval;
 }
 
-void *PtrArray_remove_index_fast(PtrArray self, size_t index) {
+void *ptr_array_remove_index_fast(PtrArray self, size_t index) {
 	const void *retval;
 	assert (self != NULL);
 	assert (index < self->length);
@@ -127,7 +127,7 @@ void *PtrArray_remove_index_fast(PtrArray self, size_t index) {
 	return (void *) retval;
 }
 
-int _PtrArray_growing_append(PtrArray self, const void *value) {
+int _ptr_array_growing_append(PtrArray self, const void *value) {
 	size_t good_size = array_good_size(self->size + 1);
 	void *new_array = realloc(self->array, good_size * sizeof(void *));
 	if (new_array == NULL)
@@ -140,14 +140,14 @@ int _PtrArray_growing_append(PtrArray self, const void *value) {
 	return 1;
 }
 
-void PtrArray_free(PtrArray self) {
+void _ptr_array_free(PtrArray self) {
 	if (self != NULL) {
 		free(self->array);
 		free(self);
 	}
 }
 
-int PtrArray_contains(const PtrArray self, const void *value) {
+int _ptr_array_contains(const PtrArray self, const void *value) {
 	int i;
 	assert (self != NULL);
 	for (i = 0; i < self->length; ++i)
@@ -157,7 +157,7 @@ int PtrArray_contains(const PtrArray self, const void *value) {
 	return 0;
 }
 
-void PtrArray_clear(PtrArray self) {
+void _ptr_array_clear(PtrArray self) {
 	#ifdef CLEANUP_REFERENCES
 	memset(self->array, 0, self->size * sizeof(void*));
 	#endif

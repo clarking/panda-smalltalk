@@ -1,7 +1,7 @@
 
 
 /*
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -19,7 +19,6 @@
     break
 
 #define FORMAT(ip) (formats[sizes[*ip]-1])
-
 
 typedef void (*CodeGenerationFunc)(Generator *gt, Bytecode *code, Node *node);
 

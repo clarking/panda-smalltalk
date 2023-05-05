@@ -1,11 +1,10 @@
 
 /*
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
 #include "character.h"
-
 
 Oop st_character_new(wchar_t wc) {
 	return (Oop) ((wc << ST_TAG_SIZE) + ST_CHARACTER_TAG);

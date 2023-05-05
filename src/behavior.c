@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -16,19 +16,18 @@ List *st_behavior_all_instance_variables(Oop class) {
 	List *list = NULL;
 	Oop names;
 	int size;
-	
+
 	if (class == ST_NIL)
 		return NULL;
-	
+
 	names = ST_BEHAVIOR_INSTANCE_VARIABLES(class);
 	if (names != ST_NIL) {
 		size = st_smi_value(st_arrayed_object_size(names));
 		for (int i = 1; i <= size; i++)
 			list = st_list_prepend(list, (void *) st_strdup(st_byte_array_bytes(st_array_at(names, i))));
 	}
-	
-	return st_list_concat(st_behavior_all_instance_variables(ST_BEHAVIOR_SUPERCLASS(class)),
-	                      st_list_reverse(list));
+
+	return st_list_concat(st_behavior_all_instance_variables(ST_BEHAVIOR_SUPERCLASS(class)), st_list_reverse(list));
 }
 
 Oop st_object_new(Oop class) {
@@ -48,7 +47,7 @@ Oop st_object_new(Oop class) {
 	}
 }
 
-Oop st_object_new_arrayed(Oop class, int size) {
+Oop st_object_new_arrayed(Oop class, uint size) {
 	switch (st_smi_value(ST_BEHAVIOR_FORMAT (class))) {
 		case ST_FORMAT_ARRAY:
 			return st_array_allocate(class, size);
@@ -59,7 +58,6 @@ Oop st_object_new_arrayed(Oop class, int size) {
 		case ST_FORMAT_FLOAT_ARRAY:
 			return st_float_array_allocate(class, size);
 		case ST_FORMAT_INTEGER_ARRAY:
-			abort(); // not implemented
 		default:
 			abort(); // should not reach
 	}

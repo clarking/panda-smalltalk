@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -17,7 +17,6 @@
 
 static VmOptions options;
 
-
 #define PKGNAME "Panda Smalltalk"
 #define VERSION "0.0.1"
 
@@ -26,11 +25,9 @@ static void init_globals(void) {
 	options.script = "";
 	options.verbose = false;
 	options.mode = VM_MODE_EXPR;
-	options.prog = "";
 }
 
 static const char version[] = PKGNAME " " VERSION "\n";
-static char *str_empty = "";
 
 static void do_it(char *buffer) {
 	CompilerError error;
@@ -50,17 +47,17 @@ static void do_it(char *buffer) {
 		if (__machine.success)
 			printf("-> %s\n", (char *) st_byte_array_bytes(value));
 	}
-	
+
 	st_free(string);
 }
 
 static void read_compile_stdin(void) {
-	
+
 	char c;
 	int i = 0;
 	char buffer[INPUT_BUF_SIZE];
 	memset(buffer, 0x00, INPUT_BUF_SIZE);
-	
+
 	switch (options.mode) {
 		case VM_MODE_EXPR:
 			do_it(st_strconcat(options.script, NULL));
@@ -72,7 +69,7 @@ static void read_compile_stdin(void) {
 					i = 0;
 					memset(buffer, 0x00, INPUT_BUF_SIZE);
 				}
-				
+
 				buffer[i++] = c;
 				buffer[i] = '\0';
 			}
@@ -103,20 +100,19 @@ static double get_elapsed_time(struct timeval before, struct timeval after) {
 }
 
 static void parse_args(int argc, char *argv[]) {
-	
-	options.prog = argv[0];
+
 	char *arg;
 	char *val = NULL;
 	int i;
-	
+
 	if (argc == 1)
 		print_help();
-	
+
 	for (i = 1; i < argc; i++) {
 		arg = argv[i];
 		if ((i + 1) < argc)
 			val = argv[i + 1];
-		
+
 		if (strcmp(arg, "-d") == 0)
 			options.src_dir = val;
 		if (strcmp(arg, "-s") == 0) {

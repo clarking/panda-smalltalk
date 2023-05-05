@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -12,7 +12,7 @@
 Oop st_float_allocate(Oop class) {
 	uint size;
 	Oop object;
-	
+
 	size = ST_SIZE_OOPS(Float);
 	object = st_memory_allocate(size);
 	if (object == 0) {
@@ -21,7 +21,7 @@ Oop st_float_allocate(Oop class) {
 		object = st_memory_allocate(size);
 		st_assert (object != 0);
 	}
-	
+
 	st_object_initialize_header(object, class);
 	st_float_set_value(object, 0.0);
 	return object;

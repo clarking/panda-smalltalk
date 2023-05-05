@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -88,7 +88,7 @@ static void prim_small_int_lt(VirtualMachine *machine) {
 	int y = pop_integer(machine);
 	int x = pop_integer(machine);
 	Oop result;
-	
+
 	if (ST_LIKELY (machine->success)) {
 		result = (x < y) ? ST_TRUE : ST_FALSE;
 		ST_STACK_PUSH (machine, result);
@@ -170,7 +170,7 @@ static void prim_small_int_mul(VirtualMachine *machine) {
 		else
 			machine->success = false;
 	}
-	
+
 	ST_STACK_UNPOP (machine, 2);
 }
 
@@ -188,7 +188,7 @@ static void prim_small_int_div_sel(VirtualMachine *machine) {
 		else
 			machine->success = false;
 	}
-	
+
 	ST_STACK_UNPOP (machine, 2);
 }
 
@@ -196,7 +196,7 @@ static void prim_small_int_div(VirtualMachine *machine) {
 	int y = pop_integer(machine);
 	int x = pop_integer(machine);
 	Oop result;
-	
+
 	if (ST_LIKELY (machine->success)) {
 		if (y != 0) {
 			result = st_smi_new(x / y);
@@ -206,7 +206,7 @@ static void prim_small_int_div(VirtualMachine *machine) {
 		else
 			machine->success = false;
 	}
-	
+
 	ST_STACK_UNPOP (machine, 2);
 }
 
@@ -214,13 +214,13 @@ static void prim_small_int_mod(VirtualMachine *machine) {
 	int y = pop_integer(machine);
 	int x = pop_integer(machine);
 	Oop result;
-	
+
 	if (ST_LIKELY (machine->success)) {
 		result = st_smi_new(x % y);
 		ST_STACK_PUSH (machine, result);
 		return;
 	}
-	
+
 	ST_STACK_UNPOP (machine, 2);
 }
 
@@ -302,7 +302,7 @@ static void prim_small_int_as_large_int(VirtualMachine *machine) {
 	result = st_large_integer_new(&value);
 	ST_STACK_PUSH (machine, result);
 	return;
-	
+
 	out:
 	fprintf(stderr, "%s", mp_error_to_string(err));
 	abort();
@@ -369,19 +369,19 @@ static void prim_large_int_div_sel(VirtualMachine *machine) {
 	err = mp_div(VALUE (a), VALUE (b), &quotient, &remainder);
 	if (err != MP_OKAY)
 		goto out;
-	
+
 	size_t size;
 	char *str;
-	
+
 	err = mp_radix_size(&remainder, 10, &size);
 	if (err != MP_OKAY)
 		goto out;
-	
+
 	str = st_malloc(size);
 	err = mp_read_radix(&remainder, str, 10);
 	if (err != MP_OKAY)
 		goto out;
-	
+
 	if (mp_cmp_d(&remainder, 0) == MP_EQ) {
 		result = st_large_integer_new(&quotient);
 		ST_STACK_PUSH (machine, result);
@@ -392,7 +392,7 @@ static void prim_large_int_div_sel(VirtualMachine *machine) {
 		ST_STACK_UNPOP (machine, 2);
 		mp_clear_multi(&quotient, &remainder, NULL);
 	}
-	
+
 	out:
 	fprintf(stderr, "%s", mp_error_to_string(err));
 	abort();
@@ -489,8 +489,8 @@ static void prim_large_int_lt(VirtualMachine *machine) {
 static void prim_large_int_gt(VirtualMachine *machine) {
 	Oop b = prim_pop_large_int(machine);
 	Oop a = prim_pop_large_int(machine);
-	
-	
+
+
 	if (!machine->success) {
 		ST_STACK_UNPOP (machine, 2);
 		return;
@@ -601,7 +601,7 @@ static void prim_large_int_bitShift(VirtualMachine *machine) {
 	result = st_large_integer_new(&value);
 	ST_STACK_PUSH (machine, result);
 	return;
-	
+
 	out:
 	fprintf(stderr, "%s", mp_error_to_string(err));
 	abort();
@@ -624,12 +624,12 @@ static void prim_large_int_as_float(VirtualMachine *machine) {
 		goto out;
 	while (--i >= 0)
 		result = (result * ST_DIGIT_RADIX) + m->dp[i];
-	
+
 	if (m->sign == MP_NEG)
 		result = -result;
 	ST_STACK_PUSH (machine, st_float_new(result));
 	return;
-	
+
 	out:
 	fprintf(stderr, "%s", mp_error_to_string(err));
 	abort();
@@ -666,7 +666,7 @@ static void prim_large_int_hash(VirtualMachine *machine) {
 	for (size_t i = 0; i < len; i++)
 		if (c[i])
 			hash = ((hash << 5) + hash) + c[i];
-	
+
 	result = hash;
 	if (result < 0)
 		result = -result;
@@ -685,7 +685,7 @@ static void prim_float_add(VirtualMachine *machine) {
 	Oop result = ST_NIL;
 	if (machine->success)
 		result = st_float_new(st_float_value(x) + st_float_value(y));
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -696,10 +696,10 @@ static void prim_float_sub(VirtualMachine *machine) {
 	Oop y = prim_pop_float(machine);
 	Oop x = prim_pop_float(machine);
 	Oop result = ST_NIL;
-	
+
 	if (machine->success)
 		result = st_float_new(st_float_value(x) - st_float_value(y));
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -710,10 +710,10 @@ static void prim_float_lt(VirtualMachine *machine) {
 	Oop y = prim_pop_float(machine);
 	Oop x = prim_pop_float(machine);
 	Oop result = ST_NIL;
-	
+
 	if (machine->success)
 		result = isless (st_float_value(x), st_float_value(y)) ? ST_TRUE : ST_FALSE;
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -724,10 +724,10 @@ static void prim_float_gt(VirtualMachine *machine) {
 	Oop y = prim_pop_float(machine);
 	Oop x = prim_pop_float(machine);
 	Oop result = ST_NIL;
-	
+
 	if (machine->success)
 		result = isgreater (st_float_value(x), st_float_value(y)) ? ST_TRUE : ST_FALSE;
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -738,10 +738,10 @@ static void prim_float_le(VirtualMachine *machine) {
 	Oop y = prim_pop_float(machine);
 	Oop x = prim_pop_float(machine);
 	Oop result = ST_NIL;
-	
+
 	if (machine->success)
 		result = islessequal (st_float_value(x), st_float_value(y)) ? ST_TRUE : ST_FALSE;
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -752,10 +752,10 @@ static void prim_float_ge(VirtualMachine *machine) {
 	Oop y = prim_pop_float(machine);
 	Oop x = prim_pop_float(machine);
 	Oop result = ST_NIL;
-	
+
 	if (machine->success)
 		result = isgreaterequal (st_float_value(x), st_float_value(y)) ? ST_TRUE : ST_FALSE;
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -766,10 +766,10 @@ static void prim_float_eq(VirtualMachine *machine) {
 	Oop y = prim_pop_float(machine);
 	Oop x = prim_pop_float(machine);
 	Oop result = ST_NIL;
-	
+
 	if (machine->success)
 		result = (st_float_value(x) == st_float_value(y)) ? ST_TRUE : ST_FALSE;
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -780,10 +780,10 @@ static void prim_float_ne(VirtualMachine *machine) {
 	Oop y = prim_pop_float(machine);
 	Oop x = prim_pop_float(machine);
 	Oop result = ST_NIL;
-	
+
 	if (machine->success)
 		result = (st_float_value(x) != st_float_value(y)) ? ST_TRUE : ST_FALSE;
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -794,10 +794,10 @@ static void prim_float_mul(VirtualMachine *machine) {
 	Oop y = prim_pop_float(machine);
 	Oop x = prim_pop_float(machine);
 	Oop result = ST_NIL;
-	
+
 	if (machine->success)
 		result = st_float_new(st_float_value(x) * st_float_value(y));
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -808,12 +808,12 @@ static void prim_float_div(VirtualMachine *machine) {
 	Oop y = prim_pop_float(machine);
 	Oop x = prim_pop_float(machine);
 	Oop result = ST_NIL;
-	
+
 	set_success(machine, y != 0);
-	
+
 	if (machine->success)
 		result = st_float_new(st_float_value(x) / st_float_value(y));
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -824,7 +824,7 @@ static void prim_float_sin(VirtualMachine *machine) {
 	Oop receiver = ST_STACK_POP (machine);
 	double value = st_float_value(receiver);
 	Oop result = st_float_new(sin(value));
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -835,7 +835,7 @@ static void prim_float_cos(VirtualMachine *machine) {
 	Oop receiver = ST_STACK_POP (machine);
 	double value = st_float_value(receiver);
 	Oop result = st_float_new(cos(value));
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -846,7 +846,7 @@ static void prim_float_tan(VirtualMachine *machine) {
 	Oop receiver = ST_STACK_POP (machine);
 	double value = st_float_value(receiver);
 	Oop result = st_float_new(tan(value));
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -857,7 +857,7 @@ static void prim_float_arcSin(VirtualMachine *machine) {
 	Oop receiver = ST_STACK_POP (machine);
 	double value = st_float_value(receiver);
 	Oop result = st_float_new(asin(value));
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -878,7 +878,7 @@ static void prim_float_arcTan(VirtualMachine *machine) {
 	Oop receiver = ST_STACK_POP (machine);
 	double value = st_float_value(receiver);
 	Oop result = st_float_new(atan(value));
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -889,7 +889,7 @@ static void prim_float_sqrt(VirtualMachine *machine) {
 	Oop receiver = ST_STACK_POP (machine);
 	double value = st_float_value(receiver);
 	Oop result = st_float_new(sqrt(value));
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -900,7 +900,7 @@ static void prim_float_log(VirtualMachine *machine) {
 	Oop receiver = ST_STACK_POP (machine);
 	double value = st_float_value(receiver);
 	Oop result = st_float_new(log10(value));
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -911,7 +911,7 @@ static void prim_float_ln(VirtualMachine *machine) {
 	Oop receiver = ST_STACK_POP (machine);
 	double value = st_float_value(receiver);
 	Oop result = st_float_new(log(value));
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -922,7 +922,7 @@ static void prim_float_exp(VirtualMachine *machine) {
 	Oop receiver = ST_STACK_POP (machine);
 	double value = st_float_value(receiver);
 	Oop result = st_float_new(exp(value));
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, result);
 	else
@@ -939,7 +939,7 @@ static void prim_float_fractionPart(VirtualMachine *machine) {
 	Oop receiver = ST_STACK_POP (machine);
 	double frac_part, int_part;
 	Oop result;
-	
+
 	frac_part = modf(st_float_value(receiver), &int_part);
 	result = st_float_new(frac_part);
 	ST_STACK_PUSH (machine, result);
@@ -960,11 +960,11 @@ static void prim_float_hash(VirtualMachine *machine) {
 	int result;
 	double value;
 	unsigned char *c;
-	
+
 	value = st_float_value(receiver);
 	if (value == 0)
 		value = fabs(value);
-	
+
 	c = (unsigned char *) &value;
 	for (size_t i = 0; i < sizeof(double); i++)
 		hash = (hash * 971) ^ c[i];
@@ -979,15 +979,15 @@ static void prim_float_printStringBase(VirtualMachine *machine) {
 	Oop receiver = ST_STACK_POP (machine);
 	char *tmp;
 	Oop string;
-	
+
 	if (!machine->success ||
-	    !st_object_is_heap(receiver) ||
-	    st_object_format(receiver) != ST_FORMAT_FLOAT) {
+		!st_object_is_heap(receiver) ||
+		st_object_format(receiver) != ST_FORMAT_FLOAT) {
 		machine->success = false;
 		ST_STACK_UNPOP (machine, 2);
 		return;
 	}
-	
+
 	// ignore base for the time being
 	tmp = st_strdup_printf("%g", st_float_value(receiver));
 	string = st_string_new(tmp);
@@ -1001,19 +1001,19 @@ static void prim_obj_error(VirtualMachine *machine) {
 	traceback = ST_STACK_POP (machine);
 	message = ST_STACK_POP (machine);
 	(void) ST_STACK_POP (machine);
-	
+
 	if (!st_object_is_heap(traceback) ||
-	    st_object_format(traceback) != ST_FORMAT_BYTE_ARRAY) {
+		st_object_format(traceback) != ST_FORMAT_BYTE_ARRAY) {
 		abort(); // can't resume execution in this prim
 	}
-	
+
 	if (!st_object_is_heap(message) ||
-	    st_object_format(message) != ST_FORMAT_BYTE_ARRAY) {
+		st_object_format(message) != ST_FORMAT_BYTE_ARRAY) {
 	}
-	
+
 	printf("An error occurred during program execution\n");
 	printf("message: %s\n\n", st_byte_array_bytes(message));
-	
+
 	printf("Traceback:\n");
 	puts(st_byte_array_bytes(traceback));
 	/* set success to false to signal error */
@@ -1030,7 +1030,7 @@ static void prim_obj_class(VirtualMachine *machine) {
 static void prim_obj_identityHash(VirtualMachine *machine) {
 	Oop object;
 	uint hash;
-	
+
 	object = ST_STACK_POP (machine);
 	if (st_object_is_smi(object))
 		hash = st_smi_hash(object);
@@ -1044,17 +1044,17 @@ static void prim_obj_identityHash(VirtualMachine *machine) {
 }
 
 static void prim_obj_copy(VirtualMachine *machine) {
-	
+
 	Oop copy;
 	Oop class;
 	int size;
-	
+
 	(void) ST_STACK_POP (machine);
 	if (!st_object_is_heap(machine->message_receiver)) {
 		ST_STACK_PUSH (machine, machine->message_receiver);
 		return;
 	}
-	
+
 	switch (st_object_format(machine->message_receiver)) {
 		case ST_FORMAT_OBJECT: {
 			class = ST_OBJECT_CLASS(machine->message_receiver);
@@ -1079,16 +1079,16 @@ static void prim_obj_copy(VirtualMachine *machine) {
 			size = st_smi_value(st_arrayed_object_size(machine->message_receiver));
 			copy = st_object_new_arrayed(ST_OBJECT_CLASS(machine->message_receiver), size);
 			memcpy(st_float_array_elements(copy),
-			       st_float_array_elements(machine->message_receiver),
-			       sizeof(double) * size);
+				   st_float_array_elements(machine->message_receiver),
+				   sizeof(double) * size);
 			break;
 		}
 		case ST_FORMAT_WORD_ARRAY: {
 			size = st_smi_value(st_arrayed_object_size(machine->message_receiver));
 			copy = st_object_new_arrayed(ST_OBJECT_CLASS(machine->message_receiver), size);
 			memcpy(st_word_array_elements(copy),
-			       st_word_array_elements(machine->message_receiver),
-			       sizeof(uint) * size);
+				   st_word_array_elements(machine->message_receiver),
+				   sizeof(uint) * size);
 			break;
 		}
 		case ST_FORMAT_FLOAT: {
@@ -1139,19 +1139,19 @@ static void prim_obj_perform(VirtualMachine *machine) {
 	Oop selector;
 	Oop method;
 	uint selector_index;
-	
+
 	selector = machine->message_selector;
 	machine->message_selector = machine->stack[machine->sp - machine->message_argcount];
 	receiver = machine->message_receiver;
 	set_success(machine, st_object_is_symbol(machine->message_selector));
 	method = prim_lookup_method(st_object_class(receiver), machine->message_selector);
 	set_success(machine, (size_t) st_method_get_arg_count(method) == (machine->message_argcount - 1));
-	
+
 	if (machine->success) {
 		selector_index = machine->sp - machine->message_argcount;
 		st_oops_move(machine->stack + selector_index,
-		             machine->stack + selector_index + 1,
-		             machine->message_argcount - 1);
+					 machine->stack + selector_index + 1,
+					 machine->message_argcount - 1);
 		machine->sp -= 1;
 		machine->message_argcount -= 1;
 		machine->new_method = method;
@@ -1167,23 +1167,23 @@ static void prim_obj_perform_withArguments(VirtualMachine *machine) {
 	Oop method;
 	Oop array;
 	int array_size;
-	
+
 	array = ST_STACK_POP (machine);
 	set_success(machine, st_object_format(array) == ST_FORMAT_ARRAY);
-	
-	if (ST_OBJECT_CLASS(machine->context) == BlockContext_CLASS)
+
+	if (ST_OBJECT_CLASS(machine->context) == ST_BLOCK_CONTEXT_CLASS)
 		method = MethodContext_METHOD (BlockContext_HOME(machine->context));
 	else
 		method = MethodContext_METHOD (machine->context);
-	
+
 	array_size = st_smi_value(st_arrayed_object_size(array));
 	set_success(machine, (machine->sp + array_size - 1) < 32);
-	
+
 	if (!machine->success) {
 		ST_STACK_UNPOP (machine, 1);
 		return;
 	}
-	
+
 	selector = machine->message_selector;
 	machine->message_selector = ST_STACK_POP (machine);
 	receiver = ST_STACK_PEEK (machine);
@@ -1193,7 +1193,7 @@ static void prim_obj_perform_withArguments(VirtualMachine *machine) {
 	machine->sp += array_size;
 	method = prim_lookup_method(st_object_class(receiver), machine->message_selector);
 	set_success(machine, st_method_get_arg_count(method) == array_size);
-	
+
 	if (machine->success) {
 		machine->new_method = method;
 		st_machine_execute_method(machine);
@@ -1239,7 +1239,7 @@ static void prim_behavior_newSize(VirtualMachine *machine) {
 	Oop instance;
 	size = pop_integer32(machine);
 	class = ST_STACK_POP (machine);
-	
+
 	switch (st_smi_value(ST_BEHAVIOR_FORMAT (class))) {
 		case ST_FORMAT_ARRAY:
 			instance = st_array_allocate(class, size);
@@ -1266,7 +1266,7 @@ static void prim_behavior_compile(VirtualMachine *machine) {
 	CompilerError error;
 	Oop receiver;
 	Oop string;
-	
+
 	string = ST_STACK_POP (machine);
 	receiver = ST_STACK_POP (machine);
 	if (!st_object_is_heap(string) || st_object_format(string) != ST_FORMAT_BYTE_ARRAY) {
@@ -1274,7 +1274,7 @@ static void prim_behavior_compile(VirtualMachine *machine) {
 		ST_STACK_UNPOP (machine, 2);
 		return;
 	}
-	
+
 	if (!st_compile_string(receiver, (char *) st_byte_array_bytes(string), &error)) {
 		machine->success = false;
 		ST_STACK_UNPOP (machine, 2);
@@ -1402,66 +1402,66 @@ static void prim_byteString_compare(VirtualMachine *machine) {
 	Oop argument = ST_STACK_POP (machine);
 	Oop receiver = ST_STACK_POP (machine);
 	int order;
-	
+
 	if (st_object_format(argument) != ST_FORMAT_BYTE_ARRAY)
 		set_success(machine, false);
-	
+
 	if (machine->success)
 		order = strcmp((const char *) st_byte_array_bytes(receiver), (const char *) st_byte_array_bytes(argument));
-	
+
 	if (machine->success)
-		ST_STACK_PUSH (machine, st_smi_new(order));
+		ST_STACK_PUSH(machine, st_smi_new(order));
 	else
-		ST_STACK_UNPOP (machine, 2);
+		ST_STACK_UNPOP(machine, 2);
 }
 
 static void prim_wideString_at(VirtualMachine *machine) {
 	int index = pop_integer32(machine);
-	Oop receiver = ST_STACK_POP (machine);
-	
-	unichar c;
+	Oop receiver = ST_STACK_POP(machine);
+
+	uint32_t c;
 	if (!machine->success) {
-		ST_STACK_UNPOP (machine, 2);
+		ST_STACK_UNPOP(machine, 2);
 		return;
 	}
-	
+
 	if (index < 1 || index > st_smi_value(st_arrayed_object_size(receiver))) {
 		set_success(machine, false);
-		ST_STACK_UNPOP (machine, 2);
+		ST_STACK_UNPOP(machine, 2);
 		return;
 	}
 	c = st_word_array_at(receiver, index);
-	ST_STACK_PUSH (machine, st_character_new(c));
+	ST_STACK_PUSH(machine, st_character_new(c));
 }
 
 static void prim_wideString_at_put(VirtualMachine *machine) {
-	Oop character = ST_STACK_POP (machine);
+	Oop character = ST_STACK_POP(machine);
 	int index = pop_integer32(machine);
-	Oop receiver = ST_STACK_POP (machine);
+	Oop receiver = ST_STACK_POP(machine);
 	if (!machine->success) {
-		ST_STACK_UNPOP (machine, 3);
+		ST_STACK_UNPOP(machine, 3);
 		return;
 	}
 	set_success(machine, st_object_class(character) == ST_CHARACTER_CLASS);
 	if (index < 1 || index > st_smi_value(st_arrayed_object_size(receiver))) {
 		set_success(machine, false);
-		ST_STACK_UNPOP (machine, 3);
+		ST_STACK_UNPOP(machine, 3);
 		return;
 	}
 	st_word_array_at_put(receiver, index, character);
-	ST_STACK_PUSH (machine, character);
+	ST_STACK_PUSH(machine, character);
 }
 
 static void prim_wordArray_at(VirtualMachine *machine) {
 	Oop receiver;
 	int index;
 	uint element;
-	
+
 	index = pop_integer32(machine);
-	receiver = ST_STACK_POP (machine);
+	receiver = ST_STACK_POP(machine);
 	if (ST_UNLIKELY(index < 1 || index > st_smi_value(st_arrayed_object_size(receiver)))) {
 		set_success(machine, false);
-		ST_STACK_UNPOP (machine, 2);
+		ST_STACK_UNPOP(machine, 2);
 		return;
 	}
 	element = st_word_array_at(receiver, index);
@@ -1471,13 +1471,13 @@ static void prim_wordArray_at(VirtualMachine *machine) {
 static void prim_wordArray_at_put(VirtualMachine *machine) {
 	int value = pop_integer(machine);
 	int index = pop_integer32(machine);
-	Oop receiver = ST_STACK_POP (machine);
-	
+	Oop receiver = ST_STACK_POP(machine);
+
 	if (!machine->success) {
 		ST_STACK_UNPOP (machine, 3);
 		return;
 	}
-	
+
 	if (ST_UNLIKELY(index < 1 || index > st_smi_value(st_arrayed_object_size(receiver)))) {
 		set_success(machine, false);
 		ST_STACK_UNPOP (machine, 3);
@@ -1491,7 +1491,7 @@ static void prim_floatArray_at(VirtualMachine *machine) {
 	Oop receiver;
 	int index;
 	double element;
-	
+
 	index = pop_integer32(machine);
 	receiver = ST_STACK_POP (machine);
 	if (ST_UNLIKELY(index < 1 || index > st_smi_value(st_arrayed_object_size(receiver)))) {
@@ -1523,7 +1523,7 @@ static void prim_floatArray_at_put(VirtualMachine *machine) {
 
 static void prim_blockContext_value(VirtualMachine *machine) {
 	Oop block;
-	size_t argcount;
+	uint argcount;
 	block = machine->message_receiver;
 	argcount = st_smi_value(BlockContext_ARGCOUNT (block));
 	if (ST_UNLIKELY(argcount != machine->message_argcount)) {
@@ -1533,7 +1533,7 @@ static void prim_blockContext_value(VirtualMachine *machine) {
 	st_oops_copy(BlockContext_STACK (block), machine->stack + machine->sp - argcount, argcount);
 	machine->sp -= machine->message_argcount + 1;
 	ContextPart_IP (block) = BlockContext_INITIALIP (block);
-	ContextPart_SP (block) = st_smi_new(argcount);
+	ContextPart_SP (block) = st_smi_new((int) argcount);
 	ContextPart_SENDER (block) = machine->context;
 	st_machine_set_active_context(machine, block);
 }
@@ -1542,25 +1542,25 @@ static void prim_blockContext_valueWithArguments(VirtualMachine *machine) {
 	Oop block;
 	Oop values;
 	int argcount;
-	
+
 	block = machine->message_receiver;
 	values = ST_STACK_PEEK (machine);
 	if (st_object_class(values) != ST_ARRAY_CLASS) {
 		set_success(machine, false);
 		return;
 	}
-	
-	argcount = st_smi_value(BlockContext_ARGCOUNT (block));
+
+	argcount = st_smi_value(BlockContext_ARGCOUNT(block));
 	if (argcount != st_smi_value(st_arrayed_object_size(values))) {
 		set_success(machine, false);
 		return;
 	}
-	
+
 	st_oops_copy(BlockContext_STACK (block), ST_ARRAY (values)->elements, argcount);
 	machine->sp -= machine->message_argcount + 1;
-	ContextPart_IP (block) = BlockContext_INITIALIP (block);
-	ContextPart_SP (block) = st_smi_new(argcount);
-	ContextPart_SENDER (block) = machine->context;
+	ContextPart_IP(block) = BlockContext_INITIALIP (block);
+	ContextPart_SP(block) = st_smi_new(argcount);
+	ContextPart_SENDER(block) = machine->context;
 	st_machine_set_active_context(machine, block);
 }
 
@@ -1571,18 +1571,18 @@ static void prim_sys_exitWithResult(VirtualMachine *machine) {
 
 static void prim_char_value(VirtualMachine *machine) {
 	Oop receiver = ST_STACK_POP (machine);
-	ST_STACK_PUSH (machine, st_smi_new(st_character_value(receiver)));
+	ST_STACK_PUSH(machine, st_smi_new(st_character_value(receiver)));
 }
 
 static void prim_char_for(VirtualMachine *machine) {
 	int value;
 	value = pop_integer(machine);
 	(void) ST_STACK_POP (machine);
-	
+
 	if (machine->success)
 		ST_STACK_PUSH (machine, st_character_new(value));
 	else
-		ST_STACK_UNPOP (machine, 2);
+		ST_STACK_UNPOP(machine, 2);
 }
 
 static void prim_file_stream_open(VirtualMachine *machine) {
@@ -1591,30 +1591,30 @@ static void prim_file_stream_open(VirtualMachine *machine) {
 	char *str;
 	int mode;
 	int fd;
-	
+
 	mode = pop_integer32(machine);
 	filename = ST_STACK_POP (machine);
 	if (st_object_format(filename) != ST_FORMAT_BYTE_ARRAY) {
 		machine->success = false;
-		ST_STACK_UNPOP (machine, 2);
+		ST_STACK_UNPOP(machine, 2);
 		return;
 	}
-	
+
 	if (mode != O_RDONLY || mode != O_WRONLY) {
 		machine->success = false;
-		ST_STACK_UNPOP (machine, 2);
+		ST_STACK_UNPOP(machine, 2);
 		return;
 	}
-	
+
 	str = st_byte_array_bytes(filename);
 	fd = open(str, O_WRONLY | O_CREAT, 0644);
 	if (fd < 0) {
 		fprintf(stderr, "%s", strerror(errno));
 		machine->success = false;
-		ST_STACK_UNPOP (machine, 2);
+		ST_STACK_UNPOP(machine, 2);
 		return;
 	}
-	
+
 	ftruncate(fd, 0);
 	(void) ST_STACK_POP (machine); // pop receiver
 	handle = st_object_new(ST_HANDLE_CLASS);
@@ -1642,7 +1642,7 @@ static void prim_file_stream_write(VirtualMachine *machine) {
 	char *buffer;
 	size_t total, size;
 	ssize_t count;
-	
+
 	array = ST_STACK_POP (machine);
 	handle = ST_STACK_POP (machine);
 	if (st_object_format(array) != ST_FORMAT_BYTE_ARRAY) {
@@ -1655,7 +1655,7 @@ static void prim_file_stream_write(VirtualMachine *machine) {
 		ST_STACK_UNPOP (machine, 2);
 		return;
 	}
-	
+
 	fd = ST_HANDLE_VALUE (handle);
 	buffer = st_byte_array_bytes(array);
 	size = st_smi_value(st_arrayed_object_size(array));
@@ -1682,57 +1682,6 @@ static void prim_file_stream_read(VirtualMachine *machine) {
 	abort(); // not implemented yet
 }
 
-
-static void prim_process_fork(VirtualMachine *machine) {
-	(void) machine;
-	abort(); // not implemented yet
-}
-
-static void prim_process_yield(VirtualMachine *machine) {
-	(void) machine;
-	abort(); // not implemented yet
-}
-
-static void prim_process_kill(VirtualMachine *machine) {
-	(void) machine;
-	abort(); // not implemented yet
-}
-
-static void prim_thread_create(VirtualMachine *machine) {
-	(void) machine;
-	abort(); // not implemented yet
-}
-
-static void prim_thread_suspend(VirtualMachine *machine) {
-	(void) machine;
-	abort(); // not implemented yet
-}
-
-static void prim_thread_yield(VirtualMachine *machine) {
-	(void) machine;
-	abort(); // not implemented yet
-}
-
-static void prim_thread_join(VirtualMachine *machine) {
-	(void) machine;
-	abort(); // not implemented yet
-}
-
-static void prim_thread_wait(VirtualMachine *machine) {
-	(void) machine;
-	abort(); // not implemented yet
-}
-
-static void prim_in_byte(VirtualMachine *machine) {
-	(void) machine;
-	abort(); // not implemented yet
-}
-
-static void prim_out_byte(VirtualMachine *machine) {
-	(void) machine;
-	abort(); // not implemented yet
-}
-
 const struct Primitive st_primitives[] = {
 	{"small_int_add",                 prim_small_int_add},
 	{"small_int_sub",                 prim_small_int_sub},
@@ -1750,7 +1699,7 @@ const struct Primitive st_primitives[] = {
 	{"small_int_bitXor",              prim_small_int_bitXor},
 	{"small_int_bitAnd",              prim_small_int_bitAnd},
 	{"small_int_bitShift",            prim_small_int_bitShift},
-	{"small_int_as_float",             prim_small_int_as_float},
+	{"small_int_as_float",            prim_small_int_as_float},
 	{"small_int_as_large_int",        prim_small_int_as_large_int},
 	{"large_int_add",                 prim_large_int_add},
 	{"large_int_sub",                 prim_large_int_sub},
@@ -1772,7 +1721,7 @@ const struct Primitive st_primitives[] = {
 	{"large_int_bitAnd",              prim_large_int_bitAnd},
 	{"large_int_bitShift",            prim_large_int_bitShift},
 	{"large_int_print_string_base",   prim_large_int_printStringBase},
-	{"large_int_as_float",             prim_large_int_as_float},
+	{"large_int_as_float",            prim_large_int_as_float},
 	{"large_int_hash",                prim_large_int_hash},
 	{"float_add",                     prim_float_add},
 	{"float_sub",                     prim_float_sub},
@@ -1840,7 +1789,7 @@ const struct Primitive st_primitives[] = {
 // returns 0 if there no primitive function corresponding to the given name
 int st_prim_index_for_name(const char *name) {
 	st_assert (name != NULL);
-	for (size_t i = 0; i < ST_N_ELEMENTS (st_primitives); i++)
+	for (int i = 0; i < ST_N_ELEMENTS (st_primitives); i++)
 		if (streq (name, st_primitives[i].name))
 			return i;
 	return -1;

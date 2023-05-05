@@ -1,7 +1,7 @@
 
 /*
  * Copyright (C) 2008 Vincent Geddes
- * Copyright (c) 2022, Aaron Clark Diaz.
+ * Copyright (c) 2023, Aaron Clark Diaz.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -11,7 +11,7 @@
 #include "types.h"
 
 typedef struct LexInput LexInput;
-#define ST_INPUT_EOF -1
+#define ST_INPUT_EOF (-1)
 
 LexInput *st_input_new(const char *string);
 
